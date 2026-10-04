@@ -491,6 +491,104 @@ textarea.paste { min-height: 220px; margin-bottom: 12px; font-size: 14px; line-h
 .merge-row { display: flex; justify-content: space-between; gap: 12px; padding: 9px 0; border-bottom: 1px solid var(--rule); font-size: 15px; }
 .folder-box { display: flex; flex-direction: column; gap: 8px; padding-top: 12px; border-top: 1px solid var(--rule); }
 
+/* ---------- countdown timers ---------- */
+.run-chip.over { background: var(--danger-tint); color: var(--danger); }
+.tmr-big { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 12px; }
+.tmr-big .tnum { font-size: 44px; font-weight: 800; line-height: 1; letter-spacing: -0.02em; color: var(--run-text); }
+.tmr-big.over .tnum { color: var(--danger); }
+.tmr-big .small { color: var(--ink-2); }
+.timer-in { max-width: 240px; }
+.badge .i { width: 13px; height: 13px; }
+.timerbar {
+  position: fixed; left: 50%; transform: translateX(-50%); width: min(560px, calc(100% - 20px));
+  bottom: calc(66px + env(safe-area-inset-bottom, 0px)); z-index: 50; display: flex; flex-direction: column; gap: 6px;
+}
+.tb-item { display: flex; align-items: center; gap: 6px; padding: 6px; border: 1.5px solid var(--run); border-radius: 14px; background: var(--surface); box-shadow: 0 6px 24px rgba(8, 12, 18, .18); }
+.tb-item.over { border-color: var(--danger-solid); background: var(--danger-tint); animation: tbpulse .9s ease-in-out infinite alternate; }
+.tb-main { flex: 1 1 auto; min-width: 0; display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 2px 6px; border: 0; background: none; color: inherit; text-align: left; cursor: pointer; }
+.tb-clock { flex: none; min-width: 4.2ch; font-size: 24px; font-weight: 800; color: var(--run-text); }
+.tb-item.over .tb-clock { color: var(--danger); }
+.tb-label { display: flex; flex-direction: column; min-width: 0; line-height: 1.25; }
+.tb-label b { overflow: hidden; font-size: 15px; white-space: nowrap; text-overflow: ellipsis; }
+.tb-label span { overflow: hidden; color: var(--ink-2); font-size: 13px; white-space: nowrap; text-overflow: ellipsis; }
+.tb-btn { flex: none; }
+.tb-more { padding: 4px 10px; border-radius: 10px; background: var(--surface); color: var(--ink-2); text-align: center; }
+@keyframes tbpulse { from { box-shadow: 0 6px 24px rgba(8, 12, 18, .18); } to { box-shadow: 0 0 0 5px rgba(180, 35, 24, .3); } }
+@media (min-width: 820px) { .timerbar { bottom: 16px; } }
+body:has(.timerbar) main { padding-bottom: calc(240px + env(safe-area-inset-bottom, 0px)); }
+body:has(.timerbar) .toasts { top: calc(58px + env(safe-area-inset-top, 0px)); bottom: auto; }
+@media (prefers-reduced-motion: reduce) { .tb-item.over { animation: none; } }
+
+/* ---------- segments ---------- */
+.proc-chip { display: inline-block; margin-top: 8px; padding: 3px 10px; border-radius: 999px; background: var(--accent-2); color: var(--accent); font-size: 13px; font-weight: 650; }
+.sgm { margin-top: 10px; border: 1px solid var(--rule); border-radius: 12px; background: var(--surface); }
+.sgm.current { border-color: var(--accent); box-shadow: inset 3px 0 0 var(--accent); }
+.sgm-head { display: flex; align-items: center; padding-right: 4px; }
+.sgm-toggle { flex: 1 1 auto; min-width: 0; display: grid; grid-template-columns: 28px minmax(0, 1fr) auto 18px; gap: 10px; align-items: center; padding: 12px 4px 12px 12px; border: 0; background: none; color: inherit; text-align: left; cursor: pointer; }
+.sgm-num { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; background: var(--surface-2); color: var(--ink-2); font-size: 14px; font-weight: 750; }
+.sgm.done .sgm-num { background: var(--stamp); color: var(--accent-ink); }
+.sgm.current .sgm-num { background: var(--accent); color: var(--accent-ink); }
+.sgm-main { display: flex; flex-direction: column; min-width: 0; }
+.sgm-name { font-size: 16px; font-weight: 700; line-height: 1.25; word-break: break-word; }
+.sgm-sub { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 8px; margin-top: 5px; font-size: 13px; color: var(--ink-3); }
+.sgm-prog { font-size: 13px; font-weight: 650; color: var(--ink-2); white-space: nowrap; }
+.sgm .chev { display: flex; color: var(--ink-3); }
+.done-note { color: var(--stamp); font-weight: 650; }
+.sgm-body { border-top: 1px solid var(--rule); padding: 2px 10px 6px 0; }
+.sgm-body .steps { margin-top: 4px; }
+.sgm-body .step { grid-template-columns: 30px 24px minmax(0, 1fr) auto; }
+.sgm-body .step::before { left: 49.25px; }
+.sgm-empty { padding: 12px 14px 4px; }
+.sgm-foot { padding: 4px 0 4px 8px; }
+@media (max-width: 560px) { .sgm-body .st-detail { margin-left: -38px; } }
+.choice { display: flex; flex-direction: column; gap: 8px; }
+.pgroup { display: flex; flex-direction: column; align-items: stretch; gap: 6px; }
+.pgroup > .btn { align-self: flex-start; }
+.pg-name { margin-top: 4px; font-size: 13px; font-weight: 700; color: var(--ink-2); }
+.prow { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border: 1px solid var(--rule); border-radius: 10px; background: var(--surface); cursor: pointer; }
+.prow.on { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); background: var(--accent-2); }
+.prow input { width: 20px; height: 20px; margin: 0; flex: none; accent-color: var(--accent); }
+.prow b { display: block; font-size: 15px; }
+.prow .small { color: var(--ink-3); }
+.opt-card { display: flex; gap: 12px; align-items: flex-start; width: 100%; padding: 14px; border: 1px solid var(--rule); border-radius: 12px; background: var(--surface); color: inherit; text-align: left; cursor: pointer; }
+.opt-card.on { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); background: var(--accent-2); }
+.opt-card .i { margin-top: 1px; color: var(--accent); }
+.opt-card b { display: block; margin-bottom: 2px; font-size: 16px; }
+.opt-card span span { font-size: 14px; line-height: 1.4; color: var(--ink-2); }
+.import-list li.seg .imp-name { font-weight: 700; }
+.seg-ico { display: flex; color: var(--accent); }
+
+/* ---------- AI import ---------- */
+.ai-status { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--ink-2); }
+.ai-status .dot { width: 9px; height: 9px; flex: none; border-radius: 50%; background: #3E8E5A; }
+.ai-status.bad { color: var(--danger); }
+.ai-status.bad .dot { background: var(--danger); }
+.wide { width: 100%; }
+.center { text-align: center; }
+.imp-for { margin: 0 0 10px; }
+.imp-file { margin: 4px 0 10px; }
+.imp-lab { margin: 10px 0 6px; }
+.imp-actions { margin-top: 2px; }
+.imp-actions p { margin-top: -6px; }
+.imp-usage { margin: 0 0 6px; }
+.file-chip { display: flex; align-items: center; gap: 12px; margin-bottom: 4px; padding: 12px; border: 1px solid var(--rule); border-radius: 12px; background: var(--surface); }
+.file-chip .i { flex: none; color: var(--accent); }
+.file-chip div { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.file-chip b { overflow: hidden; font-size: 15px; white-space: nowrap; text-overflow: ellipsis; }
+.work-card { display: flex; gap: 14px; align-items: flex-start; padding: 16px; border: 1px solid var(--rule); border-radius: 12px; background: var(--surface); }
+.work-card .spinner { flex: none; width: 28px; height: 28px; margin-top: 2px; }
+.work-card div { display: flex; flex-direction: column; gap: 4px; }
+.big3 { font-size: 30px; font-weight: 800; color: var(--accent); }
+.import-list li.segrow { border-top: 2px solid var(--ink); margin-top: 6px; }
+.import-list li.segrow .imp-name { font-weight: 700; }
+.import-list li.flagged { margin: 4px -8px; padding-left: 8px; padding-right: 8px; border-bottom: 0; border-radius: 10px; background: var(--run-tint); }
+.imp-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; padding-left: 26px; }
+.imp-type { min-height: 36px; padding: 4px 30px 4px 10px; font-size: 14px; }
+.imp-main .imp-params, .imp-main > div:not(.row):not(.imp-meta) { padding-left: 26px; }
+.flag-note { display: flex; align-items: flex-start; gap: 6px; color: var(--run-text); font-size: 13px; font-weight: 600; }
+.flag-note .i { flex: none; margin-top: 1px; }
+.tchip { display: inline-flex; align-items: center; gap: 4px; padding: 1px 7px; border-radius: 6px; background: var(--surface-2); color: var(--ink-2); font-size: 12px; font-weight: 600; }
+
 </style>
 </head>
 <body>
@@ -503,7 +601,7 @@ textarea.paste { min-height: 220px; margin-bottom: 12px; font-size: 14px; line-h
 </script>
 <script>
 const LOCAL = true;
-const BUILD = '2026.10.02.2242';
+const BUILD = '2026.10.04.0819';
 /* ---------------- on-device runtime: everything stays in this browser ---------------- */
 const randHex = n => { const a = new Uint8Array(Math.ceil(n / 2)); crypto.getRandomValues(a); return Array.from(a, b => b.toString(16).padStart(2, '0')).join('').slice(0, n); };
 const toBuf = blob => (blob.arrayBuffer ? blob.arrayBuffer() : new Promise((res, rej) => {
@@ -745,7 +843,7 @@ const THK_UNITS = { nm: 1, 'Å': 0.1, 'µm': 1000 };
 const TIME_UNITS = { s: 1, min: 60, h: 3600 }; // plus 'cyc' (ALD cycles), handled separately
 const TIME_LABEL = { s: 's', min: 'min', h: 'h', cyc: 'cycles' };
 const RATE_UNITS = { 'nm/min': 1, 'nm/s': 1 / 60, 'Å/s': 10 / 60, 'Å/min': 10, 'µm/h': 0.06 };
-const DEFAULT_SETTINGS = { initials: '', rateUnit: 'nm/min', win: 5, imgMax: 2400, backupEvery: 7 };
+const DEFAULT_SETTINGS = { initials: '', rateUnit: 'nm/min', win: 5, imgMax: 2400, backupEvery: 7, aiModel: 'gpt-6-astra', aiEffort: 'max' };
 const COLS = ['samples', 'templates', 'ratelog'];
 const OK_IMG = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
 
@@ -1101,6 +1199,9 @@ const I = {
   skip: () => icon(html`<path d="M6 6l8 6-8 6zM18 6v12" />`),
   reopen: () => icon(html`<path d="M9 8H4V3" /><path d="M4.6 8A8 8 0 1 1 4 12" />`),
   up: () => icon(html`<path d="M12 19V5M6 11l6-6 6 6" />`),
+  chevR: () => icon(html`<path d="M9 6l6 6-6 6" />`, 18),
+  flag: () => icon(html`<path d="M5 21V4M5 4h11l-2 4 2 4H5" />`, 16),
+  chevD: () => icon(html`<path d="M6 9l6 6 6-6" />`, 18),
   down: () => icon(html`<path d="M12 5v14M6 13l6 6 6-6" />`),
   copy: () => icon(html`<rect x="8" y="8" width="12" height="12" rx="2" /><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3" />`),
   trash: () => icon(html`<path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3" />`),
@@ -1304,12 +1405,21 @@ function blankStep(p = {}) {
     id: newId('s'), name: '', kind: 'other', tool: '', recipe: '', method: '', material: '', params: '',
     status: 'pending', startedAt: null, doneAt: null, loggedAt: null, skippedAt: null, timeEdited: false, by: '',
     timeV: '', timeU: 'min', thkV: '', thkU: 'nm', sw: null, meas: [], excl: false, exclWhy: '', run: '',
-    notes: '', imgs: [], ...p,
+    notes: '', imgs: [], durV: '', durU: 'min', tmr: null, tLog: null, ...p,
   };
 }
-const TPL_FIELDS = ['name', 'kind', 'tool', 'recipe', 'method', 'material', 'params'];
-const pickTpl = st => Object.fromEntries(TPL_FIELDS.map(k => [k, st[k] || (k === 'kind' ? 'other' : '')]));
+const TPL_FIELDS = ['name', 'kind', 'tool', 'recipe', 'method', 'material', 'params', 'durV', 'durU'];
+const pickTpl = st => Object.fromEntries(TPL_FIELDS.map(k => [k, st[k] || (k === 'kind' ? 'other' : k === 'durU' ? 'min' : '')]));
 const stepFromTpl = t => blankStep({ ...pickTpl(t), kind: KINDS[t.kind] ? t.kind : 'other' });
+/* countdown timers: a step's own timer, or for etch and deposition steps their process time */
+const DUR_F = { s: 1, min: 60, h: 3600 };
+const timerSec = st => { const v = num(st.durV); return Number.isFinite(v) && v > 0 ? Math.round(v * (DUR_F[st.durU] || 60)) : 0; };
+const durOf = st => timerSec(st) || (isRateKind(st.kind) && DUR_F[st.timeU] && num(st.timeV) > 0 ? Math.round(num(st.timeV) * DUR_F[st.timeU]) : 0);
+const fmtSecs = sec => (sec < 60 ? `${Math.round(sec)} s` : fmtDur(sec));
+function tLogText(t) {
+  const d = Math.round((t.done - t.alarm) / 1000);
+  return `${fmtSecs(t.total)} timer${t.total > t.planned ? ` (extended from ${fmtSecs(t.planned)})` : ''}; marked done ${fmtSecs(Math.abs(d))} ${d >= 0 ? 'after' : 'before'} it ended`;
+}
 function progress(s) {
   const steps = s.steps || [];
   return { fin: steps.filter(x => x.status === 'done' || x.status === 'skipped').length, total: steps.length };
@@ -1320,9 +1430,46 @@ function lastActivity(s) {
   for (const st of s.steps || []) t = Math.max(t, st.doneAt || 0, st.startedAt || 0, st.skippedAt || 0);
   return Math.max(t, s.updated || 0);
 }
-function newSampleDoc({ name, desc = '', epi = '', steps = [], parent = '' }) {
+function newSampleDoc({ name, desc = '', epi = '', steps = [], parent = '', proc = '', segs = null }) {
   const now = Date.now();
-  return { v: 1, name, desc, epi, status: 'active', created: now, updated: now, parent, steps };
+  const doc = { v: 1, name, desc, epi, proc, status: 'active', created: now, updated: now, parent, steps };
+  if (segs && segs.length) { doc.segs = segs; regroup(doc); }
+  return doc;
+}
+/* ---------------- segments ----------------
+   A sample may group its steps into named segments: s.segs = [{ id, name }] in order, and each step
+   carries step.seg. Samples without segments show one plain list, exactly as before. */
+const hasSegs = s => Array.isArray(s.segs) && s.segs.length > 0;
+function segGroups(s) {
+  const steps = s.steps || [];
+  if (!hasSegs(s)) return [{ id: '', name: '', steps, start: 0 }];
+  const groups = s.segs.map(g => ({ id: g.id, name: g.name || '', steps: [], start: 0 }));
+  const by = new Map(groups.map(g => [g.id, g]));
+  for (const st of steps) (by.get(st.seg) || groups[0]).steps.push(st);
+  let n = 0;
+  for (const g of groups) { g.start = n; n += g.steps.length; }
+  return groups;
+}
+function regroup(s) {
+  if (!hasSegs(s)) return s;
+  const order = new Map(s.segs.map((g, i) => [g.id, i]));
+  for (const st of s.steps || []) if (!order.has(st.seg)) st.seg = s.segs[0].id;
+  s.steps = (s.steps || []).map((st, i) => [st, i]).sort((a, b) => order.get(a[0].seg) - order.get(b[0].seg) || a[1] - b[1]).map(x => x[0]);
+  return s;
+}
+function stepLabel(s, st) {
+  const gs = segGroups(s);
+  for (let gi = 0; gi < gs.length; gi++) {
+    const k = gs[gi].steps.findIndex(x => x.id === st.id);
+    if (k >= 0) return hasSegs(s) ? `${gi + 1}.${k + 1}` : String(k + 1);
+  }
+  return '';
+}
+const segOf = (s, st) => (hasSegs(s) ? (s.segs.find(g => g.id === st.seg) || s.segs[0]) : null);
+function procNames() {
+  const m = new Map();
+  for (const s of Object.values(view('samples'))) { const p = (s.proc || '').trim(); if (p) m.set(p, Math.max(m.get(p) || 0, s.created || 0)); }
+  return [...m.entries()].sort((a, b) => b[1] - a[1]).map(x => x[0]);
 }
 
 /* ---------------- rate history ---------------- */
@@ -1613,16 +1760,38 @@ const csvCell = v => { const s = v == null ? '' : String(v); return /[",\n\r]/.t
 const csv = rows => '\uFEFF' + rows.map(r => r.map(csvCell).join(',')).join('\r\n') + '\r\n';
 const iso = ts => ts ? new Date(ts).toISOString() : '';
 const localStamp = ts => ts ? toLocalInput(ts).replace('T', ' ') : '';
+/* Split pasted traveler text into rows. Likely segment headings: lines ending in ':', all-caps titles of three or
+   more words, and top-level numbers ("3 Regrown contacts") when other lines use sub-numbers ("3.1 Solvent clean"). */
+function parseTraveler(text) {
+  const lines = String(text || '').split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+  const subTops = new Set(lines.map(l => (/^(\d{1,2})\.\d{1,2}[.)]?\s/.exec(l) || [])[1]).filter(Boolean));
+  const out = [];
+  for (const l of lines) {
+    const single = !l.includes('\t') && !l.includes('|');
+    const colon = single && l.length <= 90 && /:$/.test(l);
+    const caps = single && l.length >= 12 && l.length <= 90 && !/[a-z]/.test(l) && /[A-Z]{3}/.test(l) && l.split(/\s+/).length >= 3;
+    const tm = /^(\d{1,2})[.)]?\s+\D/.exec(l);
+    const top = single && !!tm && subTops.has(tm[1]) && !/^\d{1,2}\.\d/.test(l);
+    if (colon || caps || top) {
+      out.push({ kind: 'seg', name: l.replace(/:$/, '').replace(/^\d{1,2}[.)]?\s+/, '').trim(), tool: '', recipe: '', params: '', method: '', material: '' });
+      continue;
+    }
+    const p = parseLines(l)[0];
+    if (p) { p.name = p.name.replace(/^(\d{1,2}(\.\d{1,2})+[.)]?|\d{1,2}[.)])\s+/, '') || p.name; out.push(p); }
+  }
+  return out;
+}
 const measText = m => (m || []).filter(x => x.k).map(x => `${x.k}=${x.v}${x.u ? ' ' + x.u : ''}`).join('; ');
 
 function sampleCsv(s) {
-  const head = ['#', 'Step', 'Type', 'Tool', 'Recipe', 'Method', 'Material', 'Conditions', 'Status', 'Started (local)',
-    'Completed (local)', 'Completed (ISO UTC)', 'Time entered later', 'By', 'Time', 'Time unit', 'Thickness or depth',
+  const head = ['#', 'Segment', 'Step', 'Type', 'Tool', 'Recipe', 'Method', 'Material', 'Conditions', 'Status', 'Started (local)',
+    'Completed (local)', 'Completed (ISO UTC)', 'Time entered later', 'By', 'Timer (s)', 'Done after timer end (s)', 'Time', 'Time unit', 'Thickness or depth',
     'Thickness unit', 'Rate (nm/min or nm/cycle)', 'Excluded from rate history', 'Exclusion reason', 'Measurements', 'Notes', 'Photos'];
   const rows = (s.steps || []).map((st, i) => {
     const r = isRateKind(st.kind) ? rateOf(st) : null;
-    return [i + 1, st.name, KINDS[st.kind]?.label || st.kind, st.tool, st.recipe, st.method, st.material, st.params,
+    return [stepLabel(s, st) || i + 1, (segOf(s, st) || {}).name || '', st.name, KINDS[st.kind]?.label || st.kind, st.tool, st.recipe, st.method, st.material, st.params,
       st.status, localStamp(st.startedAt), localStamp(st.doneAt), iso(st.doneAt), st.timeEdited ? 'yes' : '', st.by,
+      st.tLog ? st.tLog.total : (timerSec(st) || ''), st.tLog ? Math.round((st.tLog.done - st.tLog.alarm) / 1000) : '',
       st.timeV, st.timeV ? TIME_LABEL[st.timeU] || st.timeU : '', st.thkV, st.thkV ? st.thkU : '',
       r ? fmtNum(r.v, 4) : '', st.excl ? 'yes' : '', st.exclWhy, measText(st.meas), st.notes, (st.imgs || []).length || ''];
   });
@@ -1653,11 +1822,17 @@ async function travelerHtml(s, withPhotos) {
       try { imgs.set(im.id, await dataUrlOf(im)); } catch (e) { missing++; }
     }
   }
+  let lastSeg = null;
   const rows = (s.steps || []).map((st, i) => {
+    const sg = segOf(s, st);
+    const head = sg && sg.id !== lastSeg ? `<tr class="seg"><td colspan="7">${esc(`${s.segs.indexOf(sg) + 1}. ${sg.name}`)}</td></tr>` : '';
+    if (sg) lastSeg = sg.id;
     const r = isRateKind(st.kind) ? rateOf(st) : null;
     const when = st.status === 'done' ? `Done ${esc(fmtDT(st.doneAt))}${st.timeEdited ? ' (entered later)' : ''}${st.by ? ' by ' + esc(st.by) : ''}`
       : st.status === 'skipped' ? `Skipped ${esc(fmtDT(st.skippedAt))}` : st.status === 'running' ? `Running since ${esc(fmtDT(st.startedAt))}` : 'Not started';
     const data = [];
+    if (st.tLog) data.push(esc(tLogText(st.tLog)));
+    else if (timerSec(st)) data.push(`Timer ${esc(fmtSecs(timerSec(st)))}`);
     if (st.timeV) data.push(`Time ${esc(st.timeV)} ${esc(TIME_LABEL[st.timeU] || st.timeU)}`);
     if (st.thkV) data.push(`${st.kind === 'etch' ? 'Depth' : 'Thickness'} ${esc(st.thkV)} ${esc(st.thkU)}`);
     if (r) data.push(`<b>${esc(fmtRate(r.v, r.basis, unit))}</b>${st.excl ? ' (excluded: ' + esc(st.exclWhy) + ')' : ''}`);
@@ -1665,7 +1840,7 @@ async function travelerHtml(s, withPhotos) {
     const pics = (st.imgs || []).map(im => imgs.has(im.id)
       ? `<figure><img src="${imgs.get(im.id)}" alt=""><figcaption>${esc(im.cap || '')} <span>${esc(fmtDT(im.at))}</span></figcaption></figure>`
       : `<figure class="nop"><figcaption>${esc(im.cap || im.name || 'Attachment')} <span>${esc(fmtDT(im.at))}</span> (not embedded)</figcaption></figure>`).join('');
-    return `<tr class="${st.status}"><td class="n">${i + 1}</td><td><b>${esc(st.name)}</b><div class="k">${esc(KINDS[st.kind]?.label || '')}</div></td>
+    return head + `<tr class="${st.status}"><td class="n">${esc(stepLabel(s, st) || String(i + 1))}</td><td><b>${esc(st.name)}</b><div class="k">${esc(KINDS[st.kind]?.label || '')}</div></td>
       <td>${esc([st.tool, st.recipe].filter(Boolean).join(', '))}${st.method || st.material ? `<div class="k">${esc([st.method, st.material].filter(Boolean).join(', '))}</div>` : ''}</td>
       <td class="pre">${esc(st.params)}</td><td>${when}</td><td>${data.join('<br>')}</td><td class="pre">${esc(st.notes)}</td></tr>
       ${pics ? `<tr class="pics"><td></td><td colspan="6">${pics}</td></tr>` : ''}`;
@@ -1676,12 +1851,12 @@ async function travelerHtml(s, withPhotos) {
 body{font:13px/1.4 "Helvetica Neue",Helvetica,Arial,sans-serif;color:#17202b;margin:24px}
 h1{font-size:28px;margin:0 0 4px;letter-spacing:-.01em}.meta{color:#485364;margin:0 0 16px}
 table{border-collapse:collapse;width:100%}th,td{border-bottom:1px solid #d5dbe3;padding:6px 8px;text-align:left;vertical-align:top}
-th{font-size:12px;color:#485364;border-bottom:1.5px solid #17202b}.n{width:28px;color:#657083}.k{color:#657083;font-size:12px}
-.pre{white-space:pre-wrap}tr.skipped td{color:#8a93a0}tr.pics td{border-bottom:1px solid #d5dbe3}
+th{font-size:12px;color:#485364;border-bottom:1.5px solid #17202b}.n{width:36px;color:#657083}.k{color:#657083;font-size:12px}
+.pre{white-space:pre-wrap}tr.skipped td{color:#8a93a0}tr.seg td{font-weight:700;font-size:14px;padding-top:16px;border-bottom:1.5px solid #17202b}tr.pics td{border-bottom:1px solid #d5dbe3}
 figure{display:inline-block;margin:4px 8px 4px 0;max-width:300px;vertical-align:top}figure img{max-width:300px;max-height:240px;display:block}
 figcaption{font-size:12px;color:#485364}figcaption span{color:#8a93a0}@media print{body{margin:10mm}tr{break-inside:avoid}}
 </style></head><body><h1>${esc(s.name)}</h1>
-<p class="meta">${esc(s.desc || '')}${s.epi ? '<br>Epi / substrate: ' + esc(s.epi) : ''}<br>Created ${esc(fmtDT(s.created))}, ${p.fin} of ${p.total} steps finished. Exported ${esc(fmtDT(Date.now()))} from ProcessTracer.${missing ? ` ${missing} photo(s) could not be embedded.` : ''}</p>
+<p class="meta">${s.proc ? 'Process: ' + esc(s.proc) + '<br>' : ''}${esc(s.desc || '')}${s.epi ? '<br>Epi / substrate: ' + esc(s.epi) : ''}<br>Created ${esc(fmtDT(s.created))}, ${p.fin} of ${p.total} steps finished. Exported ${esc(fmtDT(Date.now()))} from ProcessTracer.${missing ? ` ${missing} photo(s) could not be embedded.` : ''}</p>
 <table><thead><tr><th>#</th><th>Step</th><th>Tool, recipe</th><th>Conditions</th><th>Status</th><th>Data</th><th>Notes</th></tr></thead><tbody>${rows}</tbody></table></body></html>`;
   return { doc, missing };
 }
@@ -1748,9 +1923,18 @@ function swToField(ms, u) {
 function completeStep(sid, st) {
   const prev = clone(st);
   const now = Date.now();
+  ackTimer(st);
   updStep(sid, st.id, x => {
     x.status = 'done'; x.doneAt = now; x.loggedAt = now; x.timeEdited = false; x.skippedAt = null;
     x.by = initials() || x.by || '';
+    if (x.tmr && x.tmr.ends) {
+      const total = Math.round((x.tmr.ends - x.tmr.start) / 1000);
+      x.tLog = { planned: x.tmr.planned || total, total, start: x.tmr.start, alarm: x.tmr.ends, done: now };
+      if (isRateKind(x.kind) && !x.timeV && timerSec(x) && DUR_F[x.durU]) {
+        x.timeU = x.durU; x.timeV = String(Number((total / DUR_F[x.durU]).toFixed(3))); x.timeFromTimer = true;
+      }
+      x.tmr = null;
+    }
     if (x.sw && x.sw.since) {
       x.sw = { since: null, acc: (x.sw.acc || 0) + (now - x.sw.since) };
       if (!x.timeV && x.timeU !== 'cyc') x.timeV = swToField(x.sw.acc, x.timeU);
@@ -1765,19 +1949,146 @@ function startStep(sid, st) {
 }
 function skipStep(sid, st) {
   const prev = clone(st);
-  updStep(sid, st.id, x => { x.status = 'skipped'; x.skippedAt = Date.now(); });
+  ackTimer(st);
+  updStep(sid, st.id, x => { x.status = 'skipped'; x.skippedAt = Date.now(); x.tmr = null; });
   toast('Step skipped', { action: { label: 'Undo', fn: () => updStep(sid, st.id, x => Object.assign(x, prev)) } });
 }
 async function reopenStep(sid, st) {
   if (st.status === 'done' && !(await confirmBox({ title: 'Reopen this step?',
     body: `Its completion time (${fmtDT(st.doneAt)}) will be cleared. Notes, data and photos stay.`, ok: 'Reopen' }))) return;
-  updStep(sid, st.id, x => { x.status = 'pending'; x.doneAt = null; x.loggedAt = null; x.skippedAt = null; x.startedAt = null; x.timeEdited = false; });
+  updStep(sid, st.id, x => { x.status = 'pending'; x.doneAt = null; x.loggedAt = null; x.skippedAt = null; x.startedAt = null; x.timeEdited = false; x.tmr = null; x.tLog = null; });
+}
+
+/* ---------------- countdown timers ---------------- */
+const timerAck = new Set(), timerFired = new Map();
+const beeper = {
+  ctx: null, loop: null,
+  unlock() {
+    try {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return;
+      if (navigator.audioSession) { try { navigator.audioSession.type = 'playback'; } catch (e) { /* not supported */ } }
+      if (!this.ctx) this.ctx = new AC();
+      if (this.ctx.state !== 'running') this.ctx.resume().catch(() => {});
+      const s = this.ctx.createBufferSource();
+      s.buffer = this.ctx.createBuffer(1, 1, 22050);
+      s.connect(this.ctx.destination);
+      s.start(0);
+    } catch (e) { /* no audio here */ }
+  },
+  chime() {
+    const c = this.ctx;
+    if (!c || c.state !== 'running') return;
+    const t0 = c.currentTime + 0.02;
+    [[0, 880], [0.24, 880], [0.48, 1320]].forEach(([dt, f]) => {
+      const o = c.createOscillator(), g = c.createGain();
+      o.type = 'sine';
+      o.frequency.value = f;
+      g.gain.setValueAtTime(0.0001, t0 + dt);
+      g.gain.exponentialRampToValueAtTime(0.6, t0 + dt + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001, t0 + dt + 0.2);
+      o.connect(g); g.connect(c.destination);
+      o.start(t0 + dt); o.stop(t0 + dt + 0.22);
+    });
+  },
+  ring() { if (this.loop) return; this.chime(); this.loop = setInterval(() => this.chime(), 2000); },
+  stop() { if (this.loop) { clearInterval(this.loop); this.loop = null; } },
+};
+const wake = {
+  lock: null, failed: false,
+  async on() {
+    if (!('wakeLock' in navigator)) { this.failed = true; return; }
+    if (this.lock) return;
+    try { this.lock = await navigator.wakeLock.request('screen'); this.failed = false; this.lock.addEventListener('release', () => { this.lock = null; }); }
+    catch (e) { this.failed = true; }
+  },
+  off() { const l = this.lock; this.lock = null; if (l) l.release().catch(() => {}); },
+};
+function activeTimers() {
+  const out = [];
+  for (const [sid, s] of Object.entries(view('samples'))) {
+    for (const st of s.steps || []) if (st.tmr && st.tmr.ends && st.status !== 'done' && st.status !== 'skipped') out.push({ sid, s, st });
+  }
+  return out.sort((a, b) => a.st.tmr.ends - b.st.tmr.ends);
+}
+function ackTimer(st) { if (st && st.tmr && st.tmr.ends) timerAck.add(st.id + ':' + st.tmr.ends); }
+function checkAlarms() {
+  const now = Date.now(), vis = document.visibilityState === 'visible';
+  let ring = false;
+  for (const { st } of activeTimers()) {
+    const k = st.id + ':' + st.tmr.ends;
+    if (st.tmr.ends > now || timerAck.has(k)) continue;
+    if (!timerFired.has(k) && vis) {
+      timerFired.set(k, now);
+      try { if (navigator.vibrate) navigator.vibrate([400, 200, 400, 200, 400]); } catch (e) { /* ignore */ }
+    }
+    if (timerFired.has(k) && now - timerFired.get(k) < 30000) ring = true;
+  }
+  if (ring) beeper.ring(); else beeper.stop();
+}
+function startTimer(sid, st) {
+  const sec = durOf(st);
+  if (!sec || st.status === 'done' || st.status === 'skipped') return;
+  beeper.unlock();
+  wake.on();
+  const now = Date.now();
+  updStep(sid, st.id, x => {
+    x.tmr = { start: now, ends: now + sec * 1000, planned: sec };
+    if (x.status !== 'running') { x.status = 'running'; x.startedAt = now; x.skippedAt = null; x.by = initials() || x.by || ''; }
+  });
+}
+function addTimer(sid, st, secs) {
+  beeper.unlock();
+  ackTimer(st);
+  updStep(sid, st.id, x => { if (x.tmr && x.tmr.ends) x.tmr = { ...x.tmr, ends: Math.max(Date.now(), x.tmr.ends) + secs * 1000 }; });
+}
+function stopTimer(sid, st) { ackTimer(st); updStep(sid, st.id, x => { x.tmr = null; }); }
+addEventListener('pointerdown', () => { if (!(beeper.ctx && beeper.ctx.state === 'running') && activeTimers().length) beeper.unlock(); }, { passive: true, capture: true });
+function useNow(ms) {
+  const [, tick] = useState(0);
+  useEffect(() => { if (!ms) return undefined; const t = setInterval(() => tick(x => x + 1), ms); return () => clearInterval(t); }, [ms]);
+  return Date.now();
+}
+const cdText = left => (left > 0 ? fmtClock(Math.ceil(left / 1000) * 1000) : '+' + fmtClock(-left));
+function Countdown({ tmr, cls }) {
+  const now = useNow(250);
+  const left = tmr.ends - now;
+  return html`<span class=${cls + (left <= 0 ? ' over' : '')}><span class="tnum">${cdText(left)}</span></span>`;
+}
+function TimerBar() {
+  const list = activeTimers();
+  const n = list.length;
+  const [, tick] = useState(0);
+  useEffect(() => {
+    if (!n) { wake.off(); beeper.stop(); return undefined; }
+    wake.on();
+    const iv = setInterval(() => { checkAlarms(); tick(x => x + 1); }, 250);
+    const vis = () => { if (document.visibilityState === 'visible') { wake.on(); checkAlarms(); tick(x => x + 1); } };
+    document.addEventListener('visibilitychange', vis);
+    return () => { clearInterval(iv); document.removeEventListener('visibilitychange', vis); };
+  }, [n]);
+  if (!n || ui.lightbox) return null;
+  const now = Date.now();
+  const shown = list.slice(0, 2);
+  return html`<div class="timerbar" role="region" aria-label="Running timers">
+    ${shown.map(({ sid, s, st }) => {
+      const left = st.tmr.ends - now, over = left <= 0;
+      return html`<div class=${'tb-item' + (over ? ' over' : '')} key=${st.id}>
+        <button class="tb-main" onClick=${() => { if (over) ackTimer(st); go({ v: 'sample', id: sid, step: st.id }); }}>
+          <span class="tb-clock tnum">${cdText(left)}</span>
+          <span class="tb-label"><b>${st.name || 'Timed step'}</b><span>${over ? `Time is up, ${s.name}` : s.name}</span></span></button>
+        <button class="btn sm tb-btn" onClick=${() => addTimer(sid, st, 30)}>+30 s</button>
+        <button class="btn sm primary tb-btn" onClick=${() => completeStep(sid, st)}>Done</button>
+      </div>`;
+    })}
+    ${n > shown.length ? html`<div class="tb-more small">${plural(n - shown.length, 'more timer')} running</div>` : null}
+  </div>`;
 }
 function addRework(sid, st) {
   let nid;
   updSample(sid, s => {
     const i = s.steps.findIndex(x => x.id === st.id);
-    const n = blankStep({ ...pickTpl(st), rework: true });
+    const n = blankStep({ ...pickTpl(st), rework: true, seg: st.seg });
     nid = n.id;
     s.steps.splice(i + 1, 0, n);
   });
@@ -1785,13 +2096,18 @@ function addRework(sid, st) {
   toast('Rework step added below');
 }
 function moveStep(sid, i, d) {
-  updSample(sid, s => { const j = i + d; if (j < 0 || j >= s.steps.length) return; const [x] = s.steps.splice(i, 1); s.steps.splice(j, 0, x); });
+  updSample(sid, s => {
+    const j = i + d;
+    if (j < 0 || j >= s.steps.length) return;
+    if (hasSegs(s) && s.steps[i].seg !== s.steps[j].seg) { s.steps[i].seg = s.steps[j].seg; return; } // cross into the neighbouring segment
+    const [x] = s.steps.splice(i, 1); s.steps.splice(j, 0, x);
+  });
 }
 function dupStep(sid, st) {
   let nid;
   updSample(sid, s => {
     const i = s.steps.findIndex(x => x.id === st.id);
-    const n = blankStep({ ...pickTpl(st) });
+    const n = blankStep({ ...pickTpl(st), seg: st.seg });
     nid = n.id;
     s.steps.splice(i + 1, 0, n);
   });
@@ -1814,6 +2130,131 @@ async function toggleExcl(sid, st, on) {
 const pct = (v, m) => { const p = (v - m) / m * 100; return (p >= 0 ? '+' : '−') + fmtNum(Math.abs(p), 2) + '%'; };
 
 /* ---------------- samples list ---------------- */
+/* ---------------- segments ---------------- */
+function ensureSegs(s) {
+  if (hasSegs(s)) return;
+  const id = newId('g');
+  s.segs = [{ id, name: 'Segment 1' }];
+  for (const st of s.steps || []) st.seg = id;
+}
+async function promptAddSegment(sid, afterId) {
+  const name = await promptBox({ title: 'New segment', label: 'Segment name', placeholder: 'e.g. Alignment marks and backside metal', required: true, ok: 'Add segment' });
+  if (!name) return;
+  updSample(sid, s => {
+    ensureSegs(s);
+    const at = afterId ? s.segs.findIndex(g => g.id === afterId) + 1 : s.segs.length;
+    s.segs.splice(at > 0 ? at : s.segs.length, 0, { id: newId('g'), name: name.trim() });
+    regroup(s);
+  });
+  toast('Segment added');
+}
+async function segmentFromHere(sid, st) {
+  const name = await promptBox({ title: 'New segment from this step', label: 'Segment name', placeholder: 'e.g. Gate', required: true, ok: 'Create segment' });
+  if (!name) return;
+  updSample(sid, s => {
+    ensureSegs(s);
+    regroup(s);
+    const i = s.steps.findIndex(x => x.id === st.id);
+    if (i < 0) return;
+    const old = s.steps[i].seg, gid = newId('g');
+    s.segs.splice(s.segs.findIndex(g => g.id === old) + 1, 0, { id: gid, name: name.trim() });
+    for (let j = i; j < s.steps.length && s.steps[j].seg === old; j++) s.steps[j].seg = gid;
+    if (!s.steps.some(x => x.seg === old)) s.segs = s.segs.filter(g => g.id !== old);
+    regroup(s);
+  });
+}
+async function renameSegment(sid, gid) {
+  const s = view('samples')[sid];
+  const g = s && (s.segs || []).find(x => x.id === gid);
+  if (!g) return;
+  const name = await promptBox({ title: 'Rename segment', label: 'Segment name', value: g.name, required: true, ok: 'Rename' });
+  if (!name) return;
+  updSample(sid, x => { const y = (x.segs || []).find(z => z.id === gid); if (y) y.name = name.trim(); });
+}
+function moveSegment(sid, gid, d) {
+  updSample(sid, s => {
+    const i = s.segs.findIndex(g => g.id === gid), j = i + d;
+    if (i < 0 || j < 0 || j >= s.segs.length) return;
+    const [g] = s.segs.splice(i, 1); s.segs.splice(j, 0, g);
+    regroup(s);
+  });
+}
+function mergeSegment(sid, gid) {
+  updSample(sid, s => {
+    const i = s.segs.findIndex(g => g.id === gid);
+    if (i < 0) return;
+    if (s.segs.length === 1) { delete s.segs; for (const st of s.steps || []) delete st.seg; return; }
+    const into = s.segs[i > 0 ? i - 1 : 1].id;
+    for (const st of s.steps || []) if (st.seg === gid) st.seg = into;
+    s.segs.splice(i, 1);
+    regroup(s);
+  });
+  toast('Segments merged');
+}
+async function deleteSegment(sid, gid) {
+  const s = view('samples')[sid];
+  const g = s && (s.segs || []).find(x => x.id === gid);
+  if (!g) return;
+  const gone = (s.steps || []).filter(st => st.seg === gid);
+  if (gone.length && !(await confirmBox({ title: `Delete “${g.name}”?`, body: `This removes the segment and its ${plural(gone.length, 'step')}, with their times, data and photos. You can undo for a few seconds.`, ok: 'Delete segment', danger: true }))) return;
+  const before = clone(s);
+  updSample(sid, x => {
+    x.steps = (x.steps || []).filter(st => st.seg !== gid);
+    x.segs = (x.segs || []).filter(y => y.id !== gid);
+    if (!x.segs.length) { delete x.segs; for (const st of x.steps) delete st.seg; }
+  });
+  let undone = false;
+  toast('Segment deleted', { action: { label: 'Undo', fn: () => { undone = true; put('samples', sid, before); } } });
+  const imgs = gone.flatMap(st => st.imgs || []);
+  if (imgs.length) setTimeout(() => { if (!undone) for (const im of imgs) deleteAssetIfUnused(im.id); }, 8000);
+}
+function openSegMenu(sid, gid) { openSheet(() => html`<${SegMenu} sid=${sid} gid=${gid} />`); }
+function SegMenu({ sid, gid }) {
+  const s = view('samples')[sid];
+  const gi = s && hasSegs(s) ? s.segs.findIndex(g => g.id === gid) : -1;
+  if (gi < 0) return null;
+  const g = s.segs[gi];
+  const n = (s.steps || []).filter(st => st.seg === gid).length;
+  const act = fn => () => { closeSheet(); fn(); };
+  return html`<${Sheet} title=${`${gi + 1}. ${g.name || 'Segment'}`} onClose=${closeSheet}>
+    <div class="menu">
+      <button onClick=${act(() => renameSegment(sid, gid))}>${I.edit()}<span>Rename</span></button>
+      <button onClick=${act(() => openAddStep(sid, null, gid))}>${I.plus()}<span>Add a step to this segment</span></button>
+      <button onClick=${act(() => promptAddSegment(sid, gid))}>${I.layers()}<span>Add a segment after this one</span></button>
+      ${gi > 0 ? html`<button onClick=${act(() => moveSegment(sid, gid, -1))}>${I.up()}<span>Move segment up</span></button>` : null}
+      ${gi < s.segs.length - 1 ? html`<button onClick=${act(() => moveSegment(sid, gid, 1))}>${I.down()}<span>Move segment down</span></button>` : null}
+      ${n ? html`<button onClick=${act(() => mergeSegment(sid, gid))}>${I.split()}<span>${s.segs.length === 1 ? 'Remove segments, keep the steps' : `Merge its steps into the segment ${gi > 0 ? 'above' : 'below'}`}</span></button>` : null}
+      <button class="danger" onClick=${act(() => deleteSegment(sid, gid))}>${I.trash()}<span>${n ? `Delete segment and its ${plural(n, 'step')}` : 'Delete segment'}</span></button>
+    </div></${Sheet}>`;
+}
+function SegmentCard({ sid, s, g, gi, cur, open, onToggle, stepOpen, onStepToggle }) {
+  const total = g.steps.length;
+  const fin = g.steps.filter(x => x.status === 'done' || x.status === 'skipped').length;
+  const running = g.steps.some(x => x.status === 'running');
+  const done = total > 0 && fin === total;
+  const hasCur = !!cur && g.steps.some(x => x.id === cur.id);
+  const lastDone = done ? Math.max(...g.steps.map(x => x.doneAt || x.skippedAt || 0)) : 0;
+  const note = done ? html`<span class="done-note">Done ${fmtDate(lastDone)}</span>`
+    : running || (fin && hasCur) ? html`<span>In progress</span>` : hasCur ? html`<span>Up next</span>` : null;
+  return html`<section class=${'sgm' + (done ? ' done' : '') + (hasCur ? ' current' : '')}>
+    <div class="sgm-head">
+      <button class="sgm-toggle" aria-expanded=${open ? 'true' : 'false'} onClick=${onToggle}>
+        <span class="sgm-num">${gi + 1}</span>
+        <span class="sgm-main"><span class="sgm-name">${g.name || 'Untitled segment'}</span>
+          <span class="sgm-sub">${total ? html`<${Strip} steps=${g.steps} />` : null}${note}</span></span>
+        <span class="sgm-prog tnum">${total ? `${fin} of ${total}` : 'Empty'}</span>
+        <span class="chev">${open ? I.chevD() : I.chevR()}</span>
+      </button>
+      <button class="icon-btn" aria-label=${`Segment ${gi + 1} actions`} onClick=${() => openSegMenu(sid, g.id)}>${I.more()}</button>
+    </div>
+    ${open ? html`<div class="sgm-body">
+      ${total ? html`<ol class="steps">${g.steps.map((st, k) => html`<${StepItem} key=${st.id} sid=${sid} s=${s} st=${st} i=${g.start + k}
+          label=${`${gi + 1}.${k + 1}`} open=${stepOpen.has(st.id)} onToggle=${() => onStepToggle(st.id)} isNext=${!!cur && cur.id === st.id} />`)}</ol>`
+        : html`<p class="muted small sgm-empty">No steps in this segment yet.</p>`}
+      <div class="sgm-foot"><button class="btn sm ghost" onClick=${() => openAddStep(sid, null, g.id)}>${I.plus()}<span>Add step to this segment</span></button></div>
+    </div>` : null}
+  </section>`;
+}
 function SamplesView() {
   const [filter, setFilter] = useState('active');
   const [q, setQ] = useState('');
@@ -1822,7 +2263,7 @@ function SamplesView() {
   for (const x of all) { const k = x.s.status || 'active'; counts[k] = (counts[k] || 0) + 1; }
   const qq = norm(q);
   const list = all.filter(x => (filter === 'all' || (x.s.status || 'active') === filter)
-    && (!qq || norm(`${x.s.name} ${x.s.desc || ''} ${x.s.epi || ''}`).includes(qq))).sort((a, b) => b.t - a.t);
+    && (!qq || norm(`${x.s.name} ${x.s.proc || ''} ${x.s.desc || ''} ${x.s.epi || ''}`).includes(qq))).sort((a, b) => b.t - a.t);
   return html`
     <div class="page-head"><h1>Samples</h1>
       <button class="btn primary" onClick=${() => openNewSample()}>${I.plus()}<span>New sample</span></button></div>
@@ -1845,12 +2286,10 @@ function SampleRow({ id, s, t }) {
   const cur = currentStep(s);
   return html`<li><button class="sample-row" onClick=${() => go({ v: 'sample', id })}>
     <span class="sr-top"><span class="sr-name">${s.name || 'Untitled'}</span><span class="sr-ago">${fmtAgo(t)}</span></span>
-    ${s.desc ? html`<span class="sr-desc">${s.desc}</span>` : null}
+    ${s.proc || s.desc ? html`<span class="sr-desc">${[s.proc, s.desc].filter(Boolean).join(' · ')}</span>` : null}
     ${p.total ? html`<span class="sr-strip"><${Strip} steps=${s.steps} /><span class="sr-count tnum">${p.fin}/${p.total}</span></span>` : null}
     <span class="sr-next">${cur
-      ? (cur.status === 'running'
-        ? html`<span class="run-dot" />Running: ${cur.name || 'Untitled step'}`
-        : html`Next: ${cur.name || 'Untitled step'}`)
+      ? html`${cur.status === 'running' ? html`<span class="run-dot" />Running: ` : 'Next: '}${hasSegs(s) ? stepLabel(s, cur) + ' ' : ''}${cur.name || 'Untitled step'}${hasSegs(s) ? html`<span class="muted"> · ${(segOf(s, cur) || {}).name || ''}</span>` : null}`
       : p.total ? 'All steps finished' : 'No steps yet'}</span>
   </button></li>`;
 }
@@ -1868,47 +2307,96 @@ function copySteps(srcId, keep) {
   }
   return steps.map(st => ({ ...clone(st), id: newId('s'), sw: null }));
 }
+function copyProcess(srcId, keep) {
+  const src = view('samples')[srcId];
+  if (!src) return { steps: [], segs: null, proc: '', epi: '' };
+  const steps = copySteps(srcId, keep);
+  const srcSteps = (view('samples')[srcId] || src).steps || [];
+  steps.forEach((st, i) => { if (srcSteps[i] && srcSteps[i].seg) st.seg = srcSteps[i].seg; });
+  return { steps, segs: hasSegs(src) ? clone(src.segs) : null, proc: src.proc || '', epi: src.epi || '' };
+}
+function processSources() {
+  const groups = new Map();
+  for (const [id, s] of Object.entries(view('samples'))) {
+    const k = (s.proc || '').trim();
+    if (!groups.has(k)) groups.set(k, []);
+    groups.get(k).push({ key: 'x:' + id, id, s, t: s.created || 0 });
+  }
+  const out = [...groups.entries()].map(([proc, items]) => ({ proc, items: items.sort((a, b) => b.t - a.t) }))
+    .sort((a, b) => (a.proc ? 0 : 1) - (b.proc ? 0 : 1) || b.items[0].t - a.items[0].t);
+  const tpls = Object.entries(view('templates')).map(([id, t]) => ({ key: 't:' + id, id, tpl: t, t: t.updated || t.created || 0 })).sort((a, b) => b.t - a.t);
+  if (tpls.length) out.push({ proc: '', tpl: true, items: tpls });
+  return out;
+}
 function NewSampleSheet({ tplId = '' }) {
-  const tpls = Object.entries(view('templates')).sort((a, b) => (a[1].name || '').localeCompare(b[1].name || ''));
-  const samples = Object.entries(view('samples')).sort((a, b) => lastActivity(b[1]) - lastActivity(a[1]));
+  const groups = processSources();
+  const first = groups[0] && groups[0].items[0];
   const [name, setName] = useState('');
   const [desc, setDesc] = useState('');
-  const [epi, setEpi] = useState('');
-  const [from, setFrom] = useState(tplId ? 'tpl' : 'blank');
-  const [tpl, setTpl] = useState(tplId || (tpls[0] ? tpls[0][0] : ''));
-  const [src, setSrc] = useState(samples[0] ? samples[0][0] : '');
+  const [mode, setMode] = useState(first ? 'copy' : 'new');
+  const [src, setSrc] = useState(tplId ? 't:' + tplId : first ? first.key : '');
   const [keep, setKeep] = useState(false);
-  const dup = name.trim() && samples.some(([, s]) => norm(s.name) === norm(name));
-  const opts = [['blank', 'Blank']];
-  if (tpls.length) opts.push(['tpl', 'Template']);
-  if (samples.length) opts.push(['copy', 'Copy a sample']);
+  const [proc, setProc] = useState('');
+  const [how, setHow] = useState('blank');
+  const [more, setMore] = useState(() => new Set());
+  const dup = name.trim() && Object.values(view('samples')).some(x => norm(x.name) === norm(name));
+  const picked = src.startsWith('x:') ? view('samples')[src.slice(2)] : null;
   const create = e => {
     e.preventDefault();
-    if (!name.trim()) return;
-    let steps = [];
-    if (from === 'tpl' && view('templates')[tpl]) steps = (view('templates')[tpl].steps || []).map(stepFromTpl);
-    if (from === 'copy' && src) steps = copySteps(src, keep);
+    const nm = name.trim();
+    if (!nm) return;
+    if (mode === 'new' && how === 'import') { closeSheet(); go({ v: 'import', draft: { name: nm, desc: desc.trim(), proc: proc.trim() } }); return; }
+    let doc;
+    if (mode === 'copy' && picked) {
+      const c = copyProcess(src.slice(2), keep);
+      doc = newSampleDoc({ name: nm, desc: desc.trim(), epi: c.epi, proc: c.proc, steps: c.steps, segs: c.segs, parent: keep ? src.slice(2) : '' });
+    } else if (mode === 'copy' && src.startsWith('t:')) {
+      const t = view('templates')[src.slice(2)];
+      doc = newSampleDoc({ name: nm, desc: desc.trim(), proc: (t && t.name) || '', steps: ((t && t.steps) || []).map(stepFromTpl) });
+    } else {
+      doc = newSampleDoc({ name: nm, desc: desc.trim(), proc: proc.trim() });
+    }
     const id = newId('x');
-    put('samples', id, newSampleDoc({ name: name.trim(), desc: desc.trim(), epi: epi.trim(), steps, parent: from === 'copy' ? src : '' }));
+    put('samples', id, doc);
     closeSheet();
     go({ v: 'sample', id });
+  };
+  const row = it => {
+    const on = src === it.key;
+    const sub = it.tpl ? `Saved template, ${plural((it.tpl.steps || []).length, 'step')}`
+      : `${fmtDate(it.t)}. ${hasSegs(it.s) ? plural(it.s.segs.length, 'segment') + ', ' : ''}${plural((it.s.steps || []).length, 'step')}`;
+    return html`<label class=${'prow' + (on ? ' on' : '')} key=${it.key}><input type="radio" name="srcpick" checked=${on} onChange=${() => setSrc(it.key)} />
+      <span><b>${it.tpl ? it.tpl.name || 'Untitled template' : it.s.name || 'Untitled'}</b><span class="small">${sub}</span></span></label>`;
   };
   return html`<${Sheet} title="New sample" onClose=${closeSheet}>
     <form class="stack" onSubmit=${create}>
       <${Field} label="Sample ID" hint=${dup ? 'Another sample already has this ID.' : null}>
         <input data-autofocus value=${name} autocapitalize="characters" autocomplete="off" spellcheck="false"
           placeholder="e.g. V260712FA" onInput=${e => setName(e.currentTarget.value)} /></${Field}>
-      <${Field} label="Description"><input value=${desc} placeholder="What this run is for" onInput=${e => setDesc(e.currentTarget.value)} /></${Field}>
-      <${Field} label="Epi / substrate"><input value=${epi} placeholder="Optional" onInput=${e => setEpi(e.currentTarget.value)} /></${Field}>
-      <div class="field"><span class="lab">Steps</span><${Seg} label="Start from" value=${from} onChange=${setFrom} options=${opts} /></div>
-      ${from === 'tpl' ? html`<${Field} label="Template"><select value=${tpl} onChange=${e => setTpl(e.currentTarget.value)}>
-          ${tpls.map(([id, t]) => html`<option value=${id}>${t.name || 'Untitled'} (${(t.steps || []).length} steps)</option>`)}</select></${Field}>` : null}
-      ${from === 'copy' ? html`<${Field} label="Copy steps from"><select value=${src} onChange=${e => setSrc(e.currentTarget.value)}>
-          ${samples.map(([id, s]) => html`<option value=${id}>${s.name}</option>`)}</select></${Field}>
-        <label class="check"><input type="checkbox" checked=${keep} onChange=${e => setKeep(e.currentTarget.checked)} />
-          <span>Keep finished steps with their times, data and photos (for a piece split from that sample)</span></label>` : null}
+      <${Field} label="Description"><input value=${desc} placeholder="What this run is for (optional)" onInput=${e => setDesc(e.currentTarget.value)} /></${Field}>
+      ${first ? html`<div class="field"><span class="lab">Start from</span><${Seg} label="Start from" value=${mode} onChange=${setMode}
+        options=${[['copy', "Another sample's process"], ['new', 'New process']]} /></div>` : null}
+      ${mode === 'copy' && first ? html`<div class="choice">
+          ${groups.map(gr => {
+            const gk = (gr.tpl ? 't#' : 'p#') + gr.proc;
+            const lim = more.has(gk) ? gr.items.length : 3;
+            return html`<div class="pgroup" key=${gk}><div class="pg-name">${gr.tpl ? 'Saved templates' : gr.proc || 'No process name'}</div>
+              ${gr.items.slice(0, lim).map(row)}
+              ${gr.items.length > lim ? html`<button type="button" class="btn sm ghost" onClick=${() => setMore(m => new Set(m).add(gk))}>Show ${gr.items.length - lim} older</button>` : null}</div>`;
+          })}</div>
+        <p class="small muted">${picked ? `Copies the segments, steps and planned settings of ${picked.name}. Its times, data and photos stay with it.` : 'Copies the steps of the template.'}</p>
+        ${picked ? html`<label class="check"><input type="checkbox" checked=${keep} onChange=${e => setKeep(e.currentTarget.checked)} />
+          <span>Keep finished steps with their times, data and photos (for a piece split from ${picked.name})</span></label>` : null}`
+      : html`<${Field} label="Process name" hint="Samples with the same process name are grouped when you start the next one.">
+          <input value=${proc} list="dl-procs" placeholder="e.g. CVTLM HEMT" onInput=${e => setProc(e.currentTarget.value)} /></${Field}>
+        <div class="choice" role="radiogroup" aria-label="How to add the steps">
+          <button type="button" role="radio" aria-checked=${how === 'import' ? 'true' : 'false'} class=${'opt-card' + (how === 'import' ? ' on' : '')} onClick=${() => setHow('import')}>
+            ${I.upload()}<span><b>Import a traveler</b><span>Paste the rows from your Excel or Word traveler, then review the segments and steps</span></span></button>
+          <button type="button" role="radio" aria-checked=${how === 'blank' ? 'true' : 'false'} class=${'opt-card' + (how === 'blank' ? ' on' : '')} onClick=${() => setHow('blank')}>
+            ${I.plus()}<span><b>Start blank</b><span>Add segments and steps yourself</span></span></button>
+        </div>`}
       <div class="row end gap"><button type="button" class="btn" onClick=${closeSheet}>Cancel</button>
-        <button type="submit" class="btn primary" disabled=${!name.trim()}>Create sample</button></div>
+        <button type="submit" class="btn primary" disabled=${!name.trim() || (mode === 'copy' && !!first && !src)}>${mode === 'new' && how === 'import' ? 'Continue' : 'Create sample'}</button></div>
     </form></${Sheet}>`;
 }
 
@@ -1916,8 +2404,9 @@ function NewSampleSheet({ tplId = '' }) {
 function SampleView({ id, step: focus }) {
   const s = view('samples')[id];
   const [open, setOpen] = useState(() => new Set(focus ? [focus] : []));
+  const [segOpen, setSegOpen] = useState(() => new Map());
   useEffect(() => {
-    if (!focus) return;
+    if (!focus) return undefined;
     setOpen(o => new Set([...o, focus]));
     const t = setTimeout(() => { const el = document.getElementById('step-' + focus); if (el) el.scrollIntoView({ block: 'start', behavior: 'smooth' }); }, 80);
     return () => clearTimeout(t);
@@ -1929,11 +2418,19 @@ function SampleView({ id, step: focus }) {
   const toggle = k => setOpen(o => { const n = new Set(o); if (n.has(k)) n.delete(k); else n.add(k); return n; });
   const finished = p.total > 0 && p.fin === p.total;
   const status = s.status || 'active';
+  const segMode = hasSegs(s);
+  const segIsOpen = g => {
+    if (segOpen.has(g.id)) return segOpen.get(g.id);
+    if (focus && g.steps.some(x => x.id === focus)) return true;
+    return !g.steps.length || g.steps.some(x => x.status === 'running') || (!!cur && g.steps.some(x => x.id === cur.id));
+  };
+  const toggleSeg = g => { const now = segIsOpen(g); setSegOpen(m => new Map(m).set(g.id, !now)); };
   return html`
     <${BackLink} label="Samples" fallback=${{ v: 'samples' }} />
     <header class="sample-head">
       <div class="sh-top"><h1 class="sample-id">${s.name || 'Untitled'}</h1>
         <button class="icon-btn" aria-label="Sample actions" onClick=${() => openSampleMenu(id)}>${I.more()}</button></div>
+      ${s.proc ? html`<span class="proc-chip">${s.proc}</span>` : null}
       ${s.desc ? html`<p class="sh-desc">${s.desc}</p>` : null}
       <p class="sh-meta">${s.epi ? html`<span>${s.epi}</span>` : null}<span>Created ${fmtDT(s.created)}</span>
         <span>${p.fin} of ${p.total} steps finished</span>
@@ -1941,15 +2438,17 @@ function SampleView({ id, step: focus }) {
     </header>
     ${finished && status === 'active' ? html`<div class="callout"><span>Every step is finished.</span>
       <button class="btn sm" onClick=${() => updSample(id, x => { x.status = 'done'; })}>Mark sample done</button></div>` : null}
-    ${steps.length
-      ? html`<ol class="steps">${steps.map((st, i) => html`<${StepItem} key=${st.id} sid=${id} s=${s} st=${st} i=${i}
+    ${segMode ? segGroups(s).map((g, gi) => html`<${SegmentCard} key=${g.id} sid=${id} s=${s} g=${g} gi=${gi} cur=${cur}
+        open=${segIsOpen(g)} onToggle=${() => toggleSeg(g)} stepOpen=${open} onStepToggle=${toggle} />`)
+      : steps.length ? html`<ol class="steps">${steps.map((st, i) => html`<${StepItem} key=${st.id} sid=${id} s=${s} st=${st} i=${i}
           open=${open.has(st.id)} onToggle=${() => toggle(st.id)} isNext=${!!cur && cur.id === st.id} />`)}</ol>`
-      : html`<${Empty} title="No steps yet"><p>Add steps one at a time, or insert a whole template.</p></${Empty}>`}
+      : html`<${Empty} title="No steps yet"><p>Add steps one at a time. Group them into segments whenever you like.</p></${Empty}>`}
     <div class="row gap wrap after-steps">
-      <button class="btn" onClick=${() => openAddStep(id)}>${I.plus()}<span>Add step</span></button>
+      <button class="btn" onClick=${() => openAddStep(id, null, segMode ? s.segs[s.segs.length - 1].id : undefined)}>${I.plus()}<span>Add step</span></button>
+      <button class="btn" onClick=${() => promptAddSegment(id)}>${I.layers()}<span>Add segment</span></button>
     </div>`;
 }
-function StepItem({ sid, s, st, i, open, onToggle, isNext }) {
+function StepItem({ sid, s, st, i, open, onToggle, isNext, label }) {
   const r = isRateKind(st.kind) ? rateOf(st) : null;
   const unit = getSettings().rateUnit;
   let ups = 0;
@@ -1959,16 +2458,19 @@ function StepItem({ sid, s, st, i, open, onToggle, isNext }) {
   let act = null;
   if (st.status === 'done') act = html`<${Stamp} ts=${st.doneAt} fresh=${ui.fresh.has(st.id)} />`;
   else if (st.status === 'skipped') act = html`<span class="skip-label">Skipped</span>`;
-  else if (st.status === 'running') act = html`<span class="run-act"><span class="run-chip"><${Elapsed} since=${st.startedAt} /></span>
+  else if (st.status === 'running') act = html`<span class="run-act">${st.tmr && st.tmr.ends ? html`<${Countdown} tmr=${st.tmr} cls="run-chip" />`
+      : html`<span class="run-chip"><${Elapsed} since=${st.startedAt} /></span>`}
       <button class="btn sm primary" onClick=${done}>Done</button></span>`;
+  else if (isNext && durOf(st)) act = html`<button class="btn sm run" aria-label=${`Start ${fmtClock(durOf(st) * 1000)} timer`} onClick=${() => startTimer(sid, st)}>${I.play()}<span class="tnum">${fmtClock(durOf(st) * 1000)}</span></button>`;
   else if (isNext) act = html`<button class="btn sm primary" onClick=${done}>Done</button>`;
   return html`<li id=${'step-' + st.id} class=${`step ${st.status}${open ? ' open' : ''}${isNext ? ' next' : ''}`}>
-    <span class="st-num tnum">${i + 1}</span>
+    <span class="st-num tnum">${label || i + 1}</span>
     <span class="st-node"><${Glyph} kind=${st.kind} state=${st.status} label=${(KINDS[st.kind] || KINDS.other).label} /></span>
     <button class="st-toggle" aria-expanded=${open ? 'true' : 'false'} onClick=${onToggle}>
       <span class="st-name">${st.name || 'Untitled step'}${st.rework ? html` <span class="tag">rework</span>` : null}</span>
       ${st.tool || st.recipe ? html`<span class="st-sub">${[st.tool, st.recipe].filter(Boolean).join(', ')}</span>` : null}
-      ${r || nImg || st.notes || st.timeEdited ? html`<span class="st-badges">
+      ${r || nImg || st.notes || st.timeEdited || (st.status === 'pending' && !isNext && durOf(st)) ? html`<span class="st-badges">
+        ${st.status === 'pending' && !isNext && durOf(st) ? html`<span class="badge">${I.watch()}${fmtClock(durOf(st) * 1000)}</span>` : null}
         ${r ? html`<span class=${'badge rate' + (st.excl ? ' excl' : '')}>${fmtRate(r.v, r.basis, unit)}</span>` : null}
         ${nImg ? html`<span class="badge">${icon(html`<rect x="4" y="5" width="16" height="14" rx="2" /><circle cx="9" cy="10" r="1.6" /><path d="M20 16l-5-5-7 8" />`, 15)}${nImg}</span>` : null}
         ${st.notes ? html`<span class="badge">Notes</span>` : null}
@@ -1980,9 +2482,13 @@ function StepItem({ sid, s, st, i, open, onToggle, isNext }) {
   </li>`;
 }
 function StatusPanel({ sid, st }) {
+  const now = useNow(st.tmr && st.tmr.ends && st.status === 'running' ? 250 : 0);
+  const dur = durOf(st);
+  const timerBtn = cls => html`<button class=${cls} onClick=${() => startTimer(sid, st)}>${I.play()}<span>Start ${fmtClock(dur * 1000)} timer</span></button>`;
   if (st.status === 'done') return html`<div class="status-panel done">
     <div><b>Completed ${fmtDT(st.doneAt)}</b>${st.by ? ` by ${st.by}` : ''}
       ${st.startedAt ? html`<div class="muted small">Started ${fmtDT(st.startedAt)}; ${fmtDur(Math.max(0, st.doneAt - st.startedAt) / 1000)} from start to done</div>` : null}
+      ${st.tLog ? html`<div class="muted small">${tLogText(st.tLog)}.</div>` : null}
       ${st.timeEdited && st.loggedAt ? html`<div class="muted small">Time entered later. Marked done in the app ${fmtDT(st.loggedAt)}.</div>` : null}</div>
     <div class="row gap wrap">
       <button class="btn sm" onClick=${() => openTimeEdit(sid, st)}>${I.clock()}<span>Change time</span></button>
@@ -1991,17 +2497,32 @@ function StatusPanel({ sid, st }) {
     </div></div>`;
   if (st.status === 'skipped') return html`<div class="status-panel"><div><b>Skipped ${fmtDT(st.skippedAt)}</b></div>
     <div class="row gap"><button class="btn sm" onClick=${() => reopenStep(sid, st)}>${I.reopen()}<span>Reopen</span></button></div></div>`;
-  if (st.status === 'running') return html`<div class="status-panel running">
-    <div><b>Running for <${Elapsed} since=${st.startedAt} /></b><div class="muted small">Started ${fmtDT(st.startedAt)}</div></div>
-    <div class="row gap wrap">
-      <button class="btn primary" onClick=${() => completeStep(sid, st)}>${I.check()}<span>Mark done</span></button>
-      <button class="btn sm" onClick=${() => openTimeEdit(sid, st)}>${I.clock()}<span>Change start</span></button>
-      <button class="btn sm ghost" onClick=${() => skipStep(sid, st)}>${I.skip()}<span>Skip</span></button>
-    </div></div>`;
+  if (st.status === 'running') {
+    const t = st.tmr && st.tmr.ends ? st.tmr : null;
+    const left = t ? t.ends - now : 0;
+    return html`<div class="status-panel running">
+      ${t ? html`<div class=${'tmr-big' + (left <= 0 ? ' over' : '')} role="timer">
+          <span class="tnum">${cdText(left)}</span>
+          <span class="small">${left > 0 ? `left of ${fmtClock(t.ends - t.start)}` : 'Time is up'}</span></div>
+          ${wake.failed ? html`<p class="small muted">Keep the screen on: a locked phone pauses the app, so the chime waits until you come back. The countdown stays correct.</p>` : null}`
+        : html`<div><b>Running for <${Elapsed} since=${st.startedAt} /></b><div class="muted small">Started ${fmtDT(st.startedAt)}</div></div>`}
+      <div class="row gap wrap">
+        <button class="btn primary" onClick=${() => completeStep(sid, st)}>${I.check()}<span>Mark done</span></button>
+        ${t ? html`<button class="btn sm" onClick=${() => addTimer(sid, st, 30)}>+30 s</button>
+            <button class="btn sm" onClick=${() => addTimer(sid, st, 60)}>+1 min</button>
+            <button class="btn sm ghost" onClick=${() => stopTimer(sid, st)}>Stop timer</button>`
+          : html`${dur ? timerBtn('btn sm run') : null}
+            <button class="btn sm" onClick=${() => openTimeEdit(sid, st)}>${I.clock()}<span>Change start</span></button>
+            <button class="btn sm ghost" onClick=${() => skipStep(sid, st)}>${I.skip()}<span>Skip</span></button>`}
+      </div>
+      ${t ? html`<div class="muted small">Started ${fmtDT(st.startedAt)}</div>` : null}
+    </div>`;
+  }
   return html`<div class="status-panel"><div class="muted">Not started</div>
     <div class="row gap wrap">
-      <button class="btn primary" onClick=${() => completeStep(sid, st)}>${I.check()}<span>Mark done</span></button>
-      <button class="btn" onClick=${() => startStep(sid, st)}>${I.play()}<span>Start</span></button>
+      ${dur ? timerBtn('btn run') : null}
+      <button class=${dur ? 'btn' : 'btn primary'} onClick=${() => completeStep(sid, st)}>${I.check()}<span>Mark done</span></button>
+      ${dur ? null : html`<button class="btn" onClick=${() => startStep(sid, st)}>${I.play()}<span>Start</span></button>`}
       <button class="btn ghost" onClick=${() => skipStep(sid, st)}>${I.skip()}<span>Skip</span></button>
     </div></div>`;
 }
@@ -2023,6 +2544,9 @@ function StepDetail({ sid, s, st, i }) {
       ${rk ? html`<${Field} label="Method"><input list=${'dl-m-' + st.kind} value=${st.method} placeholder=${st.kind === 'etch' ? 'e.g. ICP-RIE, Wet' : 'e.g. Sputter, ALD'} onInput=${e => set({ method: e.currentTarget.value })} /></${Field}>
         <${Field} label=${st.kind === 'etch' ? 'Material etched' : 'Material deposited'}><input list="dl-mats" value=${st.material} placeholder="e.g. SiN" onInput=${e => set({ material: e.currentTarget.value })} /></${Field}>` : null}
       <${Field} label="Conditions" cls="span2"><${AutoText} value=${st.params} label="Conditions" placeholder="Times, temperatures, flows, doses, as run" onInput=${v => set({ params: v })} /></${Field}>
+      <${Field} label="Timer" cls="span2" hint=${rk ? 'A countdown that chimes at zero. Leave empty to count down the process time.' : 'A countdown that chimes at zero, started from this step.'}>
+        <span class="unit-in timer-in"><input inputmode="decimal" aria-label="Timer length" value=${st.durV || ''} placeholder="0" onInput=${e => set({ durV: e.currentTarget.value })} />
+          <select aria-label="Timer unit" value=${st.durU || 'min'} onChange=${e => set({ durU: e.currentTarget.value }, 0)}>${['s', 'min', 'h'].map(u => html`<option value=${u}>${TIME_LABEL[u] || u}</option>`)}</select></span></${Field}>
     </div>
     ${rk ? html`<${RateBlock} sid=${sid} st=${st} set=${set} />` : null}
     <${MeasEditor} kind=${st.kind} meas=${st.meas || []} onChange=${(meas, d) => set({ meas }, d)} />
@@ -2031,7 +2555,9 @@ function StepDetail({ sid, s, st, i }) {
     <div class="st-foot">
       <button class="btn ghost sm" disabled=${i === 0} onClick=${() => moveStep(sid, i, -1)}>${I.up()}<span>Up</span></button>
       <button class="btn ghost sm" disabled=${i === (s.steps || []).length - 1} onClick=${() => moveStep(sid, i, 1)}>${I.down()}<span>Down</span></button>
-      <button class="btn ghost sm" onClick=${() => openAddStep(sid, i + 1)}>${I.plus()}<span>Insert below</span></button>
+      <button class="btn ghost sm" onClick=${() => openAddStep(sid, i + 1, undefined, 'Insert a step below')}>${I.plus()}<span>Insert below</span></button>
+      ${hasSegs(s) && segGroups(s).some(g => g.steps[0] && g.steps[0].id === st.id) ? null
+        : html`<button class="btn ghost sm" onClick=${() => segmentFromHere(sid, st)}>${I.layers()}<span>New segment from here</span></button>`}
       <button class="btn ghost sm" onClick=${() => dupStep(sid, st)}>${I.copy()}<span>Duplicate</span></button>
       ${st.status === 'done' ? html`<button class="btn ghost sm" onClick=${() => openCopyResult(sid, st)}>${I.split()}<span>Apply to other samples</span></button>` : null}
       <button class="btn ghost sm danger" onClick=${() => deleteStep(sid, st)}>${I.trash()}<span>Delete step</span></button>
@@ -2055,7 +2581,7 @@ function RateBlock({ sid, st, set }) {
   return html`<div class="rate-block">
     <div class="rate-inputs">
       <${Field} label="Process time"><span class="unit-in">
-        <input inputmode="decimal" value=${st.timeV} placeholder="0" onInput=${e => set({ timeV: e.currentTarget.value })} />
+        <input inputmode="decimal" value=${st.timeV} placeholder="0" onInput=${e => set({ timeV: e.currentTarget.value, timeFromTimer: false })} />
         <select aria-label="Time unit" value=${st.timeU} onChange=${e => set({ timeU: e.currentTarget.value }, 0)}>
           ${Object.keys(TIME_LABEL).map(u => html`<option value=${u}>${TIME_LABEL[u]}</option>`)}</select></span></${Field}>
       <${Field} label=${etch ? 'Depth' : 'Thickness'}><span class="unit-in">
@@ -2063,6 +2589,7 @@ function RateBlock({ sid, st, set }) {
         <select aria-label="Thickness unit" value=${st.thkU} onChange=${e => set({ thkU: e.currentTarget.value }, 0)}>
           ${Object.keys(THK_UNITS).map(u => html`<option value=${u}>${u}</option>`)}</select></span></${Field}>
     </div>
+    ${st.timeFromTimer && st.timeV ? html`<p class="small muted">Process time filled in from the timer. Change it if the actual time differed.</p>` : null}
     ${st.timeU !== 'cyc' ? html`<${Stopwatch} sid=${sid} st=${st} />` : null}
     <div class="rate-out">
       ${r ? html`<div class="rate-val"><span class="big tnum">${fmtNum(convRate(r.v, r.basis, unit))}</span>
@@ -2229,19 +2756,33 @@ function TimeEditSheet({ sid, st }) {
         <button class="btn primary" disabled=${block} onClick=${save}>Save times</button></div>
     </div></${Sheet}>`;
 }
-function openAddStep(sid, at) {
-  openSheet(() => html`<${AddStepSheet} at=${at} onInsert=${(steps, focus) => {
-    updSample(sid, s => { s.steps = s.steps || []; const i = at == null ? s.steps.length : at; s.steps.splice(i, 0, ...steps); });
+function openAddStep(sid, at, seg, title) {
+  const s0 = view('samples')[sid];
+  const g0 = seg && s0 && (s0.segs || []).find(x => x.id === seg);
+  openSheet(() => html`<${AddStepSheet} at=${at} title=${title || (g0 ? `Add step to ${g0.name}` : null)} onInsert=${(steps, focus) => {
+    updSample(sid, s => {
+      s.steps = s.steps || [];
+      let i = at == null ? s.steps.length : at;
+      if (hasSegs(s)) {
+        regroup(s);
+        let g = seg;
+        const grp = g ? segGroups(s).find(x => x.id === g) : null;
+        if (grp) i = grp.start + grp.steps.length; else g = i > 0 && s.steps[i - 1] ? s.steps[i - 1].seg : s.segs[0].id;
+        for (const st of steps) st.seg = g;
+      }
+      s.steps.splice(i, 0, ...steps);
+      regroup(s);
+    });
     closeSheet();
     if (focus) go({ v: 'sample', id: sid, step: steps[0].id }, true);
     toast(steps.length === 1 ? 'Step added' : `${steps.length} steps added`);
   }} />`);
 }
-function AddStepSheet({ at, onInsert, noTemplates }) {
+function AddStepSheet({ at, onInsert, noTemplates, title }) {
   const tpls = noTemplates ? [] : Object.entries(view('templates')).sort((a, b) => (a[1].name || '').localeCompare(b[1].name || ''));
   const [tpl, setTpl] = useState(tpls[0] ? tpls[0][0] : '');
   const insert = (steps, focus) => onInsert(steps, focus);
-  return html`<${Sheet} title=${at == null ? 'Add step' : `Insert at position ${at + 1}`} onClose=${closeSheet}>
+  return html`<${Sheet} title=${title || (at == null ? 'Add step' : `Insert at position ${at + 1}`)} onClose=${closeSheet}>
     <div class="lib">${KIND_KEYS.map(k => {
       const items = LIBRARY.filter(x => x[0] === k);
       if (!items.length) return null;
@@ -2302,10 +2843,10 @@ function SplitSheet({ sid }) {
   if (!s) return null;
   const list = names.split(/[\n,]+/).map(x => x.trim()).filter(Boolean);
   const create = () => {
-    const steps = copySteps(sid, keep);
+    const c = copyProcess(sid, keep);
     for (const n of list) {
-      put('samples', newId('x'), newSampleDoc({ name: n, desc: s.desc, epi: s.epi, parent: sid,
-        steps: steps.map(x => ({ ...clone(x), id: newId('s') })) }));
+      put('samples', newId('x'), newSampleDoc({ name: n, desc: s.desc, epi: s.epi, proc: c.proc, parent: sid, segs: c.segs ? clone(c.segs) : null,
+        steps: c.steps.map(x => ({ ...clone(x), id: newId('s') })) }));
     }
     closeSheet();
     toast(`Created ${plural(list.length, 'sample')}`, { action: { label: 'View', fn: () => go({ v: 'samples' }) } });
@@ -2323,12 +2864,13 @@ function SplitSheet({ sid }) {
 }
 function EditSampleSheet({ id }) {
   const s = view('samples')[id];
-  const [f, setF] = useState(() => ({ name: s.name || '', desc: s.desc || '', epi: s.epi || '', status: s.status || 'active' }));
+  const [f, setF] = useState(() => ({ name: s.name || '', proc: s.proc || '', desc: s.desc || '', epi: s.epi || '', status: s.status || 'active' }));
   const ch = k => e => setF({ ...f, [k]: e.currentTarget.value });
   const save = e => { e.preventDefault(); if (!f.name.trim()) return; updSample(id, x => Object.assign(x, { ...f, name: f.name.trim() })); closeSheet(); };
   return html`<${Sheet} title="Sample details" onClose=${closeSheet}>
     <form class="stack" onSubmit=${save}>
       <${Field} label="Sample ID"><input data-autofocus value=${f.name} onInput=${ch('name')} /></${Field}>
+      <${Field} label="Process name"><input value=${f.proc} list="dl-procs" onInput=${ch('proc')} /></${Field}>
       <${Field} label="Description"><input value=${f.desc} onInput=${ch('desc')} /></${Field}>
       <${Field} label="Epi / substrate"><input value=${f.epi} onInput=${ch('epi')} /></${Field}>
       <div class="field"><span class="lab">Status</span><${Seg} label="Status" value=${f.status} onChange=${v => setF({ ...f, status: v })}
@@ -2347,7 +2889,6 @@ function SampleMenu({ id }) {
     <div class="menu">
       <button onClick=${act(() => openSheet(() => html`<${EditSampleSheet} id=${id} />`))}>${I.edit()}<span>Edit details</span></button>
       <button onClick=${act(() => openSheet(() => html`<${SplitSheet} sid=${id} />`))}>${I.split()}<span>Duplicate or split</span></button>
-      <button onClick=${act(() => saveAsTemplate(id))}>${I.layers()}<span>Save steps as a template</span></button>
       <button onClick=${act(() => exportTraveler(id))}>${I.download()}<span>Export printable traveler (HTML with photos)</span></button>
       <button onClick=${act(() => saveFile(`${safeName(s.name)}_steps_${fileStamp()}.csv`, sampleCsv(s)))}>${I.download()}<span>Export steps as CSV</span></button>
       ${status !== 'done' ? html`<button onClick=${act(() => updSample(id, x => { x.status = 'done'; }))}>${I.check()}<span>Mark sample done</span></button>` : null}
@@ -2445,15 +2986,17 @@ function EventRow({ e, unit }) {
           ${r ? html`<span class=${'badge rate' + (e.e.excl ? ' excl' : '')}>${fmtRate(r.v, r.basis, unit)}</span>` : null}</span></button></li>`;
   }
   const st = e.st;
+  const sg = hasSegs(e.s) ? segOf(e.s, st) : null;
   const r = e.type === 'done' && isRateKind(st.kind) ? rateOf(st) : null;
   const n = (st.imgs || []).length;
   return html`<li class=${'ev ' + e.type}><span class="ev-t tnum">${fmtTime(e.t)}</span>
     <span class="ev-g"><${Glyph} kind=${st.kind} state=${e.type === 'skipped' ? 'pending' : e.type} size=${18} /></span>
     <button class="ev-main" onClick=${() => go({ v: 'sample', id: e.sid, step: st.id })}>
       <span class="ev-title">${e.type === 'running' ? 'Started ' : e.type === 'skipped' ? 'Skipped ' : ''}${st.name || 'Untitled step'} <span class="ev-sample">${e.s.name}</span></span>
-      ${st.tool || st.recipe || r || n ? html`<span class="ev-sub">${[st.tool, st.recipe].filter(Boolean).join(', ')}
+      ${sg || st.tool || st.recipe || r || n || (e.type === 'done' && st.tLog) ? html`<span class="ev-sub">${[sg && sg.name, st.tool, st.recipe].filter(Boolean).join(', ')}
         ${r ? html`<span class=${'badge rate' + (st.excl ? ' excl' : '')}>${fmtRate(r.v, r.basis, unit)}</span>` : null}
-        ${n ? html`<span class="badge">${plural(n, 'photo')}</span>` : null}</span>` : null}
+        ${n ? html`<span class="badge">${plural(n, 'photo')}</span>` : null}
+        ${e.type === 'done' && st.tLog ? html`<span class="badge">${fmtClock(st.tLog.total * 1000)} timer</span>` : null}</span>` : null}
     </button></li>`;
 }
 
@@ -2807,7 +3350,8 @@ function TemplateEditView({ id, step: focus }) {
         <button class="st-toggle" aria-expanded=${open.has(st.id) ? 'true' : 'false'} onClick=${() => toggle(st.id)}>
           <span class="st-name">${st.name || 'Untitled step'}</span>
           ${st.tool || st.recipe ? html`<span class="st-sub">${[st.tool, st.recipe].filter(Boolean).join(', ')}</span>` : null}
-          ${st.params ? html`<span class="st-sub clamp">${st.params}</span>` : null}</button>
+          ${st.params ? html`<span class="st-sub clamp">${st.params}</span>` : null}
+          ${timerSec(st) ? html`<span class="st-badges"><span class="badge">${I.watch()}${fmtClock(timerSec(st) * 1000)}</span></span>` : null}</button>
         <span class="st-act" />
         ${open.has(st.id) ? html`<div class="st-detail"><div class="grid2">
             <${Field} label="Step name" cls="span2"><input value=${st.name} onInput=${e => setStep(st.id, { name: e.currentTarget.value })} /></${Field}>
@@ -2819,6 +3363,8 @@ function TemplateEditView({ id, step: focus }) {
             ${isRateKind(st.kind) ? html`<${Field} label="Method"><input list=${'dl-m-' + st.kind} value=${st.method} onInput=${e => setStep(st.id, { method: e.currentTarget.value })} /></${Field}>
               <${Field} label="Material"><input list="dl-mats" value=${st.material} onInput=${e => setStep(st.id, { material: e.currentTarget.value })} /></${Field}>` : null}
             <${Field} label="Conditions" cls="span2"><${AutoText} value=${st.params} label="Conditions" onInput=${v => setStep(st.id, { params: v })} /></${Field}>
+            <${Field} label="Timer" cls="span2"><span class="unit-in timer-in"><input inputmode="decimal" aria-label="Timer length" value=${st.durV || ''} placeholder="0" onInput=${e => setStep(st.id, { durV: e.currentTarget.value })} />
+              <select aria-label="Timer unit" value=${st.durU || 'min'} onChange=${e => setStep(st.id, { durU: e.currentTarget.value }, 0)}>${['s', 'min', 'h'].map(u => html`<option value=${u}>${TIME_LABEL[u] || u}</option>`)}</select></span></${Field}>
           </div>
           <div class="st-foot">
             <button class="btn ghost sm" disabled=${i === 0} onClick=${() => move(i, -1)}>${I.up()}<span>Up</span></button>
@@ -2841,17 +3387,54 @@ function aiErrText(e) {
   if (c === 'refused' || c === 'empty_completion') return 'Claude could not convert this text. Try “Split by line”.';
   return 'Could not reach Claude. Try again.';
 }
-function ImportView() {
-  const [text, setText] = useState('');
+function ImportView({ draft: draft0 }) {
+  const job0 = LOCAL ? aiState.job : null;
+  const d0 = draft0 || (job0 && job0.draft) || null;
+  const [draft] = useState(d0);
+  const [text, setText] = useState(() => (job0 && job0.text) || '');
+  const [file, setFile] = useState(null);
   const [steps, setSteps] = useState(null);
   const [busy, setBusy] = useState(false);
   const [chars, setChars] = useState(0);
   const [err, setErr] = useState('');
   const [aiOff, setAiOff] = useState(false);
-  const [name, setName] = useState('Imported traveler');
+  const [job, setJob] = useState(job0);
+  const [usage, setUsage] = useState(null);
+  const [sname, setSname] = useState(d0 ? d0.name || '' : '');
+  const [proc, setProc] = useState(d0 ? d0.proc || '' : '');
   const ctl = useRef(null);
+  const now = useNow(job ? 1000 : 0);
   const ask = LOCAL ? null : store.caps.ask;
+  const oai = LOCAL && !!aiState.key;
+  const S = getSettings();
   useEffect(() => () => { if (ctl.current) ctl.current.abort(); }, []);
+  const follow = async j => {
+    const c = new AbortController();
+    ctl.current = c;
+    try {
+      const r = await pollAiJob(j, { signal: c.signal });
+      const rows = parseAiOutput(r);
+      const u = await finishAiJob(j, r);
+      setUsage(u); setJob(null);
+      if (!rows.some(x => x.kind !== 'seg')) setErr('No steps came back. Check that the text is the traveler, then try again.');
+      else setSteps(rows);
+    } catch (e) {
+      if (e && e.code === 'cancelled') return;
+      setErr(oaiErrText(e)); setJob(null);
+      clearAiJob();
+    } finally { if (ctl.current === c) ctl.current = null; }
+  };
+  useEffect(() => { if (LOCAL && job0) follow(job0); }, []);
+  const runOai = async () => {
+    if (!text.trim()) return;
+    setErr('');
+    try {
+      const j = await startAiImport(text, { name: sname.trim(), desc: draft ? draft.desc || '' : '', proc: proc.trim() });
+      setJob(j);
+      follow(j);
+    } catch (e) { setErr(oaiErrText(e)); }
+  };
+  const cancelOai = async () => { if (ctl.current) ctl.current.abort(); const j = job; setJob(null); if (j) await cancelAiJob(j); };
   const runAi = async () => {
     if (!ask || !text.trim()) return;
     setBusy(true); setErr(''); setChars(0);
@@ -2869,50 +3452,98 @@ function ImportView() {
       }
     } finally { setBusy(false); ctl.current = null; }
   };
-  const split = () => { const s = parseLines(text); if (!s.length) { setErr('No lines found.'); return; } setErr(''); setSteps(s.map(x => ({ ...x, id: newId('s'), on: true }))); };
-  const upd = (i, patch) => setSteps(steps.map((s, j) => (j === i ? { ...s, ...patch } : s)));
-  const save = () => {
-    const keep = steps.filter(s => s.on && s.name.trim());
-    if (!keep.length) return;
-    const id = newId('t');
-    put('templates', id, { v: 1, name: name.trim() || 'Imported traveler', desc: '', created: Date.now(), steps: keep.map(s => ({ id: newId('s'), ...pickTpl(s) })) });
-    go({ v: 'template', id }, true);
-    toast(`Template saved with ${plural(keep.length, 'step')}`);
+  const split = () => { const r = parseTraveler(text); if (!r.length) { setErr('No lines found.'); return; } setErr(''); setUsage(null); setSteps(r.map(x => ({ ...x, id: newId('s'), on: true }))); };
+  const onFile = async e => {
+    const f = e.currentTarget.files && e.currentTarget.files[0];
+    e.currentTarget.value = '';
+    if (!f) return;
+    setErr('');
+    try { const r = await extractTraveler(f); setText(r.text); setFile({ name: f.name, summary: r.summary }); }
+    catch (x) { setErr((x && x.message) || 'Could not read that file.'); }
   };
-  const nOn = steps ? steps.filter(s => s.on).length : 0;
-  return html`
-    <${BackLink} label="Templates" fallback=${{ v: 'templates' }} />
-    <h1>Import a traveler</h1>
-    ${!steps ? html`
-      <p class="lede">Copy the rows of your traveler from Excel, Word or a PDF and paste them here. ${ask && !aiOff ? 'Claude can sort them into steps; you review everything before saving.' : 'Each line becomes a step; separate tool, recipe and conditions with tabs or a “|”.'}</p>
-      <textarea class="paste" rows="12" placeholder="Paste traveler rows here" value=${text} onInput=${e => setText(e.currentTarget.value)} />
+  const upd = (i, patch) => setSteps(steps.map((r, j) => (j === i ? { ...r, ...patch } : r)));
+  const save = () => {
+    const keep = steps.filter(r => r.on && r.name.trim());
+    if (!sname.trim() || !keep.some(r => r.kind !== 'seg')) return;
+    const segs = [], out = [];
+    let cur = null;
+    for (const r of keep) {
+      if (r.kind === 'seg') { cur = { id: newId('g'), name: r.name.trim() }; segs.push(cur); continue; }
+      const st = blankStep({ ...pickTpl(r), kind: KINDS[r.kind] ? r.kind : 'other' });
+      if (cur) st.seg = cur.id;
+      out.push(st);
+    }
+    if (segs.length && out.some(st => !st.seg)) { const g = { id: newId('g'), name: 'Segment 1' }; segs.unshift(g); for (const st of out) if (!st.seg) st.seg = g.id; }
+    const id = newId('x');
+    put('samples', id, newSampleDoc({ name: sname.trim(), desc: draft ? draft.desc || '' : '', proc: proc.trim(), steps: out, segs: segs.length ? segs : null }));
+    go({ v: 'sample', id }, true);
+    toast(`Created ${sname.trim()} with ${plural(out.length, 'step')}${segs.length ? ` in ${plural(segs.length, 'segment')}` : ''}`);
+  };
+  const nOn = steps ? steps.filter(r => r.on && r.kind !== 'seg').length : 0;
+  const nSeg = steps ? steps.filter(r => r.on && r.kind === 'seg').length : 0;
+  const nFlag = steps ? steps.filter(r => r.on && r.flag).length : 0;
+  const forLine = sname || (draft && draft.name) ? html`<p class="small muted imp-for">For new sample <b>${sname || draft.name}</b>${proc ? `, process ${proc}` : ''}.</p>` : null;
+  let body;
+  if (job) {
+    body = html`<div class="work-card"><span class="spinner" /><div><b>${modelLabel(job.model)} is sorting your traveler</b>
+        <span class="tnum big3">${fmtClock(Math.max(0, now - job.started))}</span>
+        <span class="small muted">${job.effort === 'max' ? 'Max effort can take a few minutes. ' : ''}You can leave the app: the import keeps running at OpenAI and finishes here when you come back.</span></div></div>
+      <div class="row gap after-steps"><button class="btn" onClick=${cancelOai}>Cancel</button></div>`;
+  } else if (!steps) {
+    body = html`
+      <p class="lede">${oai ? 'Choose your traveler file or paste its rows. You can edit the text below before anything is sent.'
+        : `Copy the rows of your traveler from Excel, Word or a PDF and paste them here${LOCAL ? ', or choose the file' : ''}. ${ask && !aiOff ? 'Claude can sort them into steps; you review everything before saving.' : 'Each line becomes a step; separate tool, recipe and conditions with tabs or a “|”. Lines ending in a colon, or numbered 1, 2 while steps are numbered 1.1, 1.2, become segment headings.'}`}</p>
+      ${LOCAL ? html`<div class="row gap wrap imp-file"><label class="btn">${I.upload()}<span>Choose a file (.xlsx, .docx)</span><input class="vh" type="file" accept=".xlsx,.docx,.csv,.tsv,.txt" onChange=${onFile} /></label></div>` : null}
+      ${file ? html`<div class="file-chip">${I.file()}<div><b>${file.name}</b><span class="small muted">${file.summary}, read on this phone</span></div></div>` : null}
+      ${oai ? html`<div class="lab imp-lab">What will be sent to OpenAI</div>` : null}
+      <textarea class="paste" rows="12" aria-label="Traveler text" placeholder="Paste traveler rows here" value=${text} onInput=${e => setText(e.currentTarget.value)} />
       ${err ? html`<p class="warn">${err}</p>` : null}
-      <div class="row gap wrap">
+      <div class="stack imp-actions">
+        ${oai ? html`<button class="btn primary wide" disabled=${!text.trim()} onClick=${runOai}>${I.spark()}<span>Sort with ${modelLabel(S.aiModel)}</span></button>
+          <p class="small muted center">${S.aiEffort === 'max' ? 'Max effort. Can take a few minutes; you can leave the app and come back.' : `${titleCase(S.aiEffort || 'medium')} effort.`}</p>` : null}
         ${ask && !aiOff ? html`<button class="btn primary" disabled=${!text.trim() || busy} onClick=${runAi}>${I.spark()}<span>${busy ? (chars ? `Reading… ${chars} characters` : 'Thinking…') : 'Sort into steps with Claude'}</span></button>` : null}
         ${busy ? html`<button class="btn" onClick=${() => ctl.current && ctl.current.abort()}>Stop</button>` : null}
-        <button class=${'btn' + (ask && !aiOff ? '' : ' primary')} disabled=${!text.trim() || busy} onClick=${split}>Split by line</button>
+        <button class=${'btn' + (LOCAL ? ' wide' : '') + (oai || (ask && !aiOff) ? '' : ' primary')} disabled=${!text.trim() || busy} onClick=${split}>${oai ? 'Split by line instead (no AI)' : 'Split by line'}</button>
       </div>
-      ${ask && !aiOff ? html`<p class="small muted">Uses your Claude account; the first time, Claude asks you to allow this page. Values are copied as written, never estimated.</p>` : null}`
-    : html`
-      <p class="lede">Check each step. Untick anything that is not a step; you can edit everything later in the template.</p>
-      <${Field} label="Template name"><input value=${name} onInput=${e => setName(e.currentTarget.value)} /></${Field}>
-      <ol class="import-list">${steps.map((s, i) => html`<li key=${s.id} class=${s.on ? '' : 'off'}>
-        <input type="checkbox" aria-label=${'Include step ' + (i + 1)} checked=${s.on} onChange=${e => upd(i, { on: e.currentTarget.checked })} />
+      ${LOCAL && !oai ? html`<p class="small muted">To sort with AI, add your OpenAI key in <button class="linkish" onClick=${() => go({ v: 'settings' })}>Settings</button>.</p>` : null}
+      ${ask && !aiOff ? html`<p class="small muted">Uses your Claude account; the first time, Claude asks you to allow this page. Values are copied as written, never estimated.</p>` : null}`;
+  } else {
+    body = html`
+      ${usage ? html`<p class="small muted imp-usage">${modelLabel(usage.model)}, ${usage.effort} effort: ${fmtSecs(usage.secs)}, ${usage.in.toLocaleString()} input and ${usage.out.toLocaleString()} output tokens.</p>` : null}
+      <p class="lede">Check each row${nFlag ? `; ${plural(nFlag, 'flagged row')} need${nFlag === 1 ? 's' : ''} a look` : ''}. Untick anything that is not a step, and set the type to Segment heading for rows that start a segment. Nothing is created until you tap Create sample.</p>
+      <div class="grid2"><${Field} label="Sample ID"><input value=${sname} autocapitalize="characters" placeholder="e.g. V260712FA" onInput=${e => setSname(e.currentTarget.value)} /></${Field}>
+        <${Field} label="Process name"><input value=${proc} list="dl-procs" placeholder="e.g. CVTLM HEMT" onInput=${e => setProc(e.currentTarget.value)} /></${Field}></div>
+      <ol class="import-list">${steps.map((r, i) => {
+        const meta = [r.tool, r.recipe, r.method, r.material].filter(Boolean).join(', ');
+        return html`<li key=${r.id} class=${(r.on ? '' : 'off') + (r.kind === 'seg' ? ' segrow' : '') + (r.flag ? ' flagged' : '')}>
+        <input type="checkbox" aria-label=${'Include row ' + (i + 1)} checked=${r.on} onChange=${e => upd(i, { on: e.currentTarget.checked })} />
         <div class="imp-main">
-          <div class="row gap"><${Glyph} kind=${s.kind} size=${18} /><input class="imp-name" aria-label="Step name" value=${s.name} onInput=${e => upd(i, { name: e.currentTarget.value })} />
-            <select aria-label="Type" class="narrow" value=${s.kind} onChange=${e => upd(i, { kind: e.currentTarget.value })}>${KIND_KEYS.map(k => html`<option value=${k}>${KINDS[k].label}</option>`)}</select></div>
-          ${s.tool || s.recipe || s.method || s.material ? html`<div class="small muted">${[s.tool, s.recipe, s.method, s.material].filter(Boolean).join(', ')}</div>` : null}
-          ${s.params ? html`<div class="small imp-params">${s.params}</div>` : null}
-        </div></li>`)}</ol>
+          <div class="row gap">${r.kind === 'seg' ? html`<span class="seg-ico">${I.layers()}</span>` : html`<${Glyph} kind=${r.kind} size=${18} />`}
+            <input class="imp-name" aria-label=${r.kind === 'seg' ? 'Segment name' : 'Step name'} value=${r.name} onInput=${e => upd(i, { name: e.currentTarget.value })} /></div>
+          <div class="imp-meta"><select aria-label="Type" class="narrow imp-type" value=${r.kind} onChange=${e => upd(i, { kind: e.currentTarget.value })}>
+              <option value="seg">Segment heading</option>${KIND_KEYS.map(k => html`<option value=${k}>${KINDS[k].label}</option>`)}</select>
+            ${meta ? html`<span class="small muted">${meta}</span>` : null}</div>
+          ${r.params ? html`<div class="small imp-params">${r.params}</div>` : null}
+          ${r.durV ? html`<div><span class="tchip">Timer ${r.durV} ${r.durU || 'min'}</span></div>` : null}
+          ${r.flag ? html`<div class="flag-note">${I.flag()}<span>${r.flag}</span></div>` : null}
+        </div></li>`;
+      })}</ol>
       <div class="row gap wrap end sticky-actions">
         <button class="btn" onClick=${() => setSteps(null)}>Back to text</button>
-        <button class="btn primary" disabled=${!nOn} onClick=${save}>Save template with ${plural(nOn, 'step')}</button></div>`}`;
+        <button class="btn primary" disabled=${!nOn || !sname.trim()} onClick=${save}>Create sample with ${plural(nOn, 'step')}${nSeg ? ` in ${plural(nSeg, 'segment')}` : ''}</button></div>`;
+  }
+  return html`
+    <${BackLink} label="Samples" fallback=${{ v: 'samples' }} />
+    <h1>Import a traveler</h1>
+    ${forLine}
+    ${body}`;
 }
 
 /* ---------------- settings ---------------- */
 const fmtBytes = b => b >= 1e9 ? `${(b / 1e9).toFixed(2)} GB` : `${(b / 1e6).toFixed(b < 1e7 ? 1 : 0)} MB`;
 function SettingsView() {
   const S = getSettings();
+  const aiSection = LOCAL ? html`<${AiSettings} />` : null;
   const [usage, setUsage] = useState('');
   const checkUsage = async () => {
     try { const r = await store.caps.assets.list(); const u = r.usage; setUsage(`${plural(u.files, 'file')}, ${fmtBytes(u.bytes)} of ${fmtBytes(u.maxBytes)}`); }
@@ -2940,6 +3571,7 @@ function SettingsView() {
     : 'Nothing is being saved in this view.';
   return html`
     <h1>Settings</h1>
+    ${aiSection}
     <section class="set-group"><h2>Logging</h2>
       <${Field} label="Your initials" hint="Added to steps you start or complete."><input class="short" value=${S.initials} maxlength="8" autocapitalize="characters" onInput=${e => putSettings({ initials: e.currentTarget.value })} /></${Field}>
     </section>
@@ -3401,15 +4033,290 @@ function InstallHint() {
     <div class="row gap"><button class="btn sm" onClick=${hide}>Got it</button></div></div>`;
 }
 function LocalBanners() {
-  return html`<${InstallHint} /><${BackupBanner} />`;
+  return html`<${InstallHint} /><${AiJobBanner} /><${BackupBanner} />`;
+}
+
+/* ---------------- AI import through the user's own OpenAI key ----------------
+   The key lives only in this browser (never in backups). Requests go straight to OpenAI in background mode, so an
+   import keeps running if the phone locks or the app is left; the app collects the result later, then deletes it there. */
+const OAI = 'https://api.openai.com/v1';
+const aiState = { key: '', job: null, usage: null };
+if (LOCAL) {
+  LocalRT.ready.then(async () => {
+    if (!LocalRT.ok) return;
+    try {
+      aiState.key = (await LocalRT.meta.get('openaiKey')) || '';
+      aiState.job = (await LocalRT.meta.get('aiJob')) || null;
+      aiState.usage = (await LocalRT.meta.get('aiUsage')) || null;
+    } catch (e) { /* ignore */ }
+    bump();
+  });
+}
+const modelLabel = m => (m === 'gpt-6-astra' ? 'GPT-6 Astra' : m || 'the model');
+const sleepA = (ms, signal) => new Promise((res, rej) => {
+  const t = setTimeout(res, ms);
+  if (signal) signal.addEventListener('abort', () => { clearTimeout(t); rej({ code: 'cancelled' }); }, { once: true });
+});
+async function oaiFetch(path, { method = 'GET', body, signal } = {}) {
+  const key = aiState.key;
+  if (!key) throw { code: 'no_key' };
+  let r;
+  try {
+    r = await fetch(OAI + path, { method, signal, headers: { Authorization: 'Bearer ' + key, ...(body ? { 'Content-Type': 'application/json' } : {}) }, body: body ? JSON.stringify(body) : undefined });
+  } catch (e) {
+    if (e && e.name === 'AbortError') throw { code: 'cancelled' };
+    throw { code: 'network' };
+  }
+  let j = null;
+  try { j = await r.json(); } catch (e) { j = null; }
+  if (!r.ok) throw { code: 'http', status: r.status, message: (j && j.error && j.error.message) || r.statusText || '' };
+  return j;
+}
+function oaiErrText(e) {
+  const c = e && e.code;
+  if (c === 'no_key') return 'Add your OpenAI API key in Settings first.';
+  if (c === 'network') return navigator.onLine === false ? 'No connection. AI needs signal; Split by line works offline.' : 'Could not reach OpenAI. Check your connection and try again.';
+  if (c === 'http') {
+    if (e.status === 401) return 'OpenAI rejected the key. Check it in Settings.';
+    if (e.status === 429) return `OpenAI says the account is over its rate limit or out of credit. ${e.message || ''}`.trim();
+    if (e.status === 404) return `OpenAI does not offer that model to this key. ${e.message || ''}`.trim();
+    return `OpenAI returned an error (${e.status}). ${e.message || ''}`.trim();
+  }
+  if (c === 'bad_output') return 'The reply could not be read as segments and steps. Try again, or use Split by line.';
+  if (c === 'incomplete') return `The reply stopped before it finished${e.message ? ` (${e.message})` : ''}. Try again, or lower the effort in Settings.`;
+  if (c === 'failed') return `OpenAI could not finish the request. ${e.message || ''}`.trim();
+  return 'Something went wrong talking to OpenAI.';
+}
+const AI_INSTRUCTIONS = [
+  'You turn a cleanroom process traveler into segments and steps for a lab app. The input is text taken from the user\'s spreadsheet or document: rows may contain cells separated by " | ", sheet names, column headings and sign-off fields.',
+  'Rules:',
+  '1. Segments are the traveler\'s own top-level sections (for example "Alignment marks and backside metal"), in order. If the traveler has no sections, return one segment with an empty name.',
+  '2. Create one step per process step, in the traveler\'s order. Keep calibration, dummy, witness or test-piece runs as their own steps, separate from the real run. Do not merge or split steps unless the traveler clearly does.',
+  '3. Copy names, numbers, units, chemicals, tools and recipes exactly as written. Never invent, estimate, convert or correct a value. Leave a field empty when the traveler does not give it.',
+  '4. kind: clean (cleans, wet chemistry, dips, strips, rinses), litho (coat, bake, expose, develop), etch (dry or wet etch), dep (deposition, evaporation, sputtering, ALD, PECVD, growth), thermal (anneals, RTA), metrology (inspection, measurement, test), other.',
+  '5. tool: the equipment. recipe: the named recipe or chemistry. method: for etch and deposition only, the technique as written (for example ICP-RIE, sputter, e-beam, ALD). material: for etch and deposition only, the material etched or deposited, as written.',
+  '6. conditions: the step\'s remaining parameters as written (times, temperatures, speeds, doses, flows, pressures), joined with "; ".',
+  '7. timer_value and timer_unit: only when the traveler states a single duration for the whole step (for example "develop 70 s"). Use null when there is no duration or more than one (for example "acetone 5 min, IPA 5 min").',
+  '8. flag: a short note when something is ambiguous or missing (for example no tool or chemistry given), or when you made a judgement call such as keeping a calibration run separate. Otherwise an empty string.',
+  '9. Skip rows that are not process steps (column headings, page titles, signatures, blank template fields), but never drop a real step.',
+].join('\n');
+const STR = { type: 'string' };
+const AI_SCHEMA = {
+  type: 'object', additionalProperties: false, required: ['segments'],
+  properties: { segments: { type: 'array', items: {
+    type: 'object', additionalProperties: false, required: ['name', 'steps'],
+    properties: { name: STR, steps: { type: 'array', items: {
+      type: 'object', additionalProperties: false,
+      required: ['name', 'kind', 'tool', 'recipe', 'method', 'material', 'conditions', 'timer_value', 'timer_unit', 'flag'],
+      properties: {
+        name: STR, kind: { type: 'string', enum: ['clean', 'litho', 'etch', 'dep', 'thermal', 'metrology', 'other'] },
+        tool: STR, recipe: STR, method: STR, material: STR, conditions: STR,
+        timer_value: { type: ['number', 'null'] }, timer_unit: { type: ['string', 'null'], enum: ['s', 'min', 'h', null] }, flag: STR,
+      } } } } } } },
+};
+async function startAiImport(text, draft) {
+  const S = getSettings();
+  const model = S.aiModel || 'gpt-6-astra', effort = S.aiEffort || 'max';
+  const r = await oaiFetch('/responses', { method: 'POST', body: {
+    model, reasoning: { effort }, background: true, store: true, instructions: AI_INSTRUCTIONS, input: text, max_output_tokens: 100000,
+    text: { format: { type: 'json_schema', name: 'traveler', strict: true, schema: AI_SCHEMA } },
+  } });
+  const job = { id: r.id, started: Date.now(), draft, text, model, effort };
+  aiState.job = job;
+  try { await LocalRT.meta.set('aiJob', job); } catch (e) { /* the import still runs, it just cannot resume */ }
+  bump();
+  return job;
+}
+async function pollAiJob(job, { signal } = {}) {
+  let wait = 2500, misses = 0;
+  for (;;) {
+    let r = null;
+    try { r = await oaiFetch('/responses/' + job.id, { signal }); misses = 0; }
+    catch (e) {
+      if (e && (e.code === 'cancelled' || e.code === 'no_key' || (e.code === 'http' && e.status !== 429 && e.status < 500))) throw e;
+      if (++misses > 40) throw e;   // keep retrying through dropped connections and server hiccups
+    }
+    if (r) {
+      if (r.status === 'completed') return r;
+      if (['failed', 'cancelled', 'incomplete'].includes(r.status)) {
+        throw { code: r.status === 'incomplete' ? 'incomplete' : 'failed', message: (r.error && r.error.message) || (r.incomplete_details && r.incomplete_details.reason) || '' };
+      }
+    }
+    await sleepA(wait, signal);
+    wait = Math.min(6000, wait + 500);
+  }
+}
+function parseAiOutput(r) {
+  const parts = [];
+  for (const item of r.output || []) if (item.type === 'message') for (const c of item.content || []) if (c.type === 'output_text' && c.text) parts.push(c.text);
+  let data = null;
+  try { data = JSON.parse(parts.join('')); } catch (e) { data = null; }
+  if (!data || !Array.isArray(data.segments)) throw { code: 'bad_output' };
+  const rows = [];
+  const named = data.segments.some(g => String(g.name || '').trim());
+  for (const g of data.segments) {
+    if (named && String(g.name || '').trim()) rows.push({ id: newId('s'), on: true, kind: 'seg', name: String(g.name).trim(), tool: '', recipe: '', method: '', material: '', params: '' });
+    for (const st of g.steps || []) {
+      const tv = Number(st.timer_value);
+      rows.push({ id: newId('s'), on: true, kind: KINDS[st.kind] ? st.kind : 'other', name: String(st.name || '').trim() || 'Untitled step',
+        tool: st.tool || '', recipe: st.recipe || '', method: st.method || '', material: st.material || '', params: st.conditions || '',
+        durV: st.timer_value != null && Number.isFinite(tv) && tv > 0 ? String(tv) : '', durU: ['s', 'min', 'h'].includes(st.timer_unit) ? st.timer_unit : 'min',
+        flag: String(st.flag || '').trim() });
+    }
+  }
+  return rows;
+}
+async function clearAiJob() { aiState.job = null; try { await LocalRT.meta.del('aiJob'); } catch (e) { /* ignore */ } bump(); }
+async function finishAiJob(job, r) {
+  const u = r.usage || {};
+  const usage = { in: u.input_tokens || 0, out: u.output_tokens || 0, reasoning: (u.output_tokens_details && u.output_tokens_details.reasoning_tokens) || 0,
+    secs: Math.round((Date.now() - job.started) / 1000), at: Date.now(), model: job.model, effort: job.effort };
+  aiState.usage = usage;
+  try { await LocalRT.meta.set('aiUsage', usage); } catch (e) { /* ignore */ }
+  oaiFetch('/responses/' + job.id, { method: 'DELETE' }).catch(() => {});
+  await clearAiJob();
+  return usage;
+}
+async function cancelAiJob(job) {
+  try { await oaiFetch(`/responses/${job.id}/cancel`, { method: 'POST' }); } catch (e) { /* it may have finished already */ }
+  oaiFetch('/responses/' + job.id, { method: 'DELETE' }).catch(() => {});
+  await clearAiJob();
+}
+
+/* ---------- reading .xlsx, .docx, .csv and .txt on the phone ---------- */
+const xmlDoc = t => new DOMParser().parseFromString(t, 'application/xml');
+async function zipText(z, name) { const b = await z.entry(name); return b ? b.text() : null; }
+const colIndex = letters => { let n = 0; for (const ch of String(letters).toUpperCase()) n = n * 26 + (ch.charCodeAt(0) - 64); return n - 1; };
+async function extractTraveler(f) {
+  const ext = extOf(f.name);
+  if (ext === 'xlsx') return extractXlsx(f);
+  if (ext === 'docx') return extractDocx(f);
+  if (['csv', 'tsv', 'txt'].includes(ext)) {
+    const t = await f.text();
+    return { text: t, summary: plural(t.split(/\r?\n/).filter(x => x.trim()).length, 'line') };
+  }
+  throw new Error(ext === 'pdf' ? 'PDFs cannot be read here. Copy the text from the PDF and paste it instead.'
+    : ext === 'xls' || ext === 'doc' ? 'That is an older Office format. Save it as .xlsx or .docx, or paste the rows.' : 'Choose an .xlsx, .docx, .csv or .txt file.');
+}
+async function extractXlsx(f) {
+  const z = await readZip(f);
+  const shared = [];
+  const ss = await zipText(z, 'xl/sharedStrings.xml');
+  if (ss) for (const si of xmlDoc(ss).getElementsByTagName('si')) shared.push([...si.getElementsByTagName('t')].map(t => t.textContent).join(''));
+  const wb = await zipText(z, 'xl/workbook.xml');
+  const names = wb ? [...xmlDoc(wb).getElementsByTagName('sheet')].map(x => x.getAttribute('name')) : [];
+  const sheets = z.names.filter(n => /^xl\/worksheets\/sheet\d+\.xml$/.test(n)).sort((a, b) => parseInt(a.match(/\d+/)[0], 10) - parseInt(b.match(/\d+/)[0], 10));
+  const out = [];
+  let nRows = 0;
+  for (let i = 0; i < sheets.length; i++) {
+    const doc = xmlDoc(await zipText(z, sheets[i]));
+    const lines = [];
+    for (const row of doc.getElementsByTagName('row')) {
+      const cells = [];
+      for (const c of row.getElementsByTagName('c')) {
+        const t = c.getAttribute('t');
+        const vEl = c.getElementsByTagName('v')[0];
+        let v = '';
+        if (t === 's') v = vEl ? shared[parseInt(vEl.textContent, 10)] || '' : '';
+        else if (t === 'inlineStr') v = [...c.getElementsByTagName('t')].map(x => x.textContent).join('');
+        else if (vEl) v = t === 'b' ? (vEl.textContent === '1' ? 'TRUE' : 'FALSE') : vEl.textContent;
+        const col = colIndex((c.getAttribute('r') || '').replace(/\d+/g, ''));
+        const val = String(v).replace(/\s+/g, ' ').trim();
+        if (col >= 0) cells[col] = val; else cells.push(val);
+      }
+      const arr = Array.from(cells, x => x || '');
+      while (arr.length && !arr[arr.length - 1]) arr.pop();
+      if (arr.some(Boolean)) lines.push(arr.join(' | '));
+    }
+    if (lines.length) { out.push(`Sheet: ${names[i] || 'Sheet ' + (i + 1)}`, ...lines); nRows += lines.length; }
+  }
+  if (!out.length) throw new Error('No text found in that spreadsheet.');
+  return { text: out.join('\n'), summary: `${plural(sheets.length, 'sheet')}, ${plural(nRows, 'row')}` };
+}
+async function extractDocx(f) {
+  const z = await readZip(f);
+  const xml = await zipText(z, 'word/document.xml');
+  if (!xml) throw new Error('No text found in that Word file.');
+  const body = xmlDoc(xml).getElementsByTagName('w:body')[0];
+  const pText = p => {
+    let t = '';
+    for (const n of p.getElementsByTagName('*')) { if (n.nodeName === 'w:t') t += n.textContent; else if (n.nodeName === 'w:tab' || n.nodeName === 'w:br') t += ' '; }
+    return t.replace(/\s+/g, ' ').trim();
+  };
+  const lines = [];
+  for (const node of body ? [...body.childNodes] : []) {
+    if (node.nodeName === 'w:p') { const t = pText(node); if (t) lines.push(t); }
+    else if (node.nodeName === 'w:tbl') {
+      for (const tr of node.getElementsByTagName('w:tr')) {
+        const cells = [...tr.childNodes].filter(n => n.nodeName === 'w:tc').map(tc => [...tc.getElementsByTagName('w:p')].map(pText).filter(Boolean).join(' / '));
+        while (cells.length && !cells[cells.length - 1]) cells.pop();
+        if (cells.some(Boolean)) lines.push(cells.join(' | '));
+      }
+    }
+  }
+  if (!lines.length) throw new Error('No text found in that Word file.');
+  return { text: lines.join('\n'), summary: plural(lines.length, 'line') };
+}
+
+/* ---------- settings section and banner ---------- */
+function AiSettings() {
+  const S = getSettings();
+  const [entry, setEntry] = useState('');
+  const [test, setTest] = useState(null);
+  const [busy, setBusy] = useState(false);
+  const key = aiState.key;
+  const masked = key ? `${key.slice(0, Math.min(8, key.length - 4))}••••••••${key.slice(-4)}` : '';
+  const runTest = async () => {
+    setBusy(true); setTest(null);
+    const m = S.aiModel || 'gpt-6-astra';
+    try { await oaiFetch('/models/' + encodeURIComponent(m)); setTest({ ok: true, text: `Key works with ${m}. Checked ${fmtDT(Date.now())}.` }); }
+    catch (e) { setTest({ ok: false, text: oaiErrText(e) }); }
+    finally { setBusy(false); }
+  };
+  const save = async () => {
+    const k = entry.trim();
+    if (!k) return;
+    try { await LocalRT.meta.set('openaiKey', k); } catch (e) { toast('Could not store the key on this device.', { error: true }); return; }
+    aiState.key = k; setEntry(''); bump();
+    runTest();
+  };
+  const remove = async () => {
+    if (!(await confirmBox({ title: 'Remove the OpenAI key?', body: 'AI import stops working on this phone until you add a key again.', ok: 'Remove key', danger: true }))) return;
+    try { await LocalRT.meta.del('openaiKey'); } catch (e) { /* ignore */ }
+    aiState.key = ''; setTest(null); bump();
+  };
+  const u = aiState.usage;
+  return html`<section class="set-group"><h2>AI (OpenAI)</h2>
+    ${test ? html`<div class=${'ai-status ' + (test.ok ? 'ok' : 'bad')} role="status"><span class="dot" /><span>${test.text}</span></div>` : null}
+    ${key ? html`<div class="field"><span class="lab">API key</span>
+        <div class="row gap"><input class="grow" aria-label="Saved API key" value=${masked} readonly /><button class="btn" disabled=${busy} onClick=${runTest}>${busy ? 'Testing…' : 'Test'}</button></div>
+        <span class="hint">Stored only on this phone and never included in backups.</span></div>`
+      : html`<div class="field"><span class="lab">API key</span>
+        <div class="row gap"><input class="grow" type="password" aria-label="OpenAI API key" autocomplete="off" spellcheck="false" placeholder="sk-…" value=${entry} onInput=${e => setEntry(e.currentTarget.value)} />
+          <button class="btn primary" disabled=${!entry.trim()} onClick=${save}>Save</button></div>
+        <span class="hint">Create one at platform.openai.com under API keys. It is stored only on this phone and never included in backups.</span></div>`}
+    <div class="field"><span class="lab">Model</span><input aria-label="Model" value=${S.aiModel} list="dl-models" spellcheck="false" autocapitalize="none" onInput=${e => putSettings({ aiModel: e.currentTarget.value.trim() })} />
+      <datalist id="dl-models"><option value="gpt-6-astra" /></datalist></div>
+    <div class="field"><span class="lab">Effort for imports</span>
+      <${Seg} label="Effort for imports" value=${S.aiEffort} onChange=${v => putSettings({ aiEffort: v })} options=${[['low', 'Low'], ['medium', 'Medium'], ['high', 'High'], ['xhigh', 'X-high'], ['max', 'Max']]} />
+      <span class="hint">Max is the slowest and the most expensive.</span></div>
+    <p class="small muted">Requests go straight from this phone to OpenAI. Results wait at OpenAI until the app collects them, then the app deletes them there.${u ? ` Last import used ${u.in.toLocaleString()} input and ${u.out.toLocaleString()} output tokens.` : ''}</p>
+    <p class="small caution">Set a monthly spending limit in your OpenAI account. Anyone using this phone while it is unlocked could use the key.</p>
+    ${key ? html`<div><button class="btn ghost danger" onClick=${remove}>Remove key</button></div>` : null}
+  </section>`;
+}
+function AiJobBanner() {
+  const j = aiState.job;
+  if (!j || nav.route.v === 'import') return null;
+  return html`<div class="banner act" role="status"><span>Traveler import${j.draft && j.draft.name ? ` for ${j.draft.name}` : ''} is running at OpenAI.</span>
+    <div class="row gap"><button class="btn sm primary" onClick=${() => go({ v: 'import' })}>Open</button></div></div>`;
 }
 
 /* ---------------- app shell ---------------- */
 const TABS = [
-  { v: 'samples', label: 'Samples', icon: I.wafer, match: ['samples', 'sample'] },
+  { v: 'samples', label: 'Samples', icon: I.wafer, match: ['samples', 'sample', 'import', 'templates', 'template'] },
   { v: 'log', label: 'Log', icon: I.log, match: ['log'] },
   { v: 'rates', label: 'Rates', icon: I.rates, match: ['rates', 'rate'] },
-  { v: 'templates', label: 'Templates', icon: I.layers, match: ['templates', 'template', 'import'] },
 ];
 function SaveState() {
   if (store.mode === 'memory') return html`<span class="save-state warn" title=${store.note}>Not saving</span>`;
@@ -3427,6 +4334,7 @@ function DataLists() {
   return [
     html`<datalist id="dl-tools" key="t">${sug.tools.map(t => html`<option value=${t} />`)}</datalist>`,
     html`<datalist id="dl-mats" key="m">${sug.mats.map(t => html`<option value=${t} />`)}</datalist>`,
+    html`<datalist id="dl-procs" key="p">${procNames().map(t => html`<option value=${t} />`)}</datalist>`,
     html`<datalist id="dl-m-etch" key="e">${METHODS.etch.map(t => html`<option value=${t} />`)}</datalist>`,
     html`<datalist id="dl-m-dep" key="d">${METHODS.dep.map(t => html`<option value=${t} />`)}</datalist>`,
   ];
@@ -3439,7 +4347,7 @@ function Route({ r }) {
     case 'rate': return html`<${RateGroupView} key=${r.key} gk=${r.key} />`;
     case 'templates': return html`<${TemplatesView} />`;
     case 'template': return html`<${TemplateEditView} key=${r.id} id=${r.id} step=${r.step} />`;
-    case 'import': return html`<${ImportView} />`;
+    case 'import': return html`<${ImportView} draft=${r.draft} />`;
     case 'settings': return html`<${SettingsView} />`;
     default: return html`<${SamplesView} />`;
   }
@@ -3469,6 +4377,7 @@ function App() {
     ${LOCAL && store.loaded ? html`<${LocalBanners} />` : null}
     ${store.saveErr ? html`<div class="banner err" role="alert"><span>${store.saveErr}</span><button class="btn sm" onClick=${() => writer.retryFailed()}>Retry</button></div>` : null}
     <main id="main">${store.loaded ? html`<${Route} r=${r} />` : html`<${Loading} />`}</main>
+    ${store.loaded ? html`<${TimerBar} />` : null}
     ${ui.lightbox ? html`<${Lightbox} />` : null}
     ${ui.sheet ? html`<div key=${ui.sheet.id}>${ui.sheet.render()}</div>` : null}
     <${Toasts} />

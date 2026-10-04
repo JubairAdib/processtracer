@@ -34,9 +34,12 @@ they never contain your data.
      then import that file here. Text carries over; photos do not.
 
 4. Updating the app later
-   Upload the new files to the same repository, replacing the old ones. The
-   app picks up the new version the next time it opens with signal. Your data
-   is not touched.
+   a. In the app: Settings > Back up now (just in case).
+   b. Upload the new files to the same repository, replacing the old ones.
+      Keep the same repository name, so the address stays the same.
+   c. Open the app with signal: it downloads the update in the background
+      but still shows the old version. Close it and open it again to run the
+      new one. Your samples, photos and settings stay as they were.
 
 Notes
 - The repository holds only app code. Anyone with the address gets an empty
