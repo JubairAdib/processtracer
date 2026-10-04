@@ -1,5 +1,5 @@
 /* ProcessTracer offline cache. Serves the app without signal; data lives in the page's own storage, not here. */
-const CACHE = 'processtracer-2026.10.04.0819';
+const CACHE = 'processtracer-2026.10.04.1604';
 const FILES = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png'];
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES)).then(() => self.skipWaiting()));
