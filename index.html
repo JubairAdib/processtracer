@@ -654,6 +654,142 @@ body:has(.timerbar) .toasts { top: calc(58px + env(safe-area-inset-top, 0px)); b
 .thumb2 .tc { overflow: hidden; color: var(--ink-3); font-size: 12px; white-space: nowrap; text-overflow: ellipsis; }
 .ai-draw { margin-top: 16px; }
 
+/* ---------- compact traveler rows, Now, step page ---------- */
+.crows { list-style: none; margin: 0; padding: 0; }
+.crow { border-top: 1px solid var(--rule); }
+.crows > .crow:first-child { border-top: 0; }
+.crow-btn { display: grid; grid-template-columns: 30px 20px minmax(0, 1fr) auto; gap: 8px; align-items: center; width: 100%; min-height: 48px; padding: 7px 12px 7px 2px; border: 0; background: none; color: inherit; text-align: left; cursor: pointer; }
+.crow.cur .crow-btn { background: var(--accent-2); }
+.crow .cn { font-size: 13px; color: var(--ink-3); text-align: right; }
+.crow .cm { min-width: 0; display: flex; flex-direction: column; }
+.crow .cm b { font-size: 15px; font-weight: 600; line-height: 1.25; word-break: break-word; }
+.crow.skipped .cm b { color: var(--ink-3); text-decoration: line-through; }
+.cp { overflow: hidden; color: var(--ink-2); font-size: 13px; white-space: nowrap; text-overflow: ellipsis; }
+.crow .cr { display: flex; align-items: center; }
+.mini-stamp { color: var(--stamp); font-size: 12px; font-weight: 750; white-space: nowrap; }
+.mini-stamp.fresh { animation: thunk .42s cubic-bezier(.2, 1.5, .35, 1) both; }
+.sgm-body > .crows { margin: 0 0 2px; }
+ol.crows:not(.in-seg) { border: 1px solid var(--rule); border-radius: 12px; background: var(--surface); margin-top: 10px; }
+.sgm-body ol.crows { border: 0; border-radius: 0; margin-top: 0; }
+.cur-btn { max-width: 100%; margin-top: 10px; justify-content: flex-start; }
+.cur-btn span { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.now { margin: 4px 0 12px; border: 1px solid var(--rule); border-radius: 12px; background: var(--surface); overflow: hidden; }
+.now-h { padding: 10px 12px 4px; color: var(--ink-2); font-size: 13px; letter-spacing: .03em; text-transform: uppercase; }
+.now-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; align-items: center; width: 100%; min-height: 52px; padding: 9px 12px; border: 0; border-top: 1px solid var(--rule); background: none; color: inherit; text-align: left; cursor: pointer; }
+.now-m { display: flex; flex-direction: column; min-width: 0; }
+.now-m b { font-size: 16px; }
+.sp { margin: -12px -16px 0; }
+.sp-top { display: grid; grid-template-columns: 44px minmax(0, 1fr) 44px; align-items: center; padding: 4px 4px 0; }
+.sp-crumb { overflow: hidden; color: var(--ink-3); font-size: 13px; text-align: center; white-space: nowrap; text-overflow: ellipsis; }
+.sp-head { padding: 0 16px 10px; border-bottom: 1px solid var(--rule); }
+.sp-head h1 { margin: 0; font-size: 24px; line-height: 1.2; }
+.sp-head .meta { margin-top: 2px; color: var(--ink-2); font-size: 14px; }
+.sp-nav { display: flex; justify-content: space-between; gap: 10px; margin-top: 8px; }
+.sp-nav .linkish { min-height: 32px; overflow: hidden; max-width: 48%; font-size: 13px; text-decoration: none; white-space: nowrap; text-overflow: ellipsis; color: var(--ink-3); }
+.sp-next { margin-left: auto; text-align: right; }
+.sp-body { display: flex; flex-direction: column; gap: 12px; padding: 12px 16px 24px; }
+.sp-body .status-panel { padding-bottom: 12px; }
+.sp-cond { margin: 0; color: var(--ink-2); font-size: 14px; white-space: pre-wrap; }
+.sec { display: flex; align-items: baseline; justify-content: space-between; margin-top: 4px; color: var(--ink-2); font-size: 13px; font-weight: 750; letter-spacing: .03em; text-transform: uppercase; }
+.sec-n { color: var(--ink-3); font-size: 12px; font-weight: 600; letter-spacing: 0; text-transform: none; }
+.subs { display: flex; flex-direction: column; }
+.sub { display: grid; grid-template-columns: 30px minmax(0, 1fr) auto; gap: 10px; align-items: center; min-height: 52px; padding: 6px 0; border-bottom: 1px solid var(--rule); }
+.sub .ck { display: grid; place-items: center; width: 28px; height: 28px; padding: 0; border: 2px solid var(--rule-2); border-radius: 50%; background: var(--surface); color: var(--accent-ink); cursor: pointer; }
+.sub .ck .i { width: 16px; height: 16px; }
+.sub.done .ck { border-color: var(--stamp); background: var(--stamp); }
+.sub.run .ck { border-color: var(--run); background: var(--run-tint); }
+.sb-main { display: flex; flex-direction: column; min-width: 0; }
+.sb-main b { font-size: 15px; }
+.sb-main .p { color: var(--ink-2); font-size: 14px; }
+.sub.done .sb-main b, .sub.done .sb-main .p { color: var(--ink-3); }
+.sub .tm { color: var(--ink-3); font-size: 13px; text-align: right; white-space: nowrap; }
+.tbtn { display: inline-flex; align-items: center; gap: 4px; min-height: 38px; padding: 0 12px; border: 1.5px solid var(--run); border-radius: 19px; background: var(--surface); color: var(--run-text); font-size: 14px; font-weight: 750; cursor: pointer; }
+.tbtn .i { width: 14px; height: 14px; }
+.runbox { display: flex; flex-direction: column; align-items: flex-end; }
+.runbox .big { color: var(--run-text); font-size: 22px; font-weight: 800; line-height: 1; }
+.runbox .u { color: var(--run-text); font-size: 12px; }
+.sub.over .runbox .big, .sub.over .runbox .u { color: var(--danger); }
+.fold { border: 1px solid var(--rule); border-radius: 10px; background: var(--surface); }
+.fold-head { display: grid; grid-template-columns: auto minmax(0, 1fr) 18px; gap: 10px; align-items: center; width: 100%; min-height: 48px; padding: 8px 12px; border: 0; background: none; color: inherit; text-align: left; cursor: pointer; }
+.fold-t { font-size: 15px; font-weight: 600; }
+.fold-s { overflow: hidden; color: var(--ink-3); font-size: 13px; text-align: right; white-space: nowrap; text-overflow: ellipsis; }
+.fold .chev { display: flex; color: var(--ink-3); }
+.fold-b { display: flex; flex-direction: column; gap: 10px; padding: 0 12px 12px; }
+.run-time { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 10px; }
+.run-time .field { flex: 1 1 180px; }
+.subs-ed { display: flex; flex-direction: column; gap: 8px; }
+.sub-ed { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: 6px; padding-bottom: 8px; border-bottom: 1px solid var(--rule); }
+.sub-ed .sub-timer { max-width: 170px; }
+.sub-ed-acts { display: flex; justify-content: flex-end; }
+/* pieces */
+.pcs { display: flex; flex-direction: column; border: 1px solid var(--rule); border-radius: 10px; background: var(--surface); }
+.pc-head, .pc-row { display: grid; grid-template-columns: 34px minmax(0, 1fr) repeat(var(--nc, 1), minmax(64px, 84px)); gap: 6px; align-items: center; padding: 6px 8px 6px 4px; }
+.pc-head { grid-template-columns: minmax(0, 1fr) repeat(var(--nc, 1), minmax(64px, 84px)); padding-left: 44px; color: var(--ink-2); font-size: 12px; font-weight: 700; border-bottom: 1px solid var(--rule); }
+.pc-head span:not(:first-child) { text-align: right; }
+.pc { border-bottom: 1px solid var(--rule); }
+.pc-tog { display: grid; place-items: center; width: 34px; height: 40px; padding: 0; border: 0; background: none; color: var(--ink-3); cursor: pointer; }
+.pc-name { min-height: 40px; padding: 6px 8px; font-size: 15px; }
+.pc-in { min-height: 40px; padding: 6px 8px; text-align: right; font-size: 15px; }
+.pc-val { color: var(--ink); font-size: 15px; text-align: right; }
+.pc-val small { display: block; color: var(--ink-3); font-size: 12px; }
+.pc-pts { display: flex; flex-direction: column; gap: 6px; padding: 4px 8px 10px 44px; background: var(--surface-2); }
+.pt-row { display: grid; grid-template-columns: 20px repeat(var(--nc, 1), minmax(0, 1fr)) 40px; gap: 6px; align-items: center; }
+.pt-row input { min-height: 38px; padding: 5px 8px; text-align: right; }
+.pt-n { color: var(--ink-3); font-size: 12px; }
+.pc-role { min-height: 36px; padding-top: 4px; padding-bottom: 4px; font-size: 14px; }
+.pc-acts { padding: 8px; }
+.col-in { width: 140px; min-height: 36px; padding: 5px 8px; }
+.res { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 4px 14px; padding: 12px; border-radius: 10px; background: var(--surface-2); font-size: 15px; }
+.res > span { color: var(--ink-2); font-size: 14px; }
+.res b { font-variant-numeric: tabular-nums; }
+.calc2 { display: flex; flex-direction: column; gap: 8px; padding: 12px; border: 1px solid var(--accent); border-radius: 12px; background: var(--surface); }
+.calc2-row { align-items: center; flex-wrap: wrap; }
+.calc2-in { width: 160px; }
+.big4 { font-size: 20px; }
+
+/* ---------- fields each step records ---------- */
+:root { --k-plasma: #4E9DA6; --k-inspect: #5E9C6B; }
+.fgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.fld { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.fld.span2 { grid-column: span 2; }
+.fld .lab { color: var(--ink-2); font-size: 13px; font-weight: 650; }
+.fin input { min-width: 0; }
+.fin input::placeholder { color: var(--ink-3); opacity: 1; }
+.fin.chg input { border-color: var(--run); box-shadow: inset 3px 0 0 var(--run); }
+.was { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; color: var(--run-text); font-size: 12px; font-weight: 650; }
+.was .linkish { min-height: 28px; font-size: 12px; }
+.hintline { color: var(--ink-3); font-size: 12px; }
+.fcap { margin: -4px 0 0; }
+.fseg { display: flex; flex-wrap: wrap; gap: 6px; }
+.fseg button, .fchips button { min-height: 40px; padding: 0 14px; border: 1px solid var(--rule-2); border-radius: 10px; background: var(--surface); color: var(--ink); font-size: 15px; font-weight: 650; cursor: pointer; }
+.fchips { display: flex; flex-wrap: wrap; gap: 6px; }
+.fchips button { min-height: 36px; border-radius: 18px; font-size: 14px; }
+.fseg button.on, .fchips button.on { border-color: var(--ink); background: var(--ink); color: var(--paper); }
+.fseg button.plan, .fchips button.plan { border: 2px dashed var(--ink-3); color: var(--ink-2); }
+.flds-ed { display: flex; flex-direction: column; gap: 8px; }
+.fed { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto; gap: 6px; align-items: center; padding-bottom: 6px; border-bottom: 1px solid var(--rule); }
+.fed-n { display: flex; flex-direction: column; min-width: 0; }
+.fed-n b { font-size: 14px; }
+.fed input, .fed select { min-height: 40px; }
+.fed-acts { display: flex; }
+.fed-acts .icon-btn { width: 36px; height: 36px; }
+.fnew { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) minmax(0, 1fr); gap: 6px; padding: 10px; border: 1px solid var(--accent); border-radius: 10px; }
+.fnew .fnew-opts, .fnew > .row { grid-column: 1 / -1; }
+.fnew > .row { justify-content: flex-end; }
+.typ2 { border-bottom: 1px solid var(--rule); }
+.typ-head { display: grid; grid-template-columns: 24px minmax(0, 1fr) 18px; gap: 10px; align-items: center; width: 100%; min-height: 56px; padding: 8px 4px; border: 0; background: none; color: inherit; text-align: left; cursor: pointer; }
+.typ-m { display: flex; flex-direction: column; min-width: 0; }
+.typ-m b { font-size: 16px; }
+.typ-m .small { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.typ-body { display: flex; flex-direction: column; gap: 8px; padding: 2px 4px 14px 34px; }
+.tfrow { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 0.8fr) minmax(0, 1fr) 36px; gap: 6px; align-items: center; }
+.tfrow input, .tfrow select { min-height: 40px; padding-left: 8px; padding-right: 8px; font-size: 14px; }
+.tfrow .tf-opts { grid-column: 1 / 4; }
+.tfrow .icon-btn { width: 36px; height: 36px; }
+@media (max-width: 380px) { .typ-body { padding-left: 4px; } }
+.fin input:only-child { border-right: 1px solid var(--rule-2); border-radius: 9px; }
+.fin.chg input:only-child { border-color: var(--run); }
+
 </style>
 </head>
 <body>
@@ -666,7 +802,7 @@ body:has(.timerbar) .toasts { top: calc(58px + env(safe-area-inset-top, 0px)); b
 </script>
 <script>
 const LOCAL = true;
-const BUILD = '2026.10.04.1604';
+const BUILD = '2026.10.05.2053';
 /* ---------------- on-device runtime: everything stays in this browser ---------------- */
 const randHex = n => { const a = new Uint8Array(Math.ceil(n / 2)); crypto.getRandomValues(a); return Array.from(a, b => b.toString(16).padStart(2, '0')).join('').slice(0, n); };
 const toBuf = blob => (blob.arrayBuffer ? blob.arrayBuffer() : new Promise((res, rej) => {
@@ -875,9 +1011,11 @@ const { html, render, useState, useEffect, useMemo, useRef, useLayoutEffect } = 
 const KINDS = {
   clean: { label: 'Clean / wet', shape: 'circle' },
   litho: { label: 'Lithography', shape: 'hexagon' },
+  plasma: { label: 'Plasma clean / ashing', shape: 'star' },
   etch: { label: 'Etch', shape: 'tri-down' },
   dep: { label: 'Deposition', shape: 'tri-up' },
   thermal: { label: 'Thermal', shape: 'diamond' },
+  inspect: { label: 'Inspection', shape: 'lens' },
   metrology: { label: 'Metrology', shape: 'square' },
   other: { label: 'Other', shape: 'pentagon' },
 };
@@ -885,7 +1023,7 @@ const KIND_KEYS = Object.keys(KINDS);
 const isRateKind = k => k === 'etch' || k === 'dep';
 
 const LIBRARY = [
-  ['clean', 'Solvent clean'], ['clean', 'Pre-treatment dip'], ['clean', 'O2 plasma descum'], ['clean', 'Resist strip'],
+  ['clean', 'Solvent clean'], ['clean', 'Pre-treatment dip'], ['plasma', 'O2 plasma descum'], ['plasma', 'Plasma ash'], ['inspect', 'Optical inspection'], ['inspect', 'Post-develop inspection'], ['clean', 'Resist strip'],
   ['litho', 'Resist coat'], ['litho', 'Bilayer resist coat'], ['litho', 'Exposure (MLA150)'], ['litho', 'Develop'], ['litho', 'Liftoff'],
   ['etch', 'Dry etch'], ['etch', 'Wet etch'], ['etch', 'Recess etch'], ['etch', 'Mesa isolation'],
   ['dep', 'Dielectric deposition'], ['dep', 'Metal deposition'], ['dep', 'Regrowth'],
@@ -908,7 +1046,7 @@ const THK_UNITS = { nm: 1, 'Å': 0.1, 'µm': 1000 };
 const TIME_UNITS = { s: 1, min: 60, h: 3600 }; // plus 'cyc' (ALD cycles), handled separately
 const TIME_LABEL = { s: 's', min: 'min', h: 'h', cyc: 'cycles' };
 const RATE_UNITS = { 'nm/min': 1, 'nm/s': 1 / 60, 'Å/s': 10 / 60, 'Å/min': 10, 'µm/h': 0.06 };
-const DEFAULT_SETTINGS = { initials: '', rateUnit: 'nm/min', win: 5, imgMax: 2400, backupEvery: 7, aiModel: 'gpt-6-astra', aiEffort: 'max' };
+const DEFAULT_SETTINGS = { initials: '', rateUnit: 'nm/min', win: 5, imgMax: 2400, backupEvery: 7, aiModel: 'gpt-6-astra', aiEffort: 'max', stepTypes: null };
 const COLS = ['samples', 'templates', 'ratelog', 'steplib'];
 const OK_IMG = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
 
@@ -976,12 +1114,17 @@ function fromLocalInput(s) {
 
 /* rate of an etch/dep record: nm per minute, or nm per cycle */
 function rateOf(x) {
-  const t = num(x.timeV), d = num(x.thkV);
-  if (!(t > 0) || !(d > 0)) return null;
-  const nm = d * (THK_UNITS[x.thkU] ?? 1);
-  if (x.timeU === 'cyc') return { v: nm / t, basis: 'cyc', nm, cyc: t };
-  const sec = t * (TIME_UNITS[x.timeU] || 60);
-  return { v: nm / (sec / 60), basis: 't', nm, sec };
+  const t = num(x.timeV);
+  const ps = pieceSummary(x);
+  const nm = ps.n ? ps.mean : NaN;
+  if (!(t > 0) || !(nm > 0)) return null;
+  const sec = x.timeU === 'cyc' ? 0 : t * (TIME_UNITS[x.timeU] || 60);
+  const k = x.timeU === 'cyc' ? 1 / t : 60 / sec;
+  const res = x.timeU === 'cyc' ? { v: nm * k, basis: 'cyc', nm, cyc: t } : { v: nm * k, basis: 't', nm, sec };
+  res.pieces = ps.pieces.filter(p => Number.isFinite(p.mean)).map(p => ({ name: p.name, role: p.role || '', rate: p.mean * k, pts: p.ts.map(v => v * k) }));
+  res.sdRate = ps.sd * k;
+  res.nPieces = ps.n;
+  return res;
 }
 const rateUnitLabel = (basis, unit) => basis === 'cyc' ? (unit.startsWith('Å') ? 'Å/cycle' : 'nm/cycle') : unit;
 const convRate = (v, basis, unit) => basis === 'cyc' ? (unit.startsWith('Å') ? v * 10 : v) : v * (RATE_UNITS[unit] ?? 1);
@@ -1303,6 +1446,8 @@ function shapeFor(kind) {
     case 'tri-down': return html`<polygon points="10,17 17.2,4.2 2.8,4.2" />`;
     case 'diamond': return html`<polygon points="10,2.6 17.4,10 10,17.4 2.6,10" />`;
     case 'square': return html`<rect x="4.1" y="4.1" width="11.8" height="11.8" />`;
+    case 'star': return html`<polygon points="10.00,2.60 11.30,6.86 15.23,4.77 13.14,8.70 17.40,10.00 13.14,11.30 15.23,15.23 11.30,13.14 10.00,17.40 8.70,13.14 4.77,15.23 6.86,11.30 2.60,10.00 6.86,8.70 4.77,4.77 8.70,6.86" />`;
+    case 'lens': return html`<circle cx="8.6" cy="8.6" r="5.4" /><path d="M12.6 12.6L17.2 17.2" stroke-width="2.4" stroke-linecap="round" />`;
     default: return html`<polygon points=${PENT} />`;
   }
 }
@@ -1476,12 +1621,16 @@ function blankStep(p = {}) {
 }
 const TPL_FIELDS = ['name', 'kind', 'tool', 'recipe', 'method', 'material', 'params', 'durV', 'durU', 'timeV', 'timeU'];
 const pickTpl = st => ({ ...Object.fromEntries(TPL_FIELDS.map(k => [k, st[k] || (k === 'kind' ? 'other' : k === 'durU' || k === 'timeU' ? 'min' : '')])),
-  ops: JSON.parse(JSON.stringify(st.ops || [])) });
+  ops: JSON.parse(JSON.stringify(st.ops || [])),
+  subs: (st.subs || []).map(x => ({ id: newId('u'), name: x.name || '', params: x.params || '', durV: x.durV || '', durU: x.durU || 'min' })),
+  pieces: (st.pieces || []).map(p => ({ id: newId('pc'), name: p.name || '', role: p.role || 'dummy', pts: [{ t: '', x: {} }] })),
+  cols: [...(st.cols || [])],
+  fields: (st.fields || []).map(f => ({ id: newId('f'), name: f.name || '', unit: f.unit || '', kind: f.kind || 'text', opts: [...(f.opts || [])], plan: String(f.plan || ''), val: '' })) });
 const stepFromTpl = t => blankStep({ ...pickTpl(t), kind: KINDS[t.kind] ? t.kind : 'other' });
 /* countdown timers: a step's own timer, or for etch and deposition steps their process time */
 const DUR_F = { s: 1, min: 60, h: 3600 };
 const timerSec = st => { const v = num(st.durV); return Number.isFinite(v) && v > 0 ? Math.round(v * (DUR_F[st.durU] || 60)) : 0; };
-const durOf = st => timerSec(st) || (isRateKind(st.kind) && DUR_F[st.timeU] && num(st.timeV) > 0 ? Math.round(num(st.timeV) * DUR_F[st.timeU]) : 0);
+const durOf = st => timerSec(st) || fieldTimeSec(st) || (isRateKind(st.kind) && DUR_F[st.timeU] && num(st.timeV) > 0 ? Math.round(num(st.timeV) * DUR_F[st.timeU]) : 0);
 const fmtSecs = sec => (sec < 60 ? `${Math.round(sec)} s` : fmtDur(sec));
 function tLogText(t) {
   const d = Math.round((t.done - t.alarm) / 1000);
@@ -1553,7 +1702,7 @@ function rateRows() {
         if (!r) return;
         out.push({ src: 'step', sid, stepId: st.id, idx: i, who: s.name, at: st.doneAt || st.loggedAt || s.updated,
           kind: st.kind, method: st.method, material: st.material, tool: st.tool, recipe: st.recipe,
-          basis: r.basis, rate: r.v, nm: r.nm, sec: r.sec, cyc: r.cyc, meas: st.meas || [],
+          basis: r.basis, rate: r.v, nm: r.nm, sec: r.sec, cyc: r.cyc, meas: st.meas || [], pieces: r.pieces,
           excl: !!st.excl, why: st.exclWhy || '', run: st.run || ('u:' + sid + ':' + st.id) });
       });
     }
@@ -1563,7 +1712,7 @@ function rateRows() {
       if (!r || !isRateKind(e.kind)) continue;
       out.push({ src: 'log', id, who: e.label || 'Logged run', at: e.at || e.created,
         kind: e.kind, method: e.method, material: e.material, tool: e.tool, recipe: e.recipe,
-        basis: r.basis, rate: r.v, nm: r.nm, sec: r.sec, cyc: r.cyc, meas: e.meas || [],
+        basis: r.basis, rate: r.v, nm: r.nm, sec: r.sec, cyc: r.cyc, meas: e.meas || [], pieces: r.pieces,
         excl: !!e.excl, why: e.exclWhy || '', run: 'l:' + id });
     }
     return out;
@@ -1599,6 +1748,10 @@ function rateGroups() {
         r.why = [...new Set(r.rows.filter(x => x.excl).map(x => x.why).filter(Boolean))].join('; ');
         const use = inc.length ? inc : r.rows;
         r.rate = use.reduce((a, x) => a + x.rate, 0) / use.length;
+        const seen = new Set();   /* a measurement applied to several co-processed samples counts once */
+        r.pieces = use.flatMap(x => (x.pieces && x.pieces.length ? x.pieces : [{ name: x.who, rate: x.rate, pts: [x.rate] }]).map(p => ({ ...p, who: x.who })))
+          .filter(p => { const k = p.name + '|' + p.pts.map(v => v.toPrecision(9)).join(','); if (seen.has(k)) return false; seen.add(k); return true; });
+        r.points = r.pieces.flatMap(p => p.pts);
       });
       g.included = g.runs.filter(r => !r.excl);
     }
@@ -1853,14 +2006,19 @@ const measText = m => (m || []).filter(x => x.k).map(x => `${x.k}=${x.v}${x.u ? 
 
 function sampleCsv(s) {
   const head = ['#', 'Segment', 'Step', 'Type', 'Tool', 'Recipe', 'Method', 'Material', 'Conditions', 'Status', 'Started (local)',
-    'Completed (local)', 'Completed (ISO UTC)', 'Time entered later', 'By', 'Timer (s)', 'Done after timer end (s)', 'Time', 'Time unit', 'Thickness or depth',
-    'Thickness unit', 'Rate (nm/min or nm/cycle)', 'Excluded from rate history', 'Exclusion reason', 'Measurements', 'Notes', 'Photos'];
+    'Completed (local)', 'Completed (ISO UTC)', 'Time entered later', 'By', 'Timer (s)', 'Done after timer end (s)', 'Sub-steps', 'Settings used', 'Time', 'Time unit',
+    'Thickness or depth (nm, mean of pieces)', 'Spread between pieces (nm, 1σ)', 'Pieces', 'Rate (nm/min or nm/cycle)', 'Excluded from rate history', 'Exclusion reason',
+    'Measurements', 'Notes', 'Photos'];
   const rows = (s.steps || []).map((st, i) => {
     const r = isRateKind(st.kind) ? rateOf(st) : null;
+    const ps = isRateKind(st.kind) ? pieceSummary(st) : { n: 0 };
+    const subs = (st.subs || []).map(x => `${x.name}${x.params ? ' (' + x.params + ')' : ''}${x.done ? ' done ' + localStamp(x.done) : ''}`).join('; ');
     return [stepLabel(s, st) || i + 1, (segOf(s, st) || {}).name || '', st.name, KINDS[st.kind]?.label || st.kind, st.tool, st.recipe, st.method, st.material, st.params,
       st.status, localStamp(st.startedAt), localStamp(st.doneAt), iso(st.doneAt), st.timeEdited ? 'yes' : '', st.by,
       st.tLog ? st.tLog.total : (timerSec(st) || ''), st.tLog ? Math.round((st.tLog.done - st.tLog.alarm) / 1000) : '',
-      st.timeV, st.timeV ? TIME_LABEL[st.timeU] || st.timeU : '', st.thkV, st.thkV ? st.thkU : '',
+      subs, (st.fields || []).filter(f => fUsed(f) !== '').map(f => `${f.name} ${fText(f, fUsed(f))}${fChanged(f) ? ` (planned ${fText(f, String(f.plan || '')) || 'nothing'})` : ''}`).join('; '),
+      st.timeV, st.timeV ? TIME_LABEL[st.timeU] || st.timeU : '', ps.n ? +ps.mean.toPrecision(6) : '', Number.isFinite(ps.sd) ? +ps.sd.toPrecision(3) : '',
+      ps.n ? ps.pieces.filter(p => Number.isFinite(p.mean)).map(p => `${p.name}: ${+p.mean.toPrecision(6)}${p.ts.length > 1 ? ` (${p.ts.length} points)` : ''}`).join('; ') : '',
       r ? fmtNum(r.v, 4) : '', st.excl ? 'yes' : '', st.exclWhy, measText(st.meas), st.notes, (st.imgs || []).length || ''];
   });
   return csv([head, ...rows]);
@@ -1901,6 +2059,7 @@ async function travelerHtml(s, withPhotos) {
     const data = [];
     if (st.tLog) data.push(esc(tLogText(st.tLog)));
     else if (timerSec(st)) data.push(`Timer ${esc(fmtSecs(timerSec(st)))}`);
+    for (const f of st.fields || []) if (fUsed(f) !== '') data.push(`${esc(f.name)}: ${esc(fText(f, fUsed(f)))}${fChanged(f) ? ` <i>(planned ${esc(fText(f, String(f.plan || '')) || 'nothing')})</i>` : ''}`);
     if (st.timeV) data.push(`Time ${esc(st.timeV)} ${esc(TIME_LABEL[st.timeU] || st.timeU)}`);
     if (st.thkV) data.push(`${st.kind === 'etch' ? 'Depth' : 'Thickness'} ${esc(st.thkV)} ${esc(st.thkU)}`);
     if (r) data.push(`<b>${esc(fmtRate(r.v, r.basis, unit))}</b>${st.excl ? ' (excluded: ' + esc(st.exclWhy) + ')' : ''}`);
@@ -2109,7 +2268,8 @@ function simulate(doc) {
   for (const st of doc.steps || []) {
     const cols = cur.map(c => c.map(L => ({ ...L, nw: false })));
     const m = { changes: [], warns: [], notes: [], logged: '' };
-    const lg = isRateKind(st.kind) && num(st.thkV) > 0 ? num(st.thkV) * (THK_UNITS[st.thkU] || 1) : null;
+    const ps = isRateKind(st.kind) ? pieceSummary(st) : null;
+    const lg = ps && ps.n ? ps.mean : null;
     let used = false;
     for (const op of st.ops || []) {
       let over = null;
@@ -2188,10 +2348,12 @@ function swToField(ms, u) {
   const d = { s: 1, min: 2, h: 3 }[u] ?? 2;
   return String(Number((ms / f).toFixed(d)));
 }
-function completeStep(sid, st) {
+function completeStep(sid, st, confirmed) {
+  if (!confirmed && st.status !== 'done' && untouched(st).length) { confirmUntouched(sid, st); return; }
   const prev = clone(st);
   const now = Date.now();
   ackTimer(st);
+  for (const sb of st.subs || []) if (sb.ends && !sb.done) timerAck.add(subKey(st, sb));
   updStep(sid, st.id, x => {
     x.status = 'done'; x.doneAt = now; x.loggedAt = now; x.timeEdited = false; x.skippedAt = null;
     x.by = initials() || x.by || '';
@@ -2275,17 +2437,20 @@ const wake = {
 function activeTimers() {
   const out = [];
   for (const [sid, s] of Object.entries(view('samples'))) {
-    for (const st of s.steps || []) if (st.tmr && st.tmr.ends && st.status !== 'done' && st.status !== 'skipped') out.push({ sid, s, st });
+    for (const st of s.steps || []) {
+      if (st.status === 'done' || st.status === 'skipped') continue;
+      if (st.tmr && st.tmr.ends) out.push({ sid, s, st, ends: st.tmr.ends, key: st.id + ':' + st.tmr.ends });
+      for (const sb of st.subs || []) if (sb.ends && !sb.done) out.push({ sid, s, st, sb, ends: sb.ends, key: subKey(st, sb) });
+    }
   }
-  return out.sort((a, b) => a.st.tmr.ends - b.st.tmr.ends);
+  return out.sort((a, b) => a.ends - b.ends);
 }
 function ackTimer(st) { if (st && st.tmr && st.tmr.ends) timerAck.add(st.id + ':' + st.tmr.ends); }
 function checkAlarms() {
   const now = Date.now(), vis = document.visibilityState === 'visible';
   let ring = false;
-  for (const { st } of activeTimers()) {
-    const k = st.id + ':' + st.tmr.ends;
-    if (st.tmr.ends > now || timerAck.has(k)) continue;
+  for (const { ends, key: k } of activeTimers()) {
+    if (ends > now || timerAck.has(k)) continue;
     if (!timerFired.has(k) && vis) {
       timerFired.set(k, now);
       try { if (navigator.vibrate) navigator.vibrate([400, 200, 400, 200, 400]); } catch (e) { /* ignore */ }
@@ -2339,14 +2504,16 @@ function TimerBar() {
   const now = Date.now();
   const shown = list.slice(0, 2);
   return html`<div class="timerbar" role="region" aria-label="Running timers">
-    ${shown.map(({ sid, s, st }) => {
-      const left = st.tmr.ends - now, over = left <= 0;
-      return html`<div class=${'tb-item' + (over ? ' over' : '')} key=${st.id}>
-        <button class="tb-main" onClick=${() => { if (over) ackTimer(st); go({ v: 'sample', id: sid, step: st.id }); }}>
+    ${shown.map(({ sid, s, st, sb, ends, key }) => {
+      const left = ends - now, over = left <= 0;
+      const name = sb ? sb.name || 'Sub-step' : st.name || 'Timed step';
+      const where = sb ? `${st.name || 'step'}, ${s.name}` : s.name;
+      return html`<div class=${'tb-item' + (over ? ' over' : '')} key=${key}>
+        <button class="tb-main" onClick=${() => { if (over) timerAck.add(key); go({ v: 'step', id: sid, step: st.id }); }}>
           <span class="tb-clock tnum">${cdText(left)}</span>
-          <span class="tb-label"><b>${st.name || 'Timed step'}</b><span>${over ? `Time is up, ${s.name}` : s.name}</span></span></button>
-        <button class="btn sm tb-btn" onClick=${() => addTimer(sid, st, 30)}>+30 s</button>
-        <button class="btn sm primary tb-btn" onClick=${() => completeStep(sid, st)}>Done</button>
+          <span class="tb-label"><b>${name}</b><span>${over ? `Time is up, ${where}` : where}</span></span></button>
+        <button class="btn sm tb-btn" onClick=${() => (sb ? addSubTimer(sid, st, sb, 30) : addTimer(sid, st, 30))}>+30 s</button>
+        <button class="btn sm primary tb-btn" onClick=${() => (sb ? toggleSub(sid, st, sb) : completeStep(sid, st))}>Done</button>
       </div>`;
     })}
     ${n > shown.length ? html`<div class="tb-more small">${plural(n - shown.length, 'more timer')} running</div>` : null}
@@ -2522,7 +2689,7 @@ function SegmentCard({ sid, s, g, gi, cur, open, onToggle, stepOpen, onStepToggl
       <button class="icon-btn" aria-label=${`Segment ${gi + 1} actions`} onClick=${() => openSegMenu(sid, g.id)}>${I.more()}</button>
     </div>
     ${open ? html`<div class="sgm-body">
-      ${total ? html`<ol class="steps">${g.steps.map((st, k) => html`<${StepItem} key=${st.id} sid=${sid} s=${s} st=${st} i=${g.start + k}
+      ${total ? html`<ol class="crows">${g.steps.map((st, k) => html`<${StepItem} key=${st.id} sid=${sid} s=${s} st=${st} i=${g.start + k}
           label=${`${gi + 1}.${k + 1}`} open=${stepOpen.has(st.id)} onToggle=${() => onStepToggle(st.id)} isNext=${!!cur && cur.id === st.id} />`)}</ol>`
         : html`<p class="muted small sgm-empty">No steps in this segment yet.</p>`}
       <div class="sgm-foot"><button class="btn sm ghost" onClick=${() => openAddStep(sid, null, g.id)}>${I.plus()}<span>Add step to this segment</span></button></div>
@@ -2541,6 +2708,7 @@ function SamplesView() {
   return html`
     <div class="page-head"><h1>Samples</h1>
       <button class="btn primary" onClick=${() => openNewSample()}>${I.plus()}<span>New sample</span></button></div>
+    <${NowSection} />
     ${all.length ? html`<div class="toolbar">
         <${Seg} label="Filter samples" value=${filter} onChange=${setFilter}
           options=${[['active', `Active ${counts.active}`], ['done', `Done ${counts.done}`], ['archived', `Archived ${counts.archived}`], ['all', 'All']]} />
@@ -2711,11 +2879,12 @@ function SampleView({ id, step: focus }) {
         <span>${p.fin} of ${p.total} steps finished</span>
         ${status !== 'active' ? html`<span class="chip">${status === 'done' ? 'Done' : 'Archived'}</span>` : null}</p>
     </header>
+    ${cur ? html`<button class="btn sm cur-btn" onClick=${() => go({ v: 'step', id, step: cur.id })}>${I.play()}<span>${cur.status === 'running' ? 'Current' : 'Next'}: ${hasSegs(s) ? stepLabel(s, cur) + ' ' : ''}${cur.name || 'Untitled step'}</span></button>` : null}
     ${finished && status === 'active' ? html`<div class="callout"><span>Every step is finished.</span>
       <button class="btn sm" onClick=${() => updSample(id, x => { x.status = 'done'; })}>Mark sample done</button></div>` : null}
     ${segMode ? segGroups(s).map((g, gi) => html`<${SegmentCard} key=${g.id} sid=${id} s=${s} g=${g} gi=${gi} cur=${cur}
         open=${segIsOpen(g)} onToggle=${() => toggleSeg(g)} stepOpen=${open} onStepToggle=${toggle} />`)
-      : steps.length ? html`<ol class="steps">${steps.map((st, i) => html`<${StepItem} key=${st.id} sid=${id} s=${s} st=${st} i=${i}
+      : steps.length ? html`<ol class="crows">${steps.map((st, i) => html`<${StepItem} key=${st.id} sid=${id} s=${s} st=${st} i=${i}
           open=${open.has(st.id)} onToggle=${() => toggle(st.id)} isNext=${!!cur && cur.id === st.id} />`)}</ol>`
       : html`<${Empty} title="No steps yet"><p>Add steps one at a time. Group them into segments whenever you like.</p></${Empty}>`}
     <div class="row gap wrap after-steps">
@@ -2723,39 +2892,7 @@ function SampleView({ id, step: focus }) {
       <button class="btn" onClick=${() => promptAddSegment(id)}>${I.layers()}<span>Add segment</span></button>
     </div>`;
 }
-function StepItem({ sid, s, st, i, open, onToggle, isNext, label }) {
-  const r = isRateKind(st.kind) ? rateOf(st) : null;
-  const unit = getSettings().rateUnit;
-  let ups = 0;
-  for (const u of ui.uploading.values()) if (u.sid === sid && u.stepId === st.id) ups++;
-  const nImg = (st.imgs || []).length + ups;
-  const done = () => { completeStep(sid, st); if (isRateKind(st.kind) && !rateOf(st) && !open) onToggle(); };
-  let act = null;
-  if (st.status === 'done') act = html`<${Stamp} ts=${st.doneAt} fresh=${ui.fresh.has(st.id)} />`;
-  else if (st.status === 'skipped') act = html`<span class="skip-label">Skipped</span>`;
-  else if (st.status === 'running') act = html`<span class="run-act">${st.tmr && st.tmr.ends ? html`<${Countdown} tmr=${st.tmr} cls="run-chip" />`
-      : html`<span class="run-chip"><${Elapsed} since=${st.startedAt} /></span>`}
-      <button class="btn sm primary" onClick=${done}>Done</button></span>`;
-  else if (isNext && durOf(st)) act = html`<button class="btn sm run" aria-label=${`Start ${fmtClock(durOf(st) * 1000)} timer`} onClick=${() => startTimer(sid, st)}>${I.play()}<span class="tnum">${fmtClock(durOf(st) * 1000)}</span></button>`;
-  else if (isNext) act = html`<button class="btn sm primary" onClick=${done}>Done</button>`;
-  return html`<li id=${'step-' + st.id} class=${`step ${st.status}${open ? ' open' : ''}${isNext ? ' next' : ''}`}>
-    <span class="st-num tnum">${label || i + 1}</span>
-    <span class="st-node"><${Glyph} kind=${st.kind} state=${st.status} label=${(KINDS[st.kind] || KINDS.other).label} /></span>
-    <button class="st-toggle" aria-expanded=${open ? 'true' : 'false'} onClick=${onToggle}>
-      <span class="st-name">${st.name || 'Untitled step'}${st.rework ? html` <span class="tag">rework</span>` : null}</span>
-      ${st.tool || st.recipe ? html`<span class="st-sub">${[st.tool, st.recipe].filter(Boolean).join(', ')}</span>` : null}
-      ${r || nImg || st.notes || st.timeEdited || (st.status === 'pending' && !isNext && durOf(st)) ? html`<span class="st-badges">
-        ${st.status === 'pending' && !isNext && durOf(st) ? html`<span class="badge">${I.watch()}${fmtClock(durOf(st) * 1000)}</span>` : null}
-        ${r ? html`<span class=${'badge rate' + (st.excl ? ' excl' : '')}>${fmtRate(r.v, r.basis, unit)}</span>` : null}
-        ${nImg ? html`<span class="badge">${icon(html`<rect x="4" y="5" width="16" height="14" rx="2" /><circle cx="9" cy="10" r="1.6" /><path d="M20 16l-5-5-7 8" />`, 15)}${nImg}</span>` : null}
-        ${st.notes ? html`<span class="badge">Notes</span>` : null}
-        ${st.timeEdited ? html`<span class="badge">Time entered later</span>` : null}
-      </span>` : null}
-    </button>
-    <span class="st-act">${act}</span>
-    ${open ? html`<div class="st-detail"><${StepDetail} sid=${sid} s=${s} st=${st} i=${i} /></div>` : null}
-  </li>`;
-}
+function StepItem(p) { return html`<${CompactStep} ...${p} />`; }
 function StatusPanel({ sid, st }) {
   const now = useNow(st.tmr && st.tmr.ends && st.status === 'running' ? 250 : 0);
   const dur = durOf(st);
@@ -3052,7 +3189,7 @@ function openAddStep(sid, at, seg, title) {
       regroup(s);
     });
     closeSheet();
-    if (focus) go(routeFor(H, steps[0].id), true);
+    if (focus) go(H.col === 'samples' ? { v: 'sample', id: H.id, step: steps[0].id } : routeFor(H, steps[0].id), true);
     toast(steps.length === 1 ? 'Step added' : `${steps.length} steps added`);
   }} />`);
 }
@@ -3074,7 +3211,7 @@ function CopyResultSheet({ sid, st }) {
       updStep(c.id, c.t.id, x => {
         Object.assign(x, { status: 'done', doneAt: st.doneAt, startedAt: st.startedAt, loggedAt: Date.now(), timeEdited: !!st.timeEdited,
           skippedAt: null, by: st.by, tool: st.tool, recipe: st.recipe, method: st.method, material: st.material,
-          params: st.params || x.params, timeV: st.timeV, timeU: st.timeU, thkV: st.thkV, thkU: st.thkU,
+          params: st.params || x.params, timeV: st.timeV, timeU: st.timeU, thkV: st.thkV, thkU: st.thkU, pieces: clone(st.pieces || []), cols: [...(st.cols || [])],
           meas: clone(st.meas || []), run, excl: !!st.excl, exclWhy: st.exclWhy || '' });
         if (notes && st.notes) x.notes = x.notes ? `${x.notes}\n${st.notes}` : st.notes;
         if (photos && (st.imgs || []).length) x.imgs = [...(x.imgs || []), ...clone(st.imgs).filter(im => !(x.imgs || []).some(y => y.id === im.id))];
@@ -3187,7 +3324,7 @@ async function deleteSample(id) {
 }
 
 /* ---------------- travelers library, your steps, drawing views ---------------- */
-const routeFor = (H, step) => (H.col === 'samples' ? { v: 'sample', id: H.id, step } : { v: 'traveler', id: H.id, step });
+const routeFor = (H, step) => (H.col === 'samples' ? { v: 'step', id: H.id, step } : { v: 'traveler', id: H.id, step });
 
 /* ---------- step details and the steps you have saved ---------- */
 function detailText(st) {
@@ -3195,13 +3332,17 @@ function detailText(st) {
   const tr = [st.tool, st.recipe].filter(Boolean).join(', ');
   if (tr) parts.push(tr);
   if (st.params) parts.push(st.params);
+  if ((st.subs || []).length) parts.push(subsLine(st.subs));
+  if ((st.fields || []).some(f => f.plan)) parts.push(fieldsLine(st, true));
+  if ((st.pieces || []).length) parts.push(`Pieces: ${st.pieces.map(p => p.name).join(', ')}`);
   if (isRateKind(st.kind) && st.timeV) parts.push(`Time ${st.timeV} ${TIME_LABEL[st.timeU] || st.timeU || ''}`.trim());
   if (timerSec(st)) parts.push(`Timer ${fmtSecs(timerSec(st))}`);
   if (realOps(st).length) parts.push(`Drawing: ${realOps(st).map(opText).join('; ')}`);
   return parts.join('. ');
 }
 const realOps = st => (st.ops || []).filter(o => o.op !== 'none');
-const hasDetails = st => !!(st.tool || st.recipe || st.params || st.method || st.material || st.durV || (isRateKind(st.kind) && st.timeV) || realOps(st).length);
+const hasDetails = st => !!(st.tool || st.recipe || st.params || st.method || st.material || st.durV || (isRateKind(st.kind) && st.timeV) || realOps(st).length || (st.subs || []).length || (st.pieces || []).length
+  || (st.fields || []).some(f => String(f.plan || '') !== '' || String(f.val || '') !== ''));
 function saveMyStep(st) {
   if (!String(st.name || '').trim()) { toast('Give the step a name first.', { error: true }); return; }
   const hit = Object.entries(view('steplib')).find(([, p]) => norm(p.name) === norm(st.name));
@@ -3232,17 +3373,21 @@ function AddStepSheet({ at, onInsert, title }) {
   const generic = LIBRARY.filter(([, n]) => ok(n) && !pn.has(norm(n)) && !un.has(norm(n)));
   const tpls = Object.entries(view('templates')).filter(([, t]) => (t.steps || []).length);
   const [tpl, setTpl] = useState(tpls[0] ? tpls[0][0] : '');
-  const add = src => onInsert([blankStep({ ...pickTpl(src), kind: KINDS[src.kind] ? src.kind : 'other' })], true);
+  const add = (src, fresh) => {
+    const st = blankStep({ ...pickTpl(src), kind: KINDS[src.kind] ? src.kind : 'other' });
+    if (fresh && !(st.fields || []).length) st.fields = newStepFields(st.kind);
+    onInsert([st], true);
+  };
   const row = (src, sub, key) => html`<div class="lib-it" key=${key}><${Glyph} kind=${src.kind} size=${18} />
       <div><b>${src.name}</b>${hasDetails(src) ? html`<div class="d">${detailText(src)}</div>` : null}${sub ? html`<div class="src">${sub}</div>` : null}</div>
       <button class="btn sm" aria-label=${'Add ' + src.name} onClick=${() => add(src)}>Add</button></div>`;
   return html`<${Sheet} title=${title || (at == null ? 'Add step' : `Insert at position ${at + 1}`)} onClose=${closeSheet}>
     <label class="search lib-search">${I.search()}<input type="search" aria-label="Find a step" placeholder="Find a step" value=${q} onInput=${e => setQ(e.currentTarget.value)} /></label>
     ${presets.length ? html`<div class="sec-lab">Your steps</div><div class="lib2">${presets.map((p, i) => row(p, '', 'p' + i))}</div>` : null}
-    ${last.length ? html`<div class="sec-lab">Last used on your samples and travelers</div><div class="lib2">${last.map((x, i) => row(x.st, `From ${x.from}${x.t ? `, ${fmtDate(x.t)}` : ''}`, 'u' + i))}</div>` : null}
-    ${generic.length ? html`<div class="sec-lab">Generic, no details</div><div class="chips">${generic.map(([k, n]) => html`<button class="chip-btn" onClick=${() => add({ name: n, kind: k })}>${n}</button>`)}</div>` : null}
+    ${last.length ? html`<div class="sec-lab">Last used on your samples and travelers</div><div class="lib2">${last.map((x, i) => row({ ...x.st, fields: (x.st.fields || []).map(f => ({ ...f, plan: fUsed(f) })) }, `From ${x.from}${x.t ? `, ${fmtDate(x.t)}` : ''}`, 'u' + i))}</div>` : null}
+    ${generic.length ? html`<div class="sec-lab">Generic, no details</div><div class="chips">${generic.map(([k, n]) => html`<button class="chip-btn" onClick=${() => add({ name: n, kind: k }, true)}>${n}</button>`)}</div>` : null}
     ${!presets.length && !last.length && !generic.length ? html`<p class="small muted">Nothing matches “${q}”.</p>` : null}
-    <div class="row gap wrap"><button class="btn" onClick=${() => add({ name: q.trim(), kind: q.trim() ? guessKind(q) || 'other' : 'other' })}>${I.plus()}<span>${q.trim() ? `New step “${q.trim()}”` : 'Blank step'}</span></button></div>
+    <div class="row gap wrap"><button class="btn" onClick=${() => add({ name: q.trim(), kind: q.trim() ? guessKind(q) || 'other' : 'other' }, true)}>${I.plus()}<span>${q.trim() ? `New step “${q.trim()}”` : 'Blank step'}</span></button></div>
     ${tpls.length && !qq ? html`<div class="sep" /><div class="stack">
       <${Field} label="Or insert every step of a traveler"><select value=${tpl} onChange=${e => setTpl(e.currentTarget.value)}>
         ${tpls.map(([id, t]) => html`<option value=${id}>${t.name || 'Untitled'} (${plural((t.steps || []).length, 'step')})</option>`)}</select></${Field}>
@@ -3281,6 +3426,8 @@ function PresetSheet({ id }) {
       <${Field} label="Timer" cls="span2"><span class="unit-in timer-in"><input inputmode="decimal" aria-label="Timer length" value=${f.durV || ''} onInput=${ch('durV')} />
         <select aria-label="Timer unit" value=${f.durU || 'min'} onChange=${ch('durU')}>${['s', 'min', 'h'].map(u => html`<option value=${u}>${TIME_LABEL[u] || u}</option>`)}</select></span></${Field}>
     </div>
+    <${FieldsEditor} kind=${f.kind} fields=${f.fields || []} onChange=${fields => setF(x => ({ ...x, fields }))} />
+    <${SubsEditor} subs=${f.subs || []} onChange=${subs => setF(x => ({ ...x, subs }))} />
     ${(f.ops || []).length ? html`<p class="small muted">Drawing: ${f.ops.map(opText).join('; ')}. To change it, edit a step that uses it and save it again.</p>` : null}
     <div class="row gap wrap end">${id ? html`<button class="btn ghost danger" onClick=${del}>${sure ? 'Tap again to remove' : 'Remove'}</button><span class="grow" />` : null}
       <button class="btn" onClick=${closeSheet}>Cancel</button><button class="btn primary" disabled=${!f.name.trim()} onClick=${save}>Save</button></div>
@@ -3422,6 +3569,8 @@ function TStepDetail({ H, t, st, i }) {
       <${Field} label="Timer" cls="span2"><span class="unit-in timer-in"><input inputmode="decimal" aria-label="Timer length" value=${st.durV || ''} placeholder="0" onInput=${e => setS({ durV: e.currentTarget.value })} />
         <select aria-label="Timer unit" value=${st.durU || 'min'} onChange=${e => setS({ durU: e.currentTarget.value }, 0)}>${['s', 'min', 'h'].map(u => html`<option value=${u}>${TIME_LABEL[u] || u}</option>`)}</select></span></${Field}>
     </div>
+    <${FieldsEditor} kind=${st.kind} fields=${st.fields || []} onChange=${(fields, d) => setS({ fields }, d)} />
+    <${SubsEditor} subs=${st.subs || []} onChange=${(subs, d) => setS({ subs }, d)} />
     <div class="st-foot">
       <button class="btn ghost sm" disabled=${i === 0} onClick=${() => moveStep(H, i, -1)}>${I.up()}<span>Up</span></button>
       <button class="btn ghost sm" disabled=${i === steps.length - 1} onClick=${() => moveStep(H, i, 1)}>${I.down()}<span>Down</span></button>
@@ -3597,6 +3746,586 @@ function DrawSetupView({ col, id }) {
     ${LOCAL ? html`<${AiDrawBox} H=${H} doc=${doc} />` : null}`;
 }
 
+/* ---------------- pieces and points (etch and deposition) ----------------
+   A run can hold several pieces (dummies, witnesses, the sample), each with several measured points. The points of a
+   piece are averaged first; the run's value is the mean of the piece averages, with the spread across pieces. The
+   scatter of points within a piece is reported separately, as uniformity. */
+const PIECE_ROLES = [['dummy', 'Dummy'], ['witness', 'Witness'], ['sample', 'Sample']];
+const pAvg = a => a.reduce((x, y) => x + y, 0) / a.length;
+const pSd = a => { if (a.length < 2) return NaN; const m = pAvg(a); return Math.sqrt(a.reduce((x, y) => x + (y - m) ** 2, 0) / (a.length - 1)); };
+function piecesOf(x) {
+  if (Array.isArray(x.pieces) && x.pieces.length) return x.pieces;
+  const d = num(x.thkV);
+  if (d > 0) return [{ id: 'legacy', name: 'Piece 1', role: 'sample', pts: [{ t: String(+(d * (THK_UNITS[x.thkU] ?? 1)).toPrecision(10)), x: {} }], legacy: true }];
+  return [];
+}
+function pieceSummary(x) {
+  const cols = x.cols || [];
+  const pieces = piecesOf(x).map(p => {
+    const ts = (p.pts || []).map(q => num(q.t)).filter(v => v > 0);
+    const extra = {};
+    for (const c of cols) { const vs = (p.pts || []).map(q => num((q.x || {})[c])).filter(Number.isFinite); extra[c] = vs.length ? pAvg(vs) : NaN; }
+    return { ...p, ts, mean: ts.length ? pAvg(ts) : NaN, sd: pSd(ts), extra };
+  });
+  const good = pieces.filter(p => Number.isFinite(p.mean));
+  const means = good.map(p => p.mean);
+  let ss = 0, dof = 0;
+  for (const p of good) if (p.ts.length > 1) { ss += p.ts.reduce((a, v) => a + (v - p.mean) ** 2, 0); dof += p.ts.length - 1; }
+  const extra = {};
+  for (const c of cols) { const vs = good.map(p => p.extra[c]).filter(Number.isFinite); extra[c] = { mean: vs.length ? pAvg(vs) : NaN, sd: pSd(vs), n: vs.length }; }
+  return { pieces, n: good.length, mean: means.length ? pAvg(means) : NaN, sd: pSd(means), within: dof ? Math.sqrt(ss / dof) : NaN,
+    pts: good.reduce((a, p) => a + p.ts.length, 0), cols, extra };
+}
+const fmtV = (v, d = 4) => (Number.isFinite(v) ? fmtNum(v, d) : '–');
+/* a value with its spread, both rounded to the spread's second significant figure */
+function fmtPm(v, sd, unit = '') {
+  const u = unit ? ' ' + unit : '';
+  if (!Number.isFinite(sd) || !(sd > 0)) return `${fmtNum(v, 4)}${u}`;
+  const dec = Math.min(8, Math.max(0, 1 - Math.floor(Math.log10(sd))));
+  return `${v.toFixed(dec)} ± ${sd.toFixed(dec)}${u}`;
+}
+function PiecesEditor({ value, kind, onChange }) {
+  const pieces = value.pieces || [], cols = value.cols || [];
+  const [open, setOpen] = useState(() => new Set());
+  const [colIn, setColIn] = useState(null);
+  const lab = kind === 'etch' ? 'Depth' : 'Thickness';
+  const sum = pieceSummary({ pieces, cols });
+  const commit = (p, c = cols, d = 600) => onChange({ pieces: p, cols: c }, d);
+  const setPiece = (i, patch, d) => commit(pieces.map((p, j) => (j === i ? { ...p, ...patch } : p)), cols, d);
+  const setPt = (i, k, patch) => setPiece(i, { pts: pieces[i].pts.map((q, j) => (j === k ? { ...q, ...patch, x: { ...(q.x || {}), ...(patch.x || {}) } } : q)) });
+  const toggle = id => setOpen(o => { const n = new Set(o); if (n.has(id)) n.delete(id); else n.add(id); return n; });
+  const addPiece = () => {
+    const id = newId('pc');
+    commit([...pieces, { id, name: `${kind === 'etch' ? 'Witness' : 'Dummy'} ${pieces.length + 1}`, role: kind === 'etch' ? 'witness' : 'dummy', pts: [{ t: '', x: {} }] }], cols, 0);
+  };
+  const addCol = () => { const c = (colIn || '').trim(); if (c && !cols.includes(c)) commit(pieces, [...cols, c], 0); setColIn(null); };
+  const delCol = c => commit(pieces, cols.filter(x => x !== c), 0);
+  return html`<div class="pcs" style=${'--nc:' + (1 + cols.length)}>
+    <div class="pc-head"><span>Piece</span><span>${lab} (nm)</span>${cols.map(c => html`<span key=${c}>${c}</span>`)}</div>
+    ${pieces.map((p, i) => {
+      const ps = sum.pieces[i] || {};
+      const single = (p.pts || []).length === 1 && !open.has(p.id);
+      return html`<div class="pc" key=${p.id}>
+        <div class="pc-row">
+          <button class="pc-tog" aria-label=${(open.has(p.id) ? 'Hide' : 'Show') + ' points of ' + p.name} aria-expanded=${open.has(p.id) ? 'true' : 'false'} onClick=${() => toggle(p.id)}>${open.has(p.id) ? I.chevD() : I.chevR()}</button>
+          <input class="pc-name" aria-label=${'Piece ' + (i + 1) + ' name'} value=${p.name} onInput=${e => setPiece(i, { name: e.currentTarget.value })} />
+          ${single ? html`<input class="pc-in" inputmode="decimal" aria-label=${lab + ' of ' + p.name} value=${p.pts[0].t} placeholder="nm" onInput=${e => setPt(i, 0, { t: e.currentTarget.value })} />
+              ${cols.map(c => html`<input class="pc-in" key=${c} inputmode="decimal" aria-label=${c + ' of ' + p.name} value=${(p.pts[0].x || {})[c] || ''} onInput=${e => setPt(i, 0, { x: { [c]: e.currentTarget.value } })} />`)}`
+            : html`<span class="pc-val tnum">${fmtV(ps.mean)}<small>${ps.ts && ps.ts.length ? `n=${ps.ts.length}` : ''}</small></span>
+              ${cols.map(c => html`<span class="pc-val tnum" key=${c}>${fmtV(ps.extra ? ps.extra[c] : NaN)}</span>`)}`}
+        </div>
+        ${open.has(p.id) ? html`<div class="pc-pts">
+            ${(p.pts || []).map((q, k) => html`<div class="pt-row" key=${k}><span class="pt-n tnum">${k + 1}</span>
+              <input inputmode="decimal" aria-label=${`${lab} point ${k + 1} of ${p.name}`} value=${q.t} placeholder="nm" onInput=${e => setPt(i, k, { t: e.currentTarget.value })} />
+              ${cols.map(c => html`<input key=${c} inputmode="decimal" aria-label=${`${c} point ${k + 1} of ${p.name}`} value=${(q.x || {})[c] || ''} onInput=${e => setPt(i, k, { x: { [c]: e.currentTarget.value } })} />`)}
+              <button class="icon-btn" aria-label=${'Remove point ' + (k + 1)} disabled=${p.pts.length < 2} onClick=${() => setPiece(i, { pts: p.pts.filter((_, j) => j !== k) }, 0)}>${I.trash()}</button></div>`)}
+            <div class="row gap wrap"><button class="btn sm ghost" onClick=${() => setPiece(i, { pts: [...p.pts, { t: '', x: {} }] }, 0)}>${I.plus()}<span>Point</span></button>
+              <select class="narrow pc-role" aria-label=${'Role of ' + p.name} value=${p.role || 'dummy'} onChange=${e => setPiece(i, { role: e.currentTarget.value }, 0)}>${PIECE_ROLES.map(([v, l]) => html`<option value=${v}>${l}</option>`)}</select>
+              <button class="btn sm ghost danger" onClick=${() => commit(pieces.filter((_, j) => j !== i), cols, 0)}>Remove piece</button></div>
+          </div>` : null}
+      </div>`;
+    })}
+    <div class="row gap wrap pc-acts"><button class="btn sm" onClick=${addPiece}>${I.plus()}<span>Piece</span></button>
+      ${colIn == null ? html`<button class="btn sm ghost" onClick=${() => setColIn('')}>${I.plus()}<span>Column</span></button>`
+        : html`<span class="row gap"><input class="col-in" aria-label="New column name" value=${colIn} placeholder=${kind === 'etch' ? 'e.g. Mask left (nm)' : 'e.g. RI'} onInput=${e => setColIn(e.currentTarget.value)} /><button class="btn sm primary" onClick=${addCol}>Add</button></span>`}
+      ${cols.map(c => html`<button class="chip-btn ghost" key=${c} aria-label=${'Remove column ' + c} onClick=${() => delCol(c)}>${c} ×</button>`)}</div>
+  </div>`;
+}
+function RunResults({ x, kind }) {
+  const unit = getSettings().rateUnit;
+  const sum = pieceSummary(x);
+  const r = rateOf(x);
+  const lab = kind === 'etch' ? 'Depth' : 'Thickness';
+  if (!sum.n) return html`<p class="small muted">Enter the ${kind === 'etch' ? 'depth' : 'thickness'} of each piece${num(x.timeV) > 0 ? '' : ' and the process time'} to get the rate.</p>`;
+  return html`<div class="res">
+      <span>${lab}</span><b>${fmtPm(sum.mean, sum.sd, 'nm')} (${plural(sum.n, 'piece')})</b>
+      <span>Rate</span>${r ? html`<b>${fmtPm(convRate(r.v, r.basis, unit), convRate(r.sdRate, r.basis, unit), rateUnitLabel(r.basis, unit))}</b>` : html`<span class="muted">needs the process time</span>`}
+      ${Number.isFinite(sum.within) ? html`<span>Within a piece</span><b>± ${fmtNum(sum.within, 2)} nm (${fmtNum((100 * sum.within) / sum.mean, 2)}%)</b>` : null}
+      ${sum.cols.filter(c => Number.isFinite(sum.extra[c].mean)).map(c => html`<span key=${'l' + c}>${c}</span><b key=${'v' + c}>${fmtPm(sum.extra[c].mean, sum.extra[c].sd)}</b>`)}
+    </div>
+    ${sum.n === 1 ? html`<p class="small muted">One piece, so no spread between pieces${sum.pts > 1 ? '; the ± within a piece is its uniformity' : ''}.</p>`
+      : sum.n === 2 ? html`<p class="small caution">With two pieces the spread between pieces is only a rough estimate.</p>` : null}`;
+}
+function TargetCalc({ sid, s, st }) {
+  const r = rateOf(st);
+  const [tgt, setTgt] = useState(st.target || '');
+  if (!r) return null;
+  const T = num(tgt);
+  const tf = T > 0 ? timeFor(T, { n: r.nPieces || 1, mean: r.v, sd: Number.isFinite(r.sdRate) ? r.sdRate : 0 }) : null;
+  const steps = s.steps || [];
+  const k = steps.findIndex(x => x.id === st.id);
+  const later = steps.slice(k + 1).filter(x => x.kind === st.kind && x.status !== 'done' && x.status !== 'skipped');
+  const nx = later.find(x => norm(x.tool) === norm(st.tool) && norm(x.recipe) === norm(st.recipe)) || later[0];
+  const use = () => {
+    updStep(sid, nx.id, x => {
+      if (r.basis === 'cyc') { x.timeV = String(Math.ceil(tf.t)); x.timeU = 'cyc'; } else { x.timeV = String(+tf.t.toFixed(2)); x.timeU = 'min'; }
+      x.timeFromCal = st.id;
+    });
+    updStep(sid, st.id, x => { x.target = tgt; }, 400);
+    toast(`${stepLabel(s, nx)} ${nx.name || 'next step'} set to ${fmtSpan(tf.t, r.basis)}`);
+  };
+  return html`<div class="calc2">
+    <div class="lab">Time for target</div>
+    <div class="row gap calc2-row"><span class="unit-in calc2-in"><input inputmode="decimal" aria-label="Target thickness" value=${tgt} placeholder=${st.kind === 'etch' ? 'Depth' : 'Thickness'} onInput=${e => setTgt(e.currentTarget.value)} /><span class="unit-tag">nm</span></span>
+      ${tf ? html`<b class="tnum big4">${fmtSpan(tf.t, r.basis)}</b>` : null}</div>
+    ${tf && tf.lo != null ? html`<span class="small muted">${fmtSpan(tf.lo, r.basis)} to ${Number.isFinite(tf.hi) ? fmtSpan(tf.hi, r.basis) : 'unbounded'} across ±1σ of this run's rate</span>`
+      : tf ? html`<span class="small muted">From a single piece, so there is no spread estimate.</span>` : null}
+    ${tf && nx ? html`<button class="btn primary" onClick=${use}>Use ${fmtSpan(tf.t, r.basis)} for ${stepLabel(s, nx)} ${nx.name || 'next step'}</button>` : null}
+  </div>`;
+}
+function RunBlock({ sid, s, st }) {
+  const S = getSettings();
+  const unit = S.rateUnit, win = Number(S.win) || 0;
+  const set = (patch, d = 700) => updStep(sid, st.id, x => Object.assign(x, patch), d);
+  const r = rateOf(st);
+  let cmp = null;
+  if (st.material || st.tool || st.recipe || st.method) {
+    const basis = st.timeU === 'cyc' ? 'cyc' : 't';
+    const g = rateGroups().find(x => x.key === gkey(st, basis));
+    if (g) { const gs = groupStats(g, win, st.run || ('u:' + sid + ':' + st.id)); if (gs.n) cmp = { g, gs, basis }; }
+  }
+  const cal = st.timeFromCal ? (s.steps || []).find(x => x.id === st.timeFromCal) : null;
+  const odd = r && r.basis === 't' && (r.v > 3000 || r.v < 0.01);
+  return html`<div class="sec">Run</div>
+    <div class="run-time"><${Field} label="Process time"><span class="unit-in">
+        <input inputmode="decimal" aria-label="Process time" value=${st.timeV} placeholder="0" onInput=${e => set({ timeV: e.currentTarget.value, timeFromTimer: false, timeFromCal: '' })} />
+        <select aria-label="Time unit" value=${st.timeU} onChange=${e => set({ timeU: e.currentTarget.value }, 0)}>${Object.keys(TIME_LABEL).map(u => html`<option value=${u}>${TIME_LABEL[u]}</option>`)}</select></span></${Field}>
+      ${st.timeU !== 'cyc' ? html`<${Stopwatch} sid=${sid} st=${st} />` : null}</div>
+    ${cal ? html`<p class="small muted">Process time set from the calibration in ${stepLabel(s, cal)} ${cal.name}.</p>` : null}
+    ${st.timeFromTimer && st.timeV ? html`<p class="small muted">Process time filled in from the timer. Change it if the actual time differed.</p>` : null}
+    <div class="sec">Pieces</div>
+    <${PiecesEditor} value=${{ pieces: piecesOf(st), cols: st.cols || [] }} kind=${st.kind}
+      onChange=${(v, d) => set({ pieces: v.pieces.map(p => (p.legacy ? { id: newId('pc'), name: p.name, role: p.role, pts: p.pts } : p)), cols: v.cols, thkV: '' }, d)} />
+    <${RunResults} x=${st} kind=${st.kind} />
+    ${odd ? html`<p class="caution small">This rate is outside the plausible range. Check the time and the thickness units.</p>` : null}
+    ${cmp ? html`<p class="small cmp">Recent runs on the same tool and recipe: <b class="tnum">${fmtNum(convRate(cmp.gs.mean, cmp.basis, unit))}${Number.isFinite(cmp.gs.sd) ? ' ± ' + fmtNum(convRate(cmp.gs.sd, cmp.basis, unit), 2) : ''} ${rateUnitLabel(cmp.basis, unit)}</b>
+        (n = ${cmp.gs.n})${r && r.basis === cmp.basis ? html`; this run ${pct(r.v, cmp.gs.mean)}${cmp.gs.sd > 0 ? ` (${fmtNum(Math.abs(r.v - cmp.gs.mean) / cmp.gs.sd, 2)}σ)` : ''}` : null}.
+        <button class="linkish" onClick=${() => go({ v: 'rate', key: cmp.g.key })}>Rate history</button></p>` : null}
+    <${TargetCalc} key=${st.id} sid=${sid} s=${s} st=${st} />
+    <label class="check"><input type="checkbox" checked=${!!st.excl} onChange=${e => toggleExcl(sid, st, e.currentTarget.checked)} />
+      <span>Leave this run out of rate statistics${st.excl && st.exclWhy ? html`. Reason: <i>${st.exclWhy}</i>` : null}</span></label>`;
+}
+
+/* ---------------- sub-steps ---------------- */
+const subSec = sb => { const v = num(sb.durV); return Number.isFinite(v) && v > 0 ? Math.round(v * (DUR_F[sb.durU] || 60)) : 0; };
+const subKey = (st, sb) => `${st.id}:${sb.id}:${sb.ends}`;
+function startSubTimer(sid, st, sb) {
+  const sec = subSec(sb);
+  if (!sec) return;
+  beeper.unlock();
+  wake.on();
+  const now = Date.now();
+  updStep(sid, st.id, x => {
+    const y = (x.subs || []).find(z => z.id === sb.id);
+    if (!y) return;
+    y.start = now; y.ends = now + sec * 1000; y.done = null;
+    if (x.status === 'pending') { x.status = 'running'; x.startedAt = now; x.skippedAt = null; x.by = initials() || x.by || ''; }
+  });
+}
+function addSubTimer(sid, st, sb, secs) {
+  beeper.unlock();
+  if (sb.ends) timerAck.add(subKey(st, sb));
+  updStep(sid, st.id, x => { const y = (x.subs || []).find(z => z.id === sb.id); if (y && y.ends) y.ends = Math.max(Date.now(), y.ends) + secs * 1000; });
+}
+function toggleSub(sid, st, sb) {
+  const now = Date.now();
+  if (sb.ends && !sb.done) timerAck.add(subKey(st, sb));
+  updStep(sid, st.id, x => {
+    const y = (x.subs || []).find(z => z.id === sb.id);
+    if (!y) return;
+    if (y.done) { y.done = null; return; }
+    y.done = now;
+    if (x.status === 'pending') { x.status = 'running'; x.startedAt = y.start || now; x.skippedAt = null; x.by = initials() || x.by || ''; }
+  });
+}
+function SubRow({ sid, st, sb, now }) {
+  const sec = subSec(sb);
+  const running = !!sb.ends && !sb.done;
+  const left = running ? sb.ends - now : 0;
+  return html`<div class=${'sub' + (sb.done ? ' done' : running ? ' run' : '') + (running && left <= 0 ? ' over' : '')}>
+    <button class="ck" aria-label=${(sb.done ? 'Uncheck ' : 'Check off ') + (sb.name || 'sub-step')} onClick=${() => toggleSub(sid, st, sb)}>${sb.done ? I.check() : null}</button>
+    <span class="sb-main"><b>${sb.name || 'Untitled'}</b>${sb.params ? html`<span class="p">${sb.params}</span>` : null}</span>
+    ${sb.done ? html`<span class="tm tnum">${sb.start ? `${fmtTime(sb.start)} to ` : ''}${fmtTime(sb.done)}</span>`
+      : running ? html`<span class="runbox"><span class="big tnum">${cdText(left)}</span><span class="u">${left > 0 ? `until ${fmtTime(sb.ends)}` : 'time is up'}</span></span>`
+      : sec ? html`<button class="tbtn" aria-label=${`Start ${fmtClock(sec * 1000)} timer for ${sb.name}`} onClick=${() => startSubTimer(sid, st, sb)}>${I.play()}<span class="tnum">${fmtClock(sec * 1000)}</span></button>` : null}
+  </div>`;
+}
+function PlanList({ sid, st }) {
+  const subs = st.subs || [];
+  const now = useNow(subs.some(x => x.ends && !x.done) ? 250 : 0);
+  if (!subs.length) return null;
+  const left = subs.filter(x => !x.done).length;
+  return html`<div class="sec">Plan<span class="sec-n">${left ? `${left} to go` : 'all checked'}</span></div>
+    <div class="subs">${subs.map(sb => html`<${SubRow} key=${sb.id} sid=${sid} st=${st} sb=${sb} now=${now} />`)}</div>
+    ${st.status === 'running' && !left ? html`<button class="btn primary wide" onClick=${() => completeStep(sid, st)}>${I.check()}<span>Mark step done</span></button>` : null}`;
+}
+function SubsEditor({ subs, onChange }) {
+  const upd = (i, patch, d = 600) => onChange(subs.map((x, j) => (j === i ? { ...x, ...patch } : x)), d);
+  const up = i => { if (i < 1) return; const n = subs.slice(); const [x] = n.splice(i, 1); n.splice(i - 1, 0, x); onChange(n, 0); };
+  return html`<div class="subs-ed">
+    <div class="lab">Sub-steps</div>
+    ${subs.length ? null : html`<p class="small muted">The actions within this step, such as each bath, or each coat and bake, with their parameters and an optional timer.</p>`}
+    ${subs.map((x, i) => html`<div class="sub-ed" key=${x.id}>
+      <input aria-label=${'Sub-step ' + (i + 1) + ' name'} value=${x.name} placeholder="e.g. Acetone" onInput=${e => upd(i, { name: e.currentTarget.value })} />
+      <input aria-label=${'Sub-step ' + (i + 1) + ' parameters'} value=${x.params} placeholder="e.g. sonicate" onInput=${e => upd(i, { params: e.currentTarget.value })} />
+      <span class="unit-in sub-timer"><input inputmode="decimal" aria-label=${'Sub-step ' + (i + 1) + ' timer'} value=${x.durV || ''} placeholder="Timer" onInput=${e => upd(i, { durV: e.currentTarget.value })} />
+        <select aria-label=${'Sub-step ' + (i + 1) + ' timer unit'} value=${x.durU || 'min'} onChange=${e => upd(i, { durU: e.currentTarget.value }, 0)}>${['s', 'min', 'h'].map(u => html`<option value=${u}>${u}</option>`)}</select></span>
+      <span class="sub-ed-acts"><button class="icon-btn" aria-label="Move sub-step up" disabled=${i === 0} onClick=${() => up(i)}>${I.up()}</button>
+        <button class="icon-btn" aria-label="Remove sub-step" onClick=${() => onChange(subs.filter((_, j) => j !== i), 0)}>${I.trash()}</button></span>
+    </div>`)}
+    <div><button class="btn sm ghost" onClick=${() => onChange([...subs, { id: newId('u'), name: '', params: '', durV: '', durU: 'min' }], 0)}>${I.plus()}<span>Sub-step</span></button></div>
+  </div>`;
+}
+
+/* ---------------- the step page ---------------- */
+function Fold({ title, sub, children, open: o0 }) {
+  const [o, setO] = useState(!!o0);
+  return html`<div class="fold"><button class="fold-head" aria-expanded=${o ? 'true' : 'false'} onClick=${() => setO(!o)}>
+      <span class="fold-t">${title}</span><span class="fold-s">${sub || ''}</span><span class="chev">${o ? I.chevD() : I.chevR()}</span></button>
+    ${o ? html`<div class="fold-b">${children}</div>` : null}</div>`;
+}
+function StepPage({ id, step }) {
+  const s = view('samples')[id];
+  const touch = useRef(null);
+  useEffect(() => { window.scrollTo(0, 0); }, [step]);
+  if (!s) return html`<${BackLink} label="Samples" /><${Empty} title="This sample is not here"><p>It may have been deleted.</p></${Empty}>`;
+  const steps = s.steps || [];
+  const k = steps.findIndex(x => x.id === step);
+  if (k < 0) return html`<${BackLink} label=${s.name} fallback=${{ v: 'sample', id }} /><${Empty} title="This step is not here"><p>It may have been deleted.</p></${Empty}>`;
+  const st = steps[k], prev = steps[k - 1], next = steps[k + 1];
+  const g = segOf(s, st);
+  const toStep = x => { if (x) go({ v: 'step', id, step: x.id }, true); };
+  const onTs = e => { touch.current = { x: e.touches[0].clientX, y: e.touches[0].clientY }; };
+  const onTe = e => {
+    const t0 = touch.current;
+    touch.current = null;
+    if (!t0) return;
+    const dx = e.changedTouches[0].clientX - t0.x, dy = e.changedTouches[0].clientY - t0.y;
+    if (Math.abs(dx) > 70 && Math.abs(dx) > 2 * Math.abs(dy) && !(e.target.closest && e.target.closest('input, textarea, select, .film'))) toStep(dx < 0 ? next : prev);
+  };
+  const set = (patch, d = 700) => updStep(id, st.id, x => Object.assign(x, patch), d);
+  const nImg = (st.imgs || []).length;
+  const ops = (st.ops || []).filter(o => o.op !== 'none');
+  return html`<div class="sp" onTouchStart=${onTs} onTouchEnd=${onTe}>
+    <div class="sp-top"><button class="icon-btn" aria-label="Back to the traveler" onClick=${() => go({ v: 'sample', id, step: st.id }, true)}>${I.back()}</button>
+      <span class="sp-crumb">${s.name}${g ? ` · ${g.name}` : ''}</span>
+      <button class="icon-btn" aria-label="Edit step" onClick=${() => openStepEdit(id, st.id)}>${I.edit()}</button></div>
+    <div class="sp-head">
+      <h1>${stepLabel(s, st)} ${st.name || 'Untitled step'}${st.rework ? html` <span class="tag">rework</span>` : null}</h1>
+      <div class="meta">${[(KINDS[st.kind] || KINDS.other).label, st.tool, st.recipe].filter(Boolean).join(' · ')}</div>
+      <div class="sp-nav">${prev ? html`<button class="linkish sp-prev" onClick=${() => toStep(prev)}>‹ ${stepLabel(s, prev)} ${prev.name}</button>` : html`<span />`}
+        ${next ? html`<button class="linkish sp-next" onClick=${() => toStep(next)}>${stepLabel(s, next)} ${next.name} ›</button>` : null}</div>
+    </div>
+    <div class="sp-body">
+      <${StatusPanel} sid=${id} st=${st} />
+      ${st.params ? html`<p class="sp-cond">${st.params}</p>` : null}
+      <${PlanList} sid=${id} st=${st} />
+      <${FieldsBlock} sid=${id} s=${s} st=${st} />
+      ${isRateKind(st.kind) ? html`<${RunBlock} sid=${id} s=${s} st=${st} />` : null}
+      ${st.kind === 'metrology' ? html`<div class="sec">Measurements</div><${MeasEditor} kind=${st.kind} meas=${st.meas || []} onChange=${(meas, d) => set({ meas }, d)} />` : null}
+      <div class="sec">Record</div>
+      <${Field} label="Notes"><${AutoText} value=${st.notes} label="Notes" placeholder="Observations, deviations, anything to remember" onInput=${v => set({ notes: v })} /></${Field}>
+      ${isRateKind(st.kind) || st.kind === 'metrology' ? null : html`<${Fold} title="Measurements" sub=${(st.meas || []).length ? plural(st.meas.length, 'value') : 'None'}><${MeasEditor} kind=${st.kind} meas=${st.meas || []} onChange=${(meas, d) => set({ meas }, d)} /></${Fold}>`}
+      <${Fold} title="Photos" sub=${nImg ? plural(nImg, 'photo') : 'None yet'} open=${nImg > 0}><${Photos} sid=${id} st=${st} /></${Fold}>
+      ${drawOf(s) ? html`<${Fold} title="Drawing after this step" sub=${ops.length ? ops.map(opText).join('; ') : 'No change'}><${XsCard} H=${docH(id)} doc=${s} st=${st} /></${Fold}>` : null}
+      <div class="row gap wrap"><button class="btn sm ghost" onClick=${() => openStepEdit(id, st.id)}>${I.edit()}<span>Edit step</span></button></div>
+    </div>
+  </div>`;
+}
+function openStepEdit(sid, stepId) { openSheet(() => html`<${StepEditSheet} sid=${sid} stepId=${stepId} />`); }
+function StepEditSheet({ sid, stepId }) {
+  const s = view('samples')[sid];
+  const st = s && (s.steps || []).find(x => x.id === stepId);
+  if (!st) return null;
+  const i = s.steps.findIndex(x => x.id === stepId);
+  const set = (patch, d = 700) => updStep(sid, st.id, x => Object.assign(x, patch), d);
+  const sug = suggestions();
+  const rk = isRateKind(st.kind);
+  const act = fn => () => { closeSheet(); fn(); };
+  return html`<${Sheet} title=${`Edit ${stepLabel(s, st)} ${st.name || 'step'}`} onClose=${closeSheet}>
+    <div class="stack">
+      <div class="grid2">
+        <${Field} label="Step name" cls="span2"><input value=${st.name} onInput=${e => set({ name: e.currentTarget.value })} /></${Field}>
+        <${Field} label="Type"><span class="sel-glyph"><${Glyph} kind=${st.kind} /><select value=${st.kind} onChange=${e => set({ kind: e.currentTarget.value }, 0)}>${KIND_KEYS.map(k => html`<option value=${k}>${KINDS[k].label}</option>`)}</select></span></${Field}>
+        <${Field} label="Tool"><input list="dl-tools" value=${st.tool} placeholder="Equipment" onInput=${e => set({ tool: e.currentTarget.value })} /></${Field}>
+        <${Field} label="Recipe" cls="span2"><input list=${'dl-erec-' + st.id} value=${st.recipe} placeholder="Recipe name or chemistry" onInput=${e => set({ recipe: e.currentTarget.value })} />
+          <datalist id=${'dl-erec-' + st.id}>${[...(sug.recipes.get(norm(st.tool)) || [])].map(r => html`<option value=${r} />`)}</datalist></${Field}>
+        ${rk ? html`<${Field} label="Method"><input list=${'dl-m-' + st.kind} value=${st.method} onInput=${e => set({ method: e.currentTarget.value })} /></${Field}>
+          <${Field} label=${st.kind === 'etch' ? 'Material etched' : 'Material deposited'}><input list="dl-mats" value=${st.material} onInput=${e => set({ material: e.currentTarget.value })} /></${Field}>` : null}
+        <${Field} label="Conditions" cls="span2"><${AutoText} value=${st.params} label="Conditions" placeholder="Parameters that apply to the whole step" onInput=${v => set({ params: v })} /></${Field}>
+        ${(st.subs || []).length ? null : html`<${Field} label="Timer for the whole step" cls="span2"><span class="unit-in timer-in"><input inputmode="decimal" aria-label="Timer length" value=${st.durV || ''} placeholder="0" onInput=${e => set({ durV: e.currentTarget.value })} />
+          <select aria-label="Timer unit" value=${st.durU || 'min'} onChange=${e => set({ durU: e.currentTarget.value }, 0)}>${['s', 'min', 'h'].map(u => html`<option value=${u}>${TIME_LABEL[u] || u}</option>`)}</select></span></${Field}>`}
+      </div>
+      <${FieldsEditor} kind=${st.kind} fields=${st.fields || []} onChange=${(fields, d) => set({ fields }, d)} />
+      <${SubsEditor} subs=${st.subs || []} onChange=${(subs, d) => set({ subs }, d)} />
+      <div class="st-foot">
+        <button class="btn ghost sm" disabled=${i === 0} onClick=${() => moveStep(sid, i, -1)}>${I.up()}<span>Up</span></button>
+        <button class="btn ghost sm" disabled=${i === s.steps.length - 1} onClick=${() => moveStep(sid, i, 1)}>${I.down()}<span>Down</span></button>
+        <button class="btn ghost sm" onClick=${act(() => openAddStep(sid, i + 1, undefined, 'Insert a step below'))}>${I.plus()}<span>Insert below</span></button>
+        ${hasSegs(s) && segGroups(s).some(g => g.steps[0] && g.steps[0].id === st.id) ? null
+          : html`<button class="btn ghost sm" onClick=${act(() => segmentFromHere(sid, st))}>${I.layers()}<span>New segment from here</span></button>`}
+        <button class="btn ghost sm" onClick=${() => saveMyStep(st)}>${I.check()}<span>Save as my step</span></button>
+        <button class="btn ghost sm" onClick=${act(() => dupStep(sid, st))}>${I.copy()}<span>Duplicate</span></button>
+        ${st.status === 'done' ? html`<button class="btn ghost sm" onClick=${act(() => openCopyResult(sid, st))}>${I.split()}<span>Apply to other samples</span></button>` : null}
+        <button class="btn ghost sm danger" onClick=${act(() => { deleteStep(sid, st); go({ v: 'sample', id: sid }, true); })}>${I.trash()}<span>Delete step</span></button>
+      </div>
+    </div></${Sheet}>`;
+}
+
+/* ---------------- compact rows and the Now list ---------------- */
+const sameDay = t => new Date(t).toDateString() === new Date().toDateString();
+const subsLine = subs => subs.map(x => [x.name, x.params].filter(Boolean).join(' ')).filter(Boolean).join(' · ');
+function CompactStep({ sid, s, st, i, isNext, label }) {
+  const r = isRateKind(st.kind) ? rateOf(st) : null;
+  const unit = getSettings().rateUnit;
+  const nImg = (st.imgs || []).length;
+  const subs = st.subs || [];
+  const line = [subs.length ? subsLine(subs) : [[st.tool, st.recipe].filter(Boolean).join(', '), st.params].filter(Boolean).join(' · '), fieldsLine(st)].filter(Boolean).join(' · ');
+  const extra = [r ? fmtRate(r.v, r.basis, unit) + (r.nPieces > 1 ? `, ${r.nPieces} pieces` : '') : '', nImg ? plural(nImg, 'photo') : ''].filter(Boolean).join(' · ');
+  const rs = subs.find(x => x.ends && !x.done);
+  let right = null;
+  if (st.status === 'done') right = html`<span class=${'mini-stamp' + (ui.fresh.has(st.id) ? ' fresh' : '')}>✓ ${sameDay(st.doneAt) ? fmtTime(st.doneAt) : fmtDate(st.doneAt)}</span>`;
+  else if (st.status === 'skipped') right = html`<span class="skip-label">Skipped</span>`;
+  else if (st.status === 'running') right = rs ? html`<${Countdown} tmr=${{ ends: rs.ends }} cls="run-chip" />` : st.tmr && st.tmr.ends ? html`<${Countdown} tmr=${st.tmr} cls="run-chip" />`
+    : html`<span class="run-chip"><${Elapsed} since=${st.startedAt} /></span>`;
+  return html`<li id=${'step-' + st.id} class=${`crow ${st.status}${isNext ? ' cur' : ''}`}>
+    <button class="crow-btn" onClick=${() => go({ v: 'step', id: sid, step: st.id })}>
+      <span class="cn tnum">${label || i + 1}</span><span class="cg"><${Glyph} kind=${st.kind} state=${st.status} size=${18} label=${(KINDS[st.kind] || KINDS.other).label} /></span>
+      <span class="cm"><b>${st.name || 'Untitled step'}${st.rework ? html` <span class="tag">rework</span>` : null}</b>${line || extra ? html`<span class="cp">${[line, extra].filter(Boolean).join(' · ')}</span>` : null}</span>
+      <span class="cr">${right}</span></button></li>`;
+}
+function NowSection() {
+  const items = [];
+  for (const [id, s] of Object.entries(view('samples'))) {
+    if ((s.status || 'active') !== 'active') continue;
+    const cur = currentStep(s);
+    if (cur) items.push({ id, s, cur, run: cur.status === 'running' ? 1 : 0, t: lastActivity(s) || 0 });
+  }
+  if (!items.length) return null;
+  items.sort((a, b) => b.run - a.run || b.t - a.t);
+  return html`<section class="now"><h2 class="now-h">Now</h2>${items.slice(0, 5).map(({ id, s, cur }) => {
+    const subs = cur.subs || [];
+    const rs = subs.find(x => x.ends && !x.done), nx = subs.find(x => !x.done);
+    const what = rs ? `${rs.name} until ${fmtTime(rs.ends)}` : cur.status === 'running' ? (nx ? `next: ${[nx.name, nx.params].filter(Boolean).join(', ')}` : 'running') : 'up next';
+    return html`<button class="now-row" key=${id} onClick=${() => go({ v: 'step', id, step: cur.id })}>
+      <span class="now-m"><b>${s.name}</b><span class="cp">${hasSegs(s) ? stepLabel(s, cur) + ' ' : ''}${cur.name || 'Untitled step'} · ${what}</span></span>
+      ${rs ? html`<${Countdown} tmr=${{ ends: rs.ends }} cls="run-chip" />` : cur.status === 'running' ? html`<span class="run-chip"><${Elapsed} since=${cur.startedAt} /></span>` : html`<span class="chev">${I.chevR()}</span>`}
+    </button>`;
+  })}</section>`;
+}
+
+/* ---------------- every piece and point, for your own analysis ---------------- */
+function piecesCsv() {
+  const srcs = [];
+  for (const [sid, s] of Object.entries(view('samples'))) for (const st of s.steps || []) if (isRateKind(st.kind) && st.status === 'done') srcs.push({ x: st, who: s.name, step: st.name, at: st.doneAt || s.updated, run: st.run || ('u:' + sid + ':' + st.id) });
+  for (const [id, e] of Object.entries(view('ratelog'))) if (isRateKind(e.kind)) srcs.push({ x: e, who: e.label || 'Logged run', step: 'Logged run', at: e.at || e.created, run: 'l:' + id });
+  const cols = [...new Set(srcs.flatMap(r => r.x.cols || []))];
+  const head = ['Date (ISO UTC)', 'Sample or label', 'Step', 'Run', 'Kind', 'Method', 'Material', 'Tool', 'Recipe', 'Time', 'Time unit', 'Piece', 'Role', 'Point',
+    'Thickness or depth (nm)', ...cols, 'Rate from this point', 'Rate unit', 'Left out', 'Reason'];
+  const rows = [head];
+  for (const r of srcs.sort((a, b) => a.at - b.at)) {
+    const x = r.x, t = num(x.timeV);
+    const k = !(t > 0) ? NaN : x.timeU === 'cyc' ? 1 / t : 60 / (t * (TIME_UNITS[x.timeU] || 60));
+    for (const p of piecesOf(x)) (p.pts || []).forEach((q, j) => {
+      const v = num(q.t);
+      rows.push([iso(r.at), r.who, r.step, r.run, x.kind, x.method, x.material, x.tool, x.recipe, x.timeV, x.timeU, p.name, p.role || '', j + 1,
+        Number.isFinite(v) ? v : '', ...cols.map(c => (q.x || {})[c] || ''), Number.isFinite(v * k) ? +(v * k).toPrecision(6) : '', x.timeU === 'cyc' ? 'nm/cycle' : 'nm/min', x.excl ? 'yes' : '', x.exclWhy || '']);
+    });
+  }
+  return '\ufeff' + rows.map(r => r.map(c => { const v = String(c == null ? '' : c); return /[",\n]/.test(v) ? `"${v.replace(/"/g, '""')}"` : v; }).join(',')).join('\r\n');
+}
+
+/* ---------------- fields each type of step records ----------------
+   A step carries its own list of fields. Each has a planned value (from the traveler, Your steps or the edit sheet) and
+   a value used on the day. An untouched field shows the plan in grey and counts as used once you confirm it; a value
+   you type that differs from the plan is flagged. */
+const FIELD_KINDS = [['num', 'Number'], ['text', 'Text'], ['choice', 'Choice'], ['multi', 'Checklist'], ['bool', 'Yes/no']];
+const DEFAULT_TYPE_FIELDS = {
+  litho: [{ name: 'Mask', kind: 'text' }, { name: 'Layer', kind: 'text' }, { name: 'Dose', unit: 'mJ/cm²', kind: 'num' }, { name: 'Defocus', kind: 'num' },
+    { name: 'Develop time', unit: 's', kind: 'num' }, { name: 'Alignment', kind: 'choice', opts: ['Pass', 'Offset', 'Fail'] }],
+  plasma: [{ name: 'Gas', kind: 'text' }, { name: 'Flow', unit: 'sccm', kind: 'num' }, { name: 'Power', unit: 'W', kind: 'num' },
+    { name: 'Pressure', unit: 'mTorr', kind: 'num' }, { name: 'Time', unit: 'min', kind: 'num' }],
+  etch: [{ name: 'Power', unit: 'W', kind: 'num' }, { name: 'Pressure', unit: 'mTorr', kind: 'num' }, { name: 'Gases', kind: 'text' }, { name: 'Endpoint', kind: 'text' }],
+  dep: [{ name: 'Power', unit: 'W', kind: 'num' }, { name: 'Temperature', unit: '°C', kind: 'num' }, { name: 'Pressure', unit: 'mTorr', kind: 'num' }, { name: 'Gases', kind: 'text' }],
+  thermal: [{ name: 'Peak temperature', unit: '°C', kind: 'num' }, { name: 'Time', unit: 's', kind: 'num' }, { name: 'Ambient', kind: 'text' }, { name: 'Ramp', unit: '°C/s', kind: 'num' }],
+  clean: [{ name: 'Chemistry', kind: 'text' }, { name: 'Temperature', unit: '°C', kind: 'num' }, { name: 'Sonication', kind: 'bool' }],
+  inspect: [{ name: 'Result', kind: 'choice', opts: ['Pass', 'Rework', 'Fail'] }, { name: 'Checked', kind: 'multi', opts: ['Develop clear', 'Alignment marks', 'CD', 'Edge bead', 'Particles'] }],
+  metrology: [], other: [],
+};
+const typeDefaults = () => ({ ...DEFAULT_TYPE_FIELDS, ...(getSettings().stepTypes || {}) });
+const typeFieldsFor = kind => typeDefaults()[kind] || [];
+const newStepFields = kind => typeFieldsFor(kind).map(d => ({ id: newId('f'), name: d.name, unit: d.unit || '', kind: d.kind || 'text', opts: [...(d.opts || [])], plan: '', val: '' }));
+const splitList = v => String(v || '').split(';').map(t => t.trim()).filter(Boolean);
+const fUsed = f => (String(f.val || '') !== '' ? String(f.val) : String(f.plan || ''));
+function fChanged(f) {
+  const v = String(f.val || ''), p = String(f.plan || '');
+  if (v === '') return false;
+  if (f.kind === 'num' && Number.isFinite(num(v)) && Number.isFinite(num(p))) return Math.abs(num(v) - num(p)) > 1e-9;
+  if (f.kind === 'multi') return [...new Set(splitList(v))].sort().join('|') !== [...new Set(splitList(p))].sort().join('|');
+  return norm(v) !== norm(p);
+}
+const fText = (f, v) => (v === '' ? '' : `${v}${f.unit && f.kind === 'num' ? ' ' + f.unit : ''}`);
+const fieldsLine = (st, plan) => (st.fields || []).map(f => fText(f, plan ? String(f.plan || '') : fUsed(f))).filter(Boolean).slice(0, 4).join(' · ');
+function fieldTimeSec(st) {
+  const f = (st.fields || []).find(x => norm(x.name) === 'time' && DUR_F[x.unit]);
+  const v = f ? num(fUsed(f)) : NaN;
+  return v > 0 ? Math.round(v * DUR_F[f.unit]) : 0;
+}
+function fieldSuggest() {
+  return memoize('fieldSuggest', () => {
+    const m = new Map();
+    const add = (f, v) => { if (!v || f.kind !== 'text') return; const k = norm(f.name); if (!m.has(k)) m.set(k, new Set()); m.get(k).add(v); };
+    for (const s of Object.values(view('samples'))) for (const st of s.steps || []) for (const f of st.fields || []) { add(f, f.plan); add(f, f.val); }
+    for (const t of Object.values(view('templates'))) for (const st of t.steps || []) for (const f of st.fields || []) add(f, f.plan);
+    return m;
+  });
+}
+const untouched = st => (st.fields || []).filter(f => String(f.val || '') === '' && String(f.plan || '') !== '');
+async function confirmUntouched(sid, st) {
+  const un = untouched(st);
+  const ok = await confirmBox({ title: 'Confirm the untouched fields',
+    body: `${un.map(f => `${f.name}: ${fText(f, String(f.plan))}`).join(', ')}. ${un.length === 1 ? 'It was' : 'These were'} not changed. Record ${un.length === 1 ? 'it' : 'them'} as planned and finish the step?`,
+    ok: 'Record as planned and finish' });
+  if (!ok) { go({ v: 'step', id: sid, step: st.id }); return; }
+  const now = Date.now();
+  updStep(sid, st.id, x => { for (const f of x.fields || []) if (String(f.val || '') === '' && String(f.plan || '') !== '') { f.val = String(f.plan); f.conf = now; } });
+  const cur = (view('samples')[sid].steps || []).find(x => x.id === st.id);
+  if (cur) completeStep(sid, cur, true);
+}
+function addTypeFields(sid, st) { updStep(sid, st.id, x => { x.fields = [...(x.fields || []), ...newStepFields(x.kind)]; }); }
+
+function FieldInput({ f, onSet }) {
+  const kind = f.kind || 'text', plan = String(f.plan || ''), val = String(f.val || '');
+  const ch = fChanged(f);
+  let ctl;
+  if (kind === 'choice' || kind === 'bool') {
+    const opts = kind === 'bool' ? ['Yes', 'No'] : f.opts || [];
+    ctl = html`<span class="fseg">${opts.map(o => {
+      const on = val !== '' && norm(val) === norm(o), pl = val === '' && norm(plan) === norm(o);
+      return html`<button key=${o} class=${on ? 'on' : pl ? 'plan' : ''} aria-pressed=${on ? 'true' : 'false'} onClick=${() => onSet({ val: on ? '' : o }, 0)}>${o}</button>`;
+    })}</span>`;
+  } else if (kind === 'multi') {
+    const used = new Set(splitList(val !== '' ? val : plan));
+    ctl = html`<span class="fchips">${(f.opts || []).map(o => {
+      const on = used.has(o);
+      return html`<button key=${o} class=${on ? (val !== '' ? 'on' : 'plan') : ''} aria-pressed=${on ? 'true' : 'false'}
+        onClick=${() => { const n = new Set(used); if (n.has(o)) n.delete(o); else n.add(o); onSet({ val: [...n].join('; ') || 'none' }, 0); }}>${o}</button>`;
+    })}</span>`;
+  } else {
+    const sug = kind === 'text' ? [...(fieldSuggest().get(norm(f.name)) || [])].slice(0, 30) : [];
+    const dl = 'dl-fv-' + norm(f.name).replace(/[^a-z0-9]/g, '');
+    ctl = html`<span class=${'unit-in fin' + (ch ? ' chg' : '')}><input aria-label=${f.name} inputmode=${kind === 'num' ? 'decimal' : null} value=${val} placeholder=${plan}
+        list=${sug.length ? dl : null} onInput=${e => onSet({ val: e.currentTarget.value, conf: null })} />${f.unit && kind === 'num' ? html`<span class="unit-tag">${f.unit}</span>` : null}</span>
+      ${sug.length ? html`<datalist id=${dl}>${sug.map(v => html`<option value=${v} />`)}</datalist>` : null}`;
+  }
+  const wide = kind === 'choice' || kind === 'multi' || kind === 'bool';
+  const note = ch ? html`<span class="was">Planned ${plan ? fText(f, plan) : 'nothing'}<button class="linkish" onClick=${() => onSet({ val: '', conf: null }, 0)}>Reset</button></span>`
+    : val === '' && plan ? html`<span class="hintline">${wide ? `Planned: ${plan}` : 'as planned'}</span>`
+    : val !== '' && f.conf ? html`<span class="hintline">confirmed as planned</span>`
+    : val === '' && !plan ? html`<span class="hintline">not recorded</span>` : null;
+  return html`<div class=${'fld' + (wide ? ' span2' : '')}><span class="lab">${f.name}${f.unit && kind !== 'num' ? ` (${f.unit})` : ''}</span>${ctl}${note}</div>`;
+}
+function FieldsBlock({ sid, s, st }) {
+  const fields = st.fields || [];
+  const setF = (id, patch, d = 600) => updStep(sid, st.id, x => { const f = (x.fields || []).find(y => y.id === id); if (f) Object.assign(f, patch); }, d);
+  if (!fields.length) {
+    return typeFieldsFor(st.kind).length ? html`<div><button class="btn sm ghost" onClick=${() => addTypeFields(sid, st)}>${I.plus()}<span>Add the ${(KINDS[st.kind] || KINDS.other).label.toLowerCase()} fields</span></button></div>` : null;
+  }
+  const nCh = fields.filter(fChanged).length;
+  const rework = st.kind === 'inspect' && fields.some(f => /result/i.test(f.name) && norm(fUsed(f)) === 'rework');
+  return html`<div class="sec">Settings used<span class="sec-n">${nCh ? `${nCh} changed from the plan` : 'as planned'}</span></div>
+    <div class="fgrid">${fields.map(f => html`<${FieldInput} key=${f.id} f=${f} onSet=${(patch, d) => setF(f.id, patch, d)} />`)}</div>
+    ${fields.some(f => f.plan) ? html`<p class="small muted fcap">Grey values are the plan. Type over one only when it differed.</p>` : null}
+    ${rework ? html`<button class="btn sm" onClick=${() => reworkLitho(sid, s, st)}>${I.plus()}<span>Add rework copies of the litho steps above</span></button>` : null}`;
+}
+function FieldsEditor({ kind, fields, onChange }) {
+  const [nf, setNf] = useState(null);
+  const have = new Set(fields.map(f => norm(f.name)));
+  const missing = typeFieldsFor(kind).filter(d => !have.has(norm(d.name)));
+  const upd = (i, patch, d = 600) => onChange(fields.map((f, j) => (j === i ? { ...f, ...patch } : f)), d);
+  const add = d => onChange([...fields, { id: newId('f'), name: d.name, unit: d.unit || '', kind: d.kind || 'text', opts: [...(d.opts || [])], plan: '', val: '' }], 0);
+  const addNew = () => {
+    if (!nf || !nf.name.trim()) return;
+    add({ name: nf.name.trim(), unit: nf.unit.trim(), kind: nf.kind, opts: String(nf.opts || '').split(',').map(t => t.trim()).filter(Boolean) });
+    setNf(null);
+  };
+  return html`<div class="flds-ed">
+    <div class="lab">Fields to record, with planned values</div>
+    ${fields.length ? null : html`<p class="small muted">Settings such as dose or power. Planned values show in grey on the step page.</p>`}
+    ${fields.map((f, i) => html`<div class="fed" key=${f.id}>
+      <span class="fed-n"><b>${f.name}</b><span class="small muted">${[f.unit, (FIELD_KINDS.find(k => k[0] === f.kind) || [0, 'Text'])[1]].filter(Boolean).join(', ')}</span></span>
+      ${f.kind === 'choice' || f.kind === 'bool' ? html`<select aria-label=${f.name + ' planned'} value=${f.plan || ''} onChange=${e => upd(i, { plan: e.currentTarget.value }, 0)}>
+          <option value="">No plan</option>${(f.kind === 'bool' ? ['Yes', 'No'] : f.opts || []).map(o => html`<option value=${o}>${o}</option>`)}</select>`
+        : html`<input aria-label=${f.name + ' planned'} inputmode=${f.kind === 'num' ? 'decimal' : null} value=${f.plan || ''} placeholder=${f.kind === 'multi' ? 'Items, separated by ;' : 'Planned'} onInput=${e => upd(i, { plan: e.currentTarget.value })} />`}
+      <span class="fed-acts"><button class="icon-btn" aria-label=${'Move ' + f.name + ' up'} disabled=${i === 0} onClick=${() => { const n = fields.slice(); const [x] = n.splice(i, 1); n.splice(i - 1, 0, x); onChange(n, 0); }}>${I.up()}</button>
+        <button class="icon-btn" aria-label=${'Remove ' + f.name} onClick=${() => onChange(fields.filter((_, j) => j !== i), 0)}>${I.x()}</button></span></div>`)}
+    <div class="chips">${missing.map(d => html`<button class="chip-btn" key=${d.name} onClick=${() => add(d)}>${d.name}${d.unit ? ` (${d.unit})` : ''}</button>`)}
+      ${nf ? null : html`<button class="chip-btn" onClick=${() => setNf({ name: '', unit: '', kind: 'num', opts: '' })}>New field</button>`}</div>
+    ${nf ? html`<div class="fnew">
+        <input aria-label="New field name" placeholder="Name, e.g. Mask" value=${nf.name} onInput=${e => setNf({ ...nf, name: e.currentTarget.value })} />
+        <input aria-label="New field unit" placeholder="Unit" value=${nf.unit} onInput=${e => setNf({ ...nf, unit: e.currentTarget.value })} />
+        <select aria-label="New field kind" value=${nf.kind} onChange=${e => setNf({ ...nf, kind: e.currentTarget.value })}>${FIELD_KINDS.map(([v, l]) => html`<option value=${v}>${l}</option>`)}</select>
+        ${nf.kind === 'choice' || nf.kind === 'multi' ? html`<input class="fnew-opts" aria-label="New field options" placeholder="Options, separated by commas" value=${nf.opts} onInput=${e => setNf({ ...nf, opts: e.currentTarget.value })} />` : null}
+        <span class="row gap"><button class="btn sm" onClick=${() => setNf(null)}>Cancel</button><button class="btn sm primary" disabled=${!nf.name.trim()} onClick=${addNew}>Add field</button></span></div>` : null}
+  </div>`;
+}
+function TypesView() {
+  const S = getSettings();
+  const [open, setOpen] = useState('litho');
+  const all = typeDefaults();
+  const setKind = (k, list) => putSettings({ stepTypes: { ...(S.stepTypes || {}), [k]: list } });
+  return html`<${BackLink} label="Settings" fallback=${{ v: 'settings' }} />
+    <h1>Step types</h1>
+    <p class="lede">The fields each type of step records. New steps of a type start with these; any single step can still add or remove fields, and travelers and Your steps keep their own.</p>
+    ${KIND_KEYS.map(k => {
+      const list = all[k] || [];
+      const op = open === k;
+      return html`<div class="typ2" key=${k}>
+        <button class="typ-head" aria-expanded=${op ? 'true' : 'false'} onClick=${() => setOpen(op ? '' : k)}><${Glyph} kind=${k} size=${20} />
+          <span class="typ-m"><b>${KINDS[k].label}</b><span class="small muted">${list.length ? list.map(f => f.name).join(', ') : 'No fields'}${isRateKind(k) ? ', plus pieces and rate' : k === 'metrology' ? ', plus the measurement table' : ''}</span></span>
+          <span class="chev">${op ? I.chevD() : I.chevR()}</span></button>
+        ${op ? html`<div class="typ-body">
+          ${list.map((f, i) => html`<div class="tfrow" key=${k + i}>
+            <input aria-label=${`${KINDS[k].label} field ${i + 1} name`} value=${f.name} onInput=${e => { const v = e.currentTarget.value; setKind(k, list.map((x, j) => (j === i ? { ...x, name: v } : x))); }} />
+            <input aria-label=${`${KINDS[k].label} field ${i + 1} unit`} value=${f.unit || ''} placeholder="Unit" onInput=${e => { const v = e.currentTarget.value; setKind(k, list.map((x, j) => (j === i ? { ...x, unit: v } : x))); }} />
+            <select aria-label=${`${KINDS[k].label} field ${i + 1} kind`} value=${f.kind || 'text'} onChange=${e => { const v = e.currentTarget.value; setKind(k, list.map((x, j) => (j === i ? { ...x, kind: v } : x))); }}>${FIELD_KINDS.map(([v, l]) => html`<option value=${v}>${l}</option>`)}</select>
+            <button class="icon-btn" aria-label=${'Remove ' + f.name} onClick=${() => setKind(k, list.filter((_, j) => j !== i))}>${I.x()}</button>
+            ${f.kind === 'choice' || f.kind === 'multi' ? html`<input class="tf-opts" aria-label=${`${KINDS[k].label} field ${i + 1} options`} value=${(f.opts || []).join(', ')} placeholder="Options, separated by commas"
+                onChange=${e => { const v = e.currentTarget.value.split(',').map(t => t.trim()).filter(Boolean); setKind(k, list.map((x, j) => (j === i ? { ...x, opts: v } : x))); }} />` : null}
+          </div>`)}
+          <div class="row gap wrap"><button class="btn sm ghost" onClick=${() => setKind(k, [...list, { name: 'New field', unit: '', kind: 'num' }])}>${I.plus()}<span>Field</span></button>
+            ${S.stepTypes && S.stepTypes[k] ? html`<button class="btn sm ghost" onClick=${() => { const n = { ...(S.stepTypes || {}) }; delete n[k]; putSettings({ stepTypes: n }); }}>Reset to the suggested fields</button>` : null}</div>
+        </div>` : null}
+      </div>`;
+    })}`;
+}
+function reworkLitho(sid, s, st) {
+  const steps = s.steps || [];
+  const k = steps.findIndex(x => x.id === st.id);
+  const src = [];
+  for (let j = k - 1; j >= 0 && steps[j].kind === 'litho'; j--) src.unshift(steps[j]);
+  if (!src.length) { toast('There are no lithography steps directly above to rework.'); return; }
+  const before = clone(s);
+  const mk = x => ({ ...stepFromTpl(x), rework: true, ...(x.seg ? { seg: x.seg } : {}) });
+  updSample(sid, x => { const i = x.steps.findIndex(y => y.id === st.id); x.steps.splice(i + 1, 0, ...src.map(mk), mk(st)); });
+  toast(`Added rework of ${plural(src.length, 'litho step')} and a new inspection`, { action: { label: 'Undo', fn: () => put('samples', sid, before) } });
+}
+function fieldsCsv() {
+  const head = ['Date (ISO UTC)', 'Sample', '#', 'Step', 'Type', 'Status', 'Field', 'Unit', 'Planned', 'Used', 'Changed from plan', 'How recorded'];
+  const rows = [head];
+  for (const s of Object.values(view('samples'))) for (const st of s.steps || []) for (const f of st.fields || []) {
+    const v = String(f.val || ''), p = String(f.plan || '');
+    const how = v === '' ? (p ? 'not yet confirmed' : 'not recorded') : f.conf ? 'confirmed as planned' : 'entered';
+    rows.push([iso(st.doneAt || st.startedAt || s.updated), s.name, stepLabel(s, st), st.name, (KINDS[st.kind] || KINDS.other).label, st.status, f.name, f.unit || '', p, fUsed(f), fChanged(f) ? 'yes' : '', how]);
+  }
+  return '\ufeff' + rows.map(r => r.map(c => { const v = String(c == null ? '' : c); return /[",\n]/.test(v) ? `"${v.replace(/"/g, '""')}"` : v; }).join(',')).join('\r\n');
+}
+function fieldsGuide() {
+  const all = typeDefaults();
+  const parts = KIND_KEYS.filter(k => (all[k] || []).length).map(k => `${k}: ${all[k].map(f => f.name + (f.unit ? ` (${f.unit})` : '') + (f.opts && f.opts.length ? ` [${f.opts.join('/')}]` : '')).join(', ')}`);
+  return `11. fields: the settings this step records, each with the planned value written in the traveler (value) and its unit. Prefer these names by kind: ${parts.join('; ')}. Include only fields whose value the traveler gives for this step, and never invent a value.`;
+}
+
 /* ---------------- log ---------------- */
 function LogView() {
   const [kinds, setKinds] = useState(() => new Set());
@@ -3757,6 +4486,98 @@ function Chart({ pts, color, yLabel, yVar, yUnit, zero, mean, fit }) {
       <text class="ax" transform=${`translate(17 ${M.t + ph / 2}) rotate(-90)`} text-anchor="middle">${yLabel}${yVar ? ', ' : ''}${yVar ? html`<tspan font-style="italic">${yVar}</tspan>` : null}${yUnit ? ` (${yUnit})` : ''}</text>
     </svg></div>`;
 }
+const quart = (a, p) => { const k = (a.length - 1) * p, f = Math.floor(k), c = Math.ceil(k); return a[f] + (a[c] - a[f]) * (k - f); };
+/* rate history: one column per run, by date or run number; a circle per piece (the average of its points), the run mean as a
+   short bar, and a box of all points once a run has five or more. Styled like the figures: open markers, inward ticks, no grid. */
+function RunChart({ runs, conv, color, mode, yLabel, yUnit, zero, mean, fit }) {
+  const ref = useRef();
+  const w = useWidth(ref, 340);
+  if (!runs.length) return html`<div ref=${ref} class="chart-box"><p class="muted small pad">Nothing to plot yet.</p></div>`;
+  const M = { l: 72, r: 14, t: 12, b: 56 };
+  const pw = Math.max(150, w - M.l - M.r), ph = Math.round(Math.min(pw * 1.1, 470));
+  const W = pw + M.l + M.r, H = ph + M.t + M.b, DAY = 864e5;
+  const xs = runs.map(r => (mode === 'date' ? r.at : r.n));
+  let x0, x1;
+  if (mode === 'date') {
+    const a = Math.min(...xs), b = Math.max(...xs);
+    if (b - a < 4 * DAY) { const c = (a + b) / 2; x0 = c - 2.5 * DAY; x1 = c + 2.5 * DAY; } else { const pad = (b - a) * 0.07; x0 = a - pad; x1 = b + pad; }
+  } else { x0 = Math.min(...xs) - 0.6; x1 = Math.max(...xs) + 0.6; }
+  const yv = [];
+  for (const r of runs) { yv.push(conv(r.rate)); for (const v of r.points || []) yv.push(conv(v)); }
+  if (Number.isFinite(mean)) yv.push(mean);
+  let lo = Math.min(...yv), hi = Math.max(...yv);
+  if (zero) lo = Math.min(0, lo);
+  if (hi === lo) { const d = Math.abs(hi) * 0.1 || 1; if (!(zero && lo === 0)) lo -= d; hi += d; }
+  const padY = (hi - lo) * 0.08;
+  const ya = zero && lo >= 0 ? 0 : lo - padY, yb = hi + padY;
+  const ys = niceStep(yb - ya, 5);
+  const y0 = zero && lo >= 0 ? 0 : Math.floor(ya / ys.step) * ys.step, y1 = Math.ceil(yb / ys.step) * ys.step;
+  const yMinor = ys.step / (ys.mant === 2 ? 4 : 5);
+  const X = x => M.l + ((x - x0) / (x1 - x0)) * pw;
+  const Y = y => M.t + ph - ((y - y0) / (y1 - y0)) * ph;
+  const dec = Math.max(0, -Math.floor(Math.log10(ys.step) + 1e-9) + (ys.mant === 2.5 ? 1 : 0));
+  const yT = tickVals(y0, y1, ys.step), yM = tickVals(y0, y1, yMinor).filter(v => !yT.some(t => Math.abs(t - v) < yMinor * 1e-3));
+  let xT = [], xM = [];
+  if (mode === 'date') {
+    const spanD = (x1 - x0) / DAY;
+    const stepD = [1, 2, 3, 7, 14, 30, 61, 91, 182, 365].find(n => spanD / n <= 5) || 365;
+    const d = new Date(x0); d.setHours(0, 0, 0, 0);
+    const first = new Date(d);
+    for (; d.getTime() <= x1; d.setDate(d.getDate() + 1)) {
+      const t = d.getTime();
+      if (t < x0) continue;
+      const ok = stepD >= 30 ? d.getDate() === 1 && d.getMonth() % Math.max(1, Math.round(stepD / 30)) === 0 : Math.round((t - first.getTime()) / DAY) % stepD === 0;
+      if (ok) xT.push(t);
+    }
+  } else {
+    const st = intStep(x1 - x0, 6);
+    xT = tickVals(x0, x1, st);
+    const mn = st >= 5 ? st / 5 : st > 1 ? 1 : 0;
+    xM = mn ? tickVals(x0, x1, mn).filter(v => !xT.includes(v)) : [];
+  }
+  const L = 6, Lm = 3.2, R = M.l + pw, B = M.t + ph;
+  const tk = [];
+  for (const v of yT) tk.push(`M${M.l},${Y(v)}h${L}M${R},${Y(v)}h${-L}`);
+  for (const v of yM) tk.push(`M${M.l},${Y(v)}h${Lm}M${R},${Y(v)}h${-Lm}`);
+  for (const v of xT) tk.push(`M${X(v)},${B}v${-L}M${X(v)},${M.t}v${L}`);
+  for (const v of xM) tk.push(`M${X(v)},${B}v${-Lm}M${X(v)},${M.t}v${Lm}`);
+  const marks = [];
+  runs.forEach(r => {
+    const x = X(mode === 'date' ? r.at : r.n);
+    const pts = (r.points || []).map(conv).sort((p, q) => p - q);
+    const ink = r.excl ? 'var(--neutral)' : color;
+    if (pts.length >= 5) {
+      const q1 = quart(pts, 0.25), md = quart(pts, 0.5), q3 = quart(pts, 0.75);
+      marks.push(html`<line x1=${x} x2=${x} y1=${Y(pts[0])} y2=${Y(pts[pts.length - 1])} stroke=${ink} stroke-width="1" />`);
+      marks.push(html`<rect x=${x - 7} y=${Y(q3)} width="14" height=${Math.max(1, Y(q1) - Y(q3))} fill="var(--marker-fill)" stroke=${ink} stroke-width="1.2" />`);
+      marks.push(html`<line x1=${x - 7} x2=${x + 7} y1=${Y(md)} y2=${Y(md)} stroke=${ink} stroke-width="1.6" />`);
+    }
+    const pcs = r.pieces || [];
+    if (pcs.length > 1) marks.push(html`<line x1=${x - 10} x2=${x + 10} y1=${Y(conv(r.rate))} y2=${Y(conv(r.rate))} stroke="var(--neutral)" stroke-width="2" />`);
+    pcs.forEach((p, j) => {
+      const jx = pcs.length > 1 ? x + (j - (pcs.length - 1) / 2) * Math.min(6, 18 / pcs.length) : x;
+      const y = Y(conv(p.rate));
+      const tip = `${fmtDate(r.at)}, ${p.who ? p.who + ', ' : ''}${p.name}: ${fmtNum(conv(p.rate))} ${yUnit}${r.excl ? ' (left out)' : ''}`;
+      marks.push(r.excl ? html`<path d=${`M${jx - 3.5},${y - 3.5}L${jx + 3.5},${y + 3.5}M${jx + 3.5},${y - 3.5}L${jx - 3.5},${y + 3.5}`} stroke="var(--neutral)" stroke-width="1.5"><title>${tip}</title></path>`
+        : html`<circle cx=${jx} cy=${y} r="4.2" fill="var(--marker-fill)" stroke=${color} stroke-width="1.5"><title>${tip}</title></circle>`);
+    });
+  });
+  return html`<div ref=${ref} class="chart-box">
+    <svg class="chart" width=${W} height=${H} viewBox=${`0 0 ${W} ${H}`} role="img" aria-label=${`${yLabel} by ${mode === 'date' ? 'run date' : 'run number'}`}>
+      <defs><clipPath id="runclip"><rect x=${M.l} y=${M.t} width=${pw} height=${ph} /></clipPath></defs>
+      <g clip-path="url(#runclip)">
+        ${Number.isFinite(mean) ? html`<line x1=${M.l} x2=${R} y1=${Y(mean)} y2=${Y(mean)} stroke="var(--neutral)" stroke-width="1" stroke-dasharray="5 4" />` : null}
+        ${fit ? html`<line x1=${X(fit.x0)} x2=${X(fit.x1)} y1=${Y(fit.y0)} y2=${Y(fit.y1)} stroke=${color} stroke-width="1" />` : null}
+        ${marks}
+      </g>
+      <path d=${tk.join('')} stroke="var(--ink)" stroke-width="1" fill="none" />
+      <rect x=${M.l} y=${M.t} width=${pw} height=${ph} fill="none" stroke="var(--ink)" stroke-width="1.1" />
+      ${yT.map(v => html`<text x=${M.l - 7} y=${Y(v)} dy="0.34em" text-anchor="end">${v.toFixed(dec)}</text>`)}
+      ${xT.map(v => html`<text x=${X(v)} y=${B + 19} text-anchor="middle">${mode === 'date' ? fmtDate(v) : v}</text>`)}
+      <text class="ax" x=${M.l + pw / 2} y=${H - 12} text-anchor="middle">${mode === 'date' ? 'Run Date' : html`Run Number, <tspan font-style="italic">n</tspan>`}</text>
+      <text class="ax" transform=${`translate(17 ${M.t + ph / 2}) rotate(-90)`} text-anchor="middle">${yLabel}, <tspan font-style="italic">r</tspan>${yUnit ? ` (${yUnit})` : ''}</text>
+    </svg></div>`;
+}
 function Spark({ vals, color }) {
   if (vals.length < 2) return html`<span class="spark-empty" />`;
   const w = 72, h = 26;
@@ -3823,6 +4644,7 @@ function RateGroupView({ gk }) {
   const [tu, setTu] = useState('nm');
   const [metric, setMetric] = useState('rate');
   const [zero, setZero] = useState(false);
+  const [mode, setMode] = useState('date');
   const g = rateGroups().find(x => x.key === gk);
   if (!g) return html`<${BackLink} label="Rates" fallback=${{ v: 'rates' }} />
     <${Empty} title="No runs in this history now"><p>Its runs may have been edited into a different tool, recipe or material, or deleted.</p></${Empty}>`;
@@ -3887,11 +4709,15 @@ function RateGroupView({ gk }) {
     </section>
 
     <section><div class="row gap wrap chart-tools"><h2 class="grow">History</h2>
+      ${useMetric === 'rate' ? html`<${Seg} label="Horizontal axis" value=${mode} onChange=${setMode} options=${[['date', 'By date'], ['run', 'By run']]} />` : null}
       ${mk.length ? html`<select aria-label="Quantity to plot" class="narrow" value=${useMetric} onChange=${e => setMetric(e.currentTarget.value)}>
         <option value="rate">Rate</option>${mk.map(x => html`<option value=${norm(x.k)}>${x.k}</option>`)}</select>` : null}
       <label class="check inline"><input type="checkbox" checked=${zero} onChange=${e => setZero(e.currentTarget.checked)} /><span>Axis from zero</span></label></div>
-      <${Chart} pts=${pts} color=${color} yLabel=${yLabel} yVar=${yVar} yUnit=${yUnit} zero=${zero} mean=${meanY} fit=${fit} />
-      <p class="legend small"><span><svg width="14" height="14" aria-hidden="true"><circle cx="7" cy="7" r="4.7" fill="var(--marker-fill)" stroke=${color} stroke-width="1.5" /></svg> run</span>
+      ${useMetric === 'rate' ? html`<${RunChart} runs=${g.runs} conv=${conv} color=${color} mode=${mode} yLabel=${yLabel} yUnit=${yUnit} zero=${zero} mean=${meanY} fit=${mode === 'run' ? fit : null} />`
+        : html`<${Chart} pts=${pts} color=${color} yLabel=${yLabel} yVar=${yVar} yUnit=${yUnit} zero=${zero} mean=${meanY} fit=${fit} />`}
+      <p class="legend small"><span><svg width="14" height="14" aria-hidden="true"><circle cx="7" cy="7" r="4.7" fill="var(--marker-fill)" stroke=${color} stroke-width="1.5" /></svg> ${useMetric === 'rate' ? 'piece (average of its points)' : 'run'}</span>
+        ${useMetric === 'rate' ? html`<span><svg width="22" height="10" aria-hidden="true"><line x1="3" x2="19" y1="5" y2="5" stroke="var(--neutral)" stroke-width="2" /></svg> run mean</span>
+          <span><svg width="14" height="14" aria-hidden="true"><rect x="3" y="2" width="8" height="10" fill="none" stroke=${color} stroke-width="1.2" /></svg> all points, when a run has 5 or more</span>` : null}
         ${left.length ? html`<span><svg width="14" height="14" aria-hidden="true"><path d="M3,3L11,11M11,3L3,11" stroke="var(--neutral)" stroke-width="1.5" /></svg> left out</span>` : null}
         ${Number.isFinite(meanY) ? html`<span><svg width="22" height="10" aria-hidden="true"><line x1="0" x2="22" y1="5" y2="5" stroke="var(--neutral)" stroke-dasharray="5 4" /></svg> recent mean</span>` : null}
         ${fit ? html`<span><svg width="22" height="10" aria-hidden="true"><line x1="0" x2="22" y1="5" y2="5" stroke=${color} /></svg> drift fit</span>` : null}</p>
@@ -3909,7 +4735,7 @@ function RateGroupView({ gk }) {
             <td class="tnum">${r.n}</td><td class="nowrap">${fmtDate(r.at)}<div class="small muted">${fmtTime(r.at)}</div></td>
             <td class="num tnum"><b>${fmtNum(conv(r.rate))}</b></td>
             <td>${r.rows.map(x => html`<button class="linkish block nowrap" onClick=${() => openRow(x)}>${x.who}</button>`)}</td>
-            <td class="num tnum">${r.rows.map(x => html`<div class="nowrap">${fmtNum(x.nm, 3)} nm, ${g.basis === 'cyc' ? `${x.cyc} cyc` : fmtDur(x.sec)}</div>`)}</td>
+            <td class="num tnum">${r.rows.map(x => html`<div class="nowrap">${fmtNum(x.nm, 3)} nm, ${g.basis === 'cyc' ? `${x.cyc} cyc` : fmtDur(x.sec)}${x.pieces && x.pieces.length > 1 ? `, ${x.pieces.length} pieces` : ''}</div>`)}</td>
             ${mk.map(x => { const v = runMeas(r, x.k); return html`<td class="num tnum">${Number.isFinite(v) ? fmtNum(v, 4) : ''}</td>`; })}
             <td class="act"><button class="btn xs ghost" onClick=${() => setRunExcl(r, !r.excl)}>${r.excl ? 'Include' : 'Leave out'}</button></td></tr>
             ${note ? html`<tr key=${r.id + 'n'} class=${'note-row' + (r.excl ? ' excl' : '')}><td></td><td colspan=${cols - 1}><span class=${r.excl ? 'muted' : 'caution'}>${note}</span></td></tr>` : null}`;
@@ -3941,10 +4767,11 @@ function RateEntrySheet({ id, g }) {
         <${Field} label="Recipe"><input value=${f.recipe} onInput=${ch('recipe')} /></${Field}>
         <${Field} label="Process time"><span class="unit-in"><input inputmode="decimal" value=${f.timeV} onInput=${ch('timeV')} />
           <select aria-label="Time unit" value=${f.timeU} onChange=${ch('timeU')}>${Object.keys(TIME_LABEL).map(u => html`<option value=${u}>${TIME_LABEL[u]}</option>`)}</select></span></${Field}>
-        <${Field} label=${etch ? 'Depth' : 'Thickness'}><span class="unit-in"><input inputmode="decimal" value=${f.thkV} onInput=${ch('thkV')} />
-          <select aria-label="Thickness unit" value=${f.thkU} onChange=${ch('thkU')}>${Object.keys(THK_UNITS).map(u => html`<option value=${u}>${u}</option>`)}</select></span></${Field}>
         <${Field} label="When"><input type="datetime-local" value=${toLocalInput(f.at)} onInput=${e => { const t = fromLocalInput(e.currentTarget.value); if (t) setF({ ...f, at: t }); }} /></${Field}>
         <${Field} label="Sample or label"><input value=${f.label} placeholder="e.g. Si witness" onInput=${ch('label')} /></${Field}>
+        <div class="span2"><div class="lab">Pieces</div><${PiecesEditor} value=${{ pieces: piecesOf(f), cols: f.cols || [] }} kind=${f.kind}
+          onChange=${v => setF(x => ({ ...x, pieces: v.pieces.map(p => (p.legacy ? { id: newId('pc'), name: p.name, role: p.role, pts: p.pts } : p)), cols: v.cols, thkV: '' }))} />
+          <${RunResults} x=${f} kind=${f.kind} /></div>
       </div>
       <div class="rate-out">${r ? html`<div class="rate-val"><span class="big tnum">${fmtNum(convRate(r.v, r.basis, getSettings().rateUnit))}</span> <span>${rateUnitLabel(r.basis, getSettings().rateUnit)}</span></div>` : html`<span class="muted small">Enter time and ${etch ? 'depth' : 'thickness'} to compute the rate.</span>`}</div>
       <${MeasEditor} kind=${f.kind} meas=${f.meas || []} onChange=${meas => setF(x => ({ ...x, meas }))} />
@@ -4210,6 +5037,8 @@ function ImportView({ draft: draft0 }) {
               <option value="seg">Segment heading</option>${KIND_KEYS.map(k => html`<option value=${k}>${KINDS[k].label}</option>`)}</select>
             ${meta ? html`<span class="small muted">${meta}</span>` : null}</div>
           ${r.params ? html`<div class="small imp-params">${r.params}</div>` : null}
+          ${(r.subs || []).length ? html`<div class="small imp-params">Sub-steps: ${subsLine(r.subs)}</div>` : null}
+          ${(r.fields || []).length ? html`<div class="small imp-params">Settings: ${r.fields.map(f => `${f.name} ${fText(f, f.plan)}`).join(', ')}</div>` : null}
           ${r.durV ? html`<div><span class="tchip">Timer ${r.durV} ${r.durU || 'min'}</span></div>` : null}
           ${r.flag ? html`<div class="flag-note">${I.flag()}<span>${r.flag}</span></div>` : null}
         </div></li>`;
@@ -4258,6 +5087,8 @@ function SettingsView() {
   return html`
     <h1>Settings</h1>
     ${aiSection}
+    <section class="set-group"><h2>Step types</h2><p class="small muted">The fields each type of step records, such as dose and defocus for lithography.</p>
+      <div><button class="btn" onClick=${() => go({ v: 'types' })}>Edit step types</button></div></section>
     <section class="set-group"><h2>Logging</h2>
       <${Field} label="Your initials" hint="Added to steps you start or complete."><input class="short" value=${S.initials} maxlength="8" autocapitalize="characters" onInput=${e => putSettings({ initials: e.currentTarget.value })} /></${Field}>
     </section>
@@ -4277,6 +5108,8 @@ function SettingsView() {
       <p class="small muted">${where}</p>
       <div class="row gap wrap">
         <button class="btn" onClick=${() => saveFile(`processtracer_rates_${fileStamp()}.csv`, ratesCsv())}>${I.download()}<span>Rate history (CSV)</span></button>
+        <button class="btn" onClick=${() => saveFile(`processtracer_pieces_${fileStamp()}.csv`, piecesCsv())}>${I.download()}<span>Pieces and points (CSV)</span></button>
+        <button class="btn" onClick=${() => saveFile(`processtracer_settings_used_${fileStamp()}.csv`, fieldsCsv())}>${I.download()}<span>Settings used per step (CSV)</span></button>
         <button class="btn" onClick=${() => saveFile(`processtracer_backup_${fileStamp()}.json`, backupJson())}>${I.download()}<span>Full backup (JSON)</span></button>
         <label class="btn">${I.upload()}<span>Restore a backup</span><input class="vh" type="file" accept="application/json,.json" onChange=${restore} /></label>
       </div>
@@ -4698,7 +5531,9 @@ function LocalDataSection() {
       ${folderSupported() ? html`<${FolderBackup} />` : null}
     </section>
     <section class="set-group"><h2>Exports</h2>
-      <div class="row gap wrap"><button class="btn" onClick=${() => saveFile(`processtracer_rates_${fileStamp()}.csv`, ratesCsv())}>${I.download()}<span>Rate history (CSV)</span></button></div>
+      <div class="row gap wrap"><button class="btn" onClick=${() => saveFile(`processtracer_rates_${fileStamp()}.csv`, ratesCsv())}>${I.download()}<span>Rate history (CSV)</span></button>
+        <button class="btn" onClick=${() => saveFile(`processtracer_pieces_${fileStamp()}.csv`, piecesCsv())}>${I.download()}<span>Pieces and points (CSV)</span></button>
+        <button class="btn" onClick=${() => saveFile(`processtracer_settings_used_${fileStamp()}.csv`, fieldsCsv())}>${I.download()}<span>Settings used per step (CSV)</span></button></div>
       <p class="small muted">ProcessTracer, version ${BUILD}</p>
     </section>`;
 }
@@ -4779,12 +5614,13 @@ const AI_INSTRUCTIONS = [
   '1. Segments are the traveler\'s own top-level sections (for example "Alignment marks and backside metal"), in order. If the traveler has no sections, return one segment with an empty name.',
   '2. Create one step per process step, in the traveler\'s order. Keep calibration, dummy, witness or test-piece runs as their own steps, separate from the real run. Do not merge or split steps unless the traveler clearly does.',
   '3. Copy names, numbers, units, chemicals, tools and recipes exactly as written. Never invent, estimate, convert or correct a value. Leave a field empty when the traveler does not give it.',
-  '4. kind: clean (cleans, wet chemistry, dips, strips, rinses), litho (coat, bake, expose, develop), etch (dry or wet etch), dep (deposition, evaporation, sputtering, ALD, PECVD, growth), thermal (anneals, RTA), metrology (inspection, measurement, test), other.',
+  '4. kind: clean (solvent or wet cleans, dips, resist strips in solvent, rinses), plasma (O2 ash, descum, plasma clean), litho (coat, bake, expose, develop), etch (dry or wet etch), dep (deposition, evaporation, sputtering, ALD, PECVD, growth), thermal (anneals, RTA), inspect (optical inspection, visual checks), metrology (measurements and tests), other.',
   '5. tool: the equipment. recipe: the named recipe or chemistry. method: for etch and deposition only, the technique as written (for example ICP-RIE, sputter, e-beam, ALD). material: for etch and deposition only, the material etched or deposited, as written.',
   '6. conditions: the step\'s remaining parameters as written (times, temperatures, speeds, doses, flows, pressures), joined with "; ".',
   '7. timer_value and timer_unit: only when the traveler states a single duration for the whole step (for example "develop 70 s"). Use null when there is no duration or more than one (for example "acetone 5 min, IPA 5 min").',
   '8. flag: a short note when something is ambiguous or missing (for example no tool or chemistry given), or when you made a judgement call such as keeping a calibration run separate. Otherwise an empty string.',
   '9. Skip rows that are not process steps (column headings, page titles, signatures, blank template fields), but never drop a real step.',
+  '10. substeps: when the traveler lists several actions within one step (each bath of a clean, each coat and bake of a resist stack, each stage of an anneal), return them in order as substeps with their own parameters as written (params) and a timer only for a single stated duration. One step that is one tool visit is better than many tiny steps. Use an empty list when a step has no listed actions.',
 ].join('\n');
 const STR = { type: 'string' };
 const AI_SCHEMA = {
@@ -4793,18 +5629,21 @@ const AI_SCHEMA = {
     type: 'object', additionalProperties: false, required: ['name', 'steps'],
     properties: { name: STR, steps: { type: 'array', items: {
       type: 'object', additionalProperties: false,
-      required: ['name', 'kind', 'tool', 'recipe', 'method', 'material', 'conditions', 'timer_value', 'timer_unit', 'flag'],
+      required: ['name', 'kind', 'tool', 'recipe', 'method', 'material', 'conditions', 'timer_value', 'timer_unit', 'flag', 'substeps', 'fields'],
       properties: {
-        name: STR, kind: { type: 'string', enum: ['clean', 'litho', 'etch', 'dep', 'thermal', 'metrology', 'other'] },
+        name: STR, kind: { type: 'string', enum: ['clean', 'plasma', 'litho', 'etch', 'dep', 'thermal', 'inspect', 'metrology', 'other'] },
         tool: STR, recipe: STR, method: STR, material: STR, conditions: STR,
         timer_value: { type: ['number', 'null'] }, timer_unit: { type: ['string', 'null'], enum: ['s', 'min', 'h', null] }, flag: STR,
+        substeps: { type: 'array', items: { type: 'object', additionalProperties: false, required: ['name', 'params', 'timer_value', 'timer_unit'],
+          properties: { name: STR, params: STR, timer_value: { type: ['number', 'null'] }, timer_unit: { type: ['string', 'null'], enum: ['s', 'min', 'h', null] } } } },
+        fields: { type: 'array', items: { type: 'object', additionalProperties: false, required: ['name', 'unit', 'value'], properties: { name: STR, unit: STR, value: STR } } },
       } } } } } } },
 };
 async function startAiImport(text, draft) {
   const S = getSettings();
   const model = S.aiModel || 'gpt-6-astra', effort = S.aiEffort || 'max';
   const r = await oaiFetch('/responses', { method: 'POST', body: {
-    model, reasoning: { effort }, background: true, store: true, instructions: AI_INSTRUCTIONS, input: text, max_output_tokens: 100000,
+    model, reasoning: { effort }, background: true, store: true, instructions: AI_INSTRUCTIONS + '\n' + fieldsGuide(), input: text, max_output_tokens: 100000,
     text: { format: { type: 'json_schema', name: 'traveler', strict: true, schema: AI_SCHEMA } },
   } });
   const job = { type: 'import', id: r.id, started: Date.now(), draft, text, model, effort };
@@ -4847,7 +5686,15 @@ function parseAiOutput(r) {
       rows.push({ id: newId('s'), on: true, kind: KINDS[st.kind] ? st.kind : 'other', name: String(st.name || '').trim() || 'Untitled step',
         tool: st.tool || '', recipe: st.recipe || '', method: st.method || '', material: st.material || '', params: st.conditions || '',
         durV: st.timer_value != null && Number.isFinite(tv) && tv > 0 ? String(tv) : '', durU: ['s', 'min', 'h'].includes(st.timer_unit) ? st.timer_unit : 'min',
-        flag: String(st.flag || '').trim() });
+        flag: String(st.flag || '').trim(),
+        subs: (st.substeps || []).filter(x => x && String(x.name || '').trim()).map(x => ({ id: newId('u'), name: String(x.name).trim(), params: String(x.params || '').trim(),
+          durV: x.timer_value != null && Number(x.timer_value) > 0 ? String(x.timer_value) : '', durU: ['s', 'min', 'h'].includes(x.timer_unit) ? x.timer_unit : 'min' })),
+        fields: (st.fields || []).filter(x => x && String(x.name || '').trim() && String(x.value || '').trim()).map(x => {
+          const k = KINDS[st.kind] ? st.kind : 'other';
+          const d = typeFieldsFor(k).find(y => norm(y.name) === norm(x.name));
+          const v = String(x.value).trim();
+          return { id: newId('f'), name: d ? d.name : String(x.name).trim(), unit: d ? d.unit || '' : String(x.unit || '').trim(), kind: d ? d.kind || 'text' : Number.isFinite(num(v)) ? 'num' : 'text', opts: d ? [...(d.opts || [])] : [], plan: v, val: '' };
+        }) });
     }
   }
   return rows;
@@ -5125,7 +5972,7 @@ function AiDrawBox({ H, doc }) {
 
 /* ---------------- app shell ---------------- */
 const TABS = [
-  { v: 'samples', label: 'Samples', icon: I.wafer, match: ['samples', 'sample', 'import'] },
+  { v: 'samples', label: 'Samples', icon: I.wafer, match: ['samples', 'sample', 'import', 'step'] },
   { v: 'travelers', label: 'Travelers', icon: I.layers, match: ['travelers', 'traveler', 'steplib', 'templates', 'template'] },
   { v: 'log', label: 'Log', icon: I.log, match: ['log'] },
   { v: 'rates', label: 'Rates', icon: I.rates, match: ['rates', 'rate'] },
@@ -5154,12 +6001,14 @@ function DataLists() {
 function Route({ r }) {
   switch (r.v) {
     case 'sample': return html`<${SampleView} key=${r.id} id=${r.id} step=${r.step} />`;
+    case 'step': return html`<${StepPage} key=${r.id} id=${r.id} step=${r.step} />`;
     case 'log': return html`<${LogView} />`;
     case 'rates': return html`<${RatesView} />`;
     case 'rate': return html`<${RateGroupView} key=${r.key} gk=${r.key} />`;
     case 'travelers': case 'templates': return html`<${TravelersView} />`;
     case 'traveler': case 'template': return html`<${TravelerView} key=${r.id} id=${r.id} step=${r.step} />`;
     case 'steplib': return html`<${StepLibView} />`;
+    case 'types': return html`<${TypesView} />`;
     case 'drawsetup': return html`<${DrawSetupView} key=${r.col + r.id} col=${r.col} id=${r.id} />`;
     case 'xsec': return html`<${XsViewer} col=${r.col} id=${r.id} step=${r.step} />`;
     case 'import': return html`<${ImportView} draft=${r.draft} />`;
