@@ -790,6 +790,35 @@ ol.crows:not(.in-seg) { border: 1px solid var(--rule); border-radius: 12px; back
 .fin input:only-child { border-right: 1px solid var(--rule-2); border-radius: 9px; }
 .fin.chg input:only-child { border-color: var(--run); }
 
+/* ---------- kits, named pieces, sub-step settings ---------- */
+.crow.in-kit { box-shadow: inset 3px 0 0 var(--accent); }
+.kit-cap { padding: 6px 12px 0 14px; color: var(--accent); font-size: 12px; font-weight: 750; }
+.tag2 { display: inline-block; margin-left: 6px; padding: 1px 7px; border-radius: 6px; background: var(--accent-2); color: var(--accent); font-size: 12px; font-weight: 700; vertical-align: middle; }
+.tag2.warn { background: var(--run-tint); color: var(--run-text); }
+.pc-name-w { display: flex; gap: 4px; min-width: 0; }
+.pc-name-w .pc-name { flex: 1; min-width: 0; }
+.pc-pick { flex: none; padding: 0 8px; }
+.pc-ref { display: flex; align-items: center; min-height: 40px; padding: 0 4px; font-size: 15px; }
+.ppick { display: flex; flex-direction: column; gap: 2px; margin: 4px 8px 8px; padding: 10px; border: 1px solid var(--accent); border-radius: 10px; background: var(--surface); }
+.ppick-top { flex-wrap: wrap; margin-bottom: 4px; }
+.ppick-top input { flex: 1 1 140px; min-width: 0; }
+.pick { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; align-items: center; width: 100%; padding: 9px 2px; border: 0; border-bottom: 1px solid var(--rule); background: none; color: inherit; text-align: left; }
+.pick.as-btn { cursor: pointer; }
+.pick b { font-size: 15px; }
+.pick .small { display: block; color: var(--ink-2); }
+.pnew { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 6px; margin: 6px 0; padding: 10px; border: 1px dashed var(--rule-2); border-radius: 10px; }
+.pnew .pnew-d, .pnew .pnew-a { grid-column: 1 / -1; }
+.pnew .pnew-a { justify-content: flex-end; }
+.plist { margin-top: 8px; border-top: 1px solid var(--rule); }
+.piece-h { margin: 0; }
+.hist { width: 100%; border-collapse: collapse; font-size: 14px; }
+.hist th { padding: 6px 4px; border-bottom: 1px solid var(--rule); color: var(--ink-2); font-size: 12px; text-align: left; }
+.hist td { padding: 8px 4px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+.sub-f { grid-column: 2 / -1; display: grid; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: 8px; padding: 0 0 6px; }
+.sub-f .fld.span2 { grid-column: 1 / -1; }
+.sub-ed-f { grid-column: 1 / -1; padding: 8px; border-radius: 10px; background: var(--surface-2); }
+.sub-ed-acts .btn { min-height: 36px; }
+
 </style>
 </head>
 <body>
@@ -802,7 +831,7 @@ ol.crows:not(.in-seg) { border: 1px solid var(--rule); border-radius: 12px; back
 </script>
 <script>
 const LOCAL = true;
-const BUILD = '2026.10.05.2053';
+const BUILD = '2026.10.05.2213';
 /* ---------------- on-device runtime: everything stays in this browser ---------------- */
 const randHex = n => { const a = new Uint8Array(Math.ceil(n / 2)); crypto.getRandomValues(a); return Array.from(a, b => b.toString(16).padStart(2, '0')).join('').slice(0, n); };
 const toBuf = blob => (blob.arrayBuffer ? blob.arrayBuffer() : new Promise((res, rej) => {
@@ -1046,8 +1075,8 @@ const THK_UNITS = { nm: 1, 'Å': 0.1, 'µm': 1000 };
 const TIME_UNITS = { s: 1, min: 60, h: 3600 }; // plus 'cyc' (ALD cycles), handled separately
 const TIME_LABEL = { s: 's', min: 'min', h: 'h', cyc: 'cycles' };
 const RATE_UNITS = { 'nm/min': 1, 'nm/s': 1 / 60, 'Å/s': 10 / 60, 'Å/min': 10, 'µm/h': 0.06 };
-const DEFAULT_SETTINGS = { initials: '', rateUnit: 'nm/min', win: 5, imgMax: 2400, backupEvery: 7, aiModel: 'gpt-6-astra', aiEffort: 'max', stepTypes: null };
-const COLS = ['samples', 'templates', 'ratelog', 'steplib'];
+const DEFAULT_SETTINGS = { initials: '', rateUnit: 'nm/min', win: 5, imgMax: 2400, backupEvery: 7, aiModel: 'gpt-6-astra', aiEffort: 'max', stepTypes: null, starterSeeded: 0 };
+const COLS = ['samples', 'templates', 'ratelog', 'steplib', 'pieces'];
 const OK_IMG = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
 
 /* ---------------- utilities ---------------- */
@@ -1619,10 +1648,11 @@ function blankStep(p = {}) {
     notes: '', imgs: [], durV: '', durU: 'min', tmr: null, tLog: null, ...p,
   };
 }
-const TPL_FIELDS = ['name', 'kind', 'tool', 'recipe', 'method', 'material', 'params', 'durV', 'durU', 'timeV', 'timeU'];
+const TPL_FIELDS = ['name', 'kind', 'tool', 'recipe', 'method', 'material', 'params', 'durV', 'durU', 'timeV', 'timeU', 'role'];
 const pickTpl = st => ({ ...Object.fromEntries(TPL_FIELDS.map(k => [k, st[k] || (k === 'kind' ? 'other' : k === 'durU' || k === 'timeU' ? 'min' : '')])),
   ops: JSON.parse(JSON.stringify(st.ops || [])),
-  subs: (st.subs || []).map(x => ({ id: newId('u'), name: x.name || '', params: x.params || '', durV: x.durV || '', durU: x.durU || 'min' })),
+  subs: (st.subs || []).map(x => ({ id: newId('u'), name: x.name || '', params: x.params || '', durV: x.durV || '', durU: x.durU || 'min',
+    fields: (x.fields || []).map(f => ({ id: newId('f'), name: f.name || '', unit: f.unit || '', kind: f.kind || 'text', opts: [...(f.opts || [])], plan: String(f.plan || ''), val: '' })) })),
   pieces: (st.pieces || []).map(p => ({ id: newId('pc'), name: p.name || '', role: p.role || 'dummy', pts: [{ t: '', x: {} }] })),
   cols: [...(st.cols || [])],
   fields: (st.fields || []).map(f => ({ id: newId('f'), name: f.name || '', unit: f.unit || '', kind: f.kind || 'text', opts: [...(f.opts || [])], plan: String(f.plan || ''), val: '' })) });
@@ -1702,7 +1732,7 @@ function rateRows() {
         if (!r) return;
         out.push({ src: 'step', sid, stepId: st.id, idx: i, who: s.name, at: st.doneAt || st.loggedAt || s.updated,
           kind: st.kind, method: st.method, material: st.material, tool: st.tool, recipe: st.recipe,
-          basis: r.basis, rate: r.v, nm: r.nm, sec: r.sec, cyc: r.cyc, meas: st.meas || [], pieces: r.pieces,
+          basis: r.basis, rate: r.v, nm: r.nm, sec: r.sec, cyc: r.cyc, meas: st.meas || [], pieces: r.pieces, cal: isCal(st),
           excl: !!st.excl, why: st.exclWhy || '', run: st.run || ('u:' + sid + ':' + st.id) });
       });
     }
@@ -1712,7 +1742,7 @@ function rateRows() {
       if (!r || !isRateKind(e.kind)) continue;
       out.push({ src: 'log', id, who: e.label || 'Logged run', at: e.at || e.created,
         kind: e.kind, method: e.method, material: e.material, tool: e.tool, recipe: e.recipe,
-        basis: r.basis, rate: r.v, nm: r.nm, sec: r.sec, cyc: r.cyc, meas: e.meas || [], pieces: r.pieces,
+        basis: r.basis, rate: r.v, nm: r.nm, sec: r.sec, cyc: r.cyc, meas: e.meas || [], pieces: r.pieces, cal: isCal(e),
         excl: !!e.excl, why: e.exclWhy || '', run: 'l:' + id });
     }
     return out;
@@ -2016,7 +2046,7 @@ function sampleCsv(s) {
     return [stepLabel(s, st) || i + 1, (segOf(s, st) || {}).name || '', st.name, KINDS[st.kind]?.label || st.kind, st.tool, st.recipe, st.method, st.material, st.params,
       st.status, localStamp(st.startedAt), localStamp(st.doneAt), iso(st.doneAt), st.timeEdited ? 'yes' : '', st.by,
       st.tLog ? st.tLog.total : (timerSec(st) || ''), st.tLog ? Math.round((st.tLog.done - st.tLog.alarm) / 1000) : '',
-      subs, (st.fields || []).filter(f => fUsed(f) !== '').map(f => `${f.name} ${fText(f, fUsed(f))}${fChanged(f) ? ` (planned ${fText(f, String(f.plan || '')) || 'nothing'})` : ''}`).join('; '),
+      subs, allFields(st).filter(({ f }) => fUsed(f) !== '').map(({ f, where }) => `${where ? where + ' ' : ''}${f.name} ${fText(f, fUsed(f))}${fChanged(f) ? ` (planned ${fText(f, String(f.plan || '')) || 'nothing'})` : ''}`).join('; '),
       st.timeV, st.timeV ? TIME_LABEL[st.timeU] || st.timeU : '', ps.n ? +ps.mean.toPrecision(6) : '', Number.isFinite(ps.sd) ? +ps.sd.toPrecision(3) : '',
       ps.n ? ps.pieces.filter(p => Number.isFinite(p.mean)).map(p => `${p.name}: ${+p.mean.toPrecision(6)}${p.ts.length > 1 ? ` (${p.ts.length} points)` : ''}`).join('; ') : '',
       r ? fmtNum(r.v, 4) : '', st.excl ? 'yes' : '', st.exclWhy, measText(st.meas), st.notes, (st.imgs || []).length || ''];
@@ -2059,7 +2089,7 @@ async function travelerHtml(s, withPhotos) {
     const data = [];
     if (st.tLog) data.push(esc(tLogText(st.tLog)));
     else if (timerSec(st)) data.push(`Timer ${esc(fmtSecs(timerSec(st)))}`);
-    for (const f of st.fields || []) if (fUsed(f) !== '') data.push(`${esc(f.name)}: ${esc(fText(f, fUsed(f)))}${fChanged(f) ? ` <i>(planned ${esc(fText(f, String(f.plan || '')) || 'nothing')})</i>` : ''}`);
+    for (const { f, where } of allFields(st)) if (fUsed(f) !== '') data.push(`${esc((where ? where + ' ' : '') + f.name)}: ${esc(fText(f, fUsed(f)))}${fChanged(f) ? ` <i>(planned ${esc(fText(f, String(f.plan || '')) || 'nothing')})</i>` : ''}`);
     if (st.timeV) data.push(`Time ${esc(st.timeV)} ${esc(TIME_LABEL[st.timeU] || st.timeU)}`);
     if (st.thkV) data.push(`${st.kind === 'etch' ? 'Depth' : 'Thickness'} ${esc(st.thkV)} ${esc(st.thkU)}`);
     if (r) data.push(`<b>${esc(fmtRate(r.v, r.basis, unit))}</b>${st.excl ? ' (excluded: ' + esc(st.exclWhy) + ')' : ''}`);
@@ -2089,7 +2119,7 @@ figcaption{font-size:12px;color:#485364}figcaption span{color:#8a93a0}@media pri
 }
 function backupJson() {
   return JSON.stringify({ app: 'ProcessTracer', version: 1, exported: new Date().toISOString(),
-    samples: view('samples'), templates: view('templates'), ratelog: view('ratelog'), steplib: view('steplib'), settings: getSettings() }, null, 1);
+    samples: view('samples'), templates: view('templates'), ratelog: view('ratelog'), steplib: view('steplib'), pieces: view('pieces'), settings: getSettings() }, null, 1);
 }
 
 /* ---------------- traveler import ---------------- */
@@ -2766,7 +2796,7 @@ function processSources() {
   }
   const out = [...groups.entries()].map(([proc, items]) => ({ proc, items: items.sort((a, b) => b.t - a.t) }))
     .sort((a, b) => (a.proc ? 0 : 1) - (b.proc ? 0 : 1) || b.items[0].t - a.items[0].t);
-  const tpls = Object.entries(view('templates')).map(([id, t]) => ({ key: 't:' + id, id, tpl: t, t: t.updated || t.created || 0 })).sort((a, b) => b.t - a.t);
+  const tpls = Object.entries(view('templates')).filter(([, t]) => !t.kit).map(([id, t]) => ({ key: 't:' + id, id, tpl: t, t: t.updated || t.created || 0 })).sort((a, b) => b.t - a.t);
   if (tpls.length) out.unshift({ proc: '', tpl: true, items: tpls });
   return out;
 }
@@ -3371,7 +3401,8 @@ function AddStepSheet({ at, onInsert, title }) {
   const un = new Set(used.map(x => norm(x.st.name)));
   const last = used.filter(x => ok(x.st.name)).slice(0, qq ? 40 : 6);
   const generic = LIBRARY.filter(([, n]) => ok(n) && !pn.has(norm(n)) && !un.has(norm(n)));
-  const tpls = Object.entries(view('templates')).filter(([, t]) => (t.steps || []).length);
+  const tpls = Object.entries(view('templates')).filter(([, t]) => !t.kit && (t.steps || []).length);
+  const kits = Object.entries(view('templates')).filter(([, t]) => t.kit && (t.steps || []).length && ok(t.name));
   const [tpl, setTpl] = useState(tpls[0] ? tpls[0][0] : '');
   const add = (src, fresh) => {
     const st = blankStep({ ...pickTpl(src), kind: KINDS[src.kind] ? src.kind : 'other' });
@@ -3383,6 +3414,9 @@ function AddStepSheet({ at, onInsert, title }) {
       <button class="btn sm" aria-label=${'Add ' + src.name} onClick=${() => add(src)}>Add</button></div>`;
   return html`<${Sheet} title=${title || (at == null ? 'Add step' : `Insert at position ${at + 1}`)} onClose=${closeSheet}>
     <label class="search lib-search">${I.search()}<input type="search" aria-label="Find a step" placeholder="Find a step" value=${q} onInput=${e => setQ(e.currentTarget.value)} /></label>
+    ${kits.length ? html`<div class="sec-lab">Kits, several steps at once</div><div class="lib2">${kits.map(([kid, t]) => html`<div class="lib-it" key=${kid}><${Glyph} kind=${t.steps[0].kind} size=${18} />
+        <div><b>${t.name}</b><div class="d">${t.steps.map(x => x.name).join(' → ')}</div></div>
+        <button class="btn sm" aria-label=${'Add the ' + t.name + ' kit'} onClick=${() => onInsert(insertKit(t), false)}>Add ${t.steps.length}</button></div>`)}</div>` : null}
     ${presets.length ? html`<div class="sec-lab">Your steps</div><div class="lib2">${presets.map((p, i) => row(p, '', 'p' + i))}</div>` : null}
     ${last.length ? html`<div class="sec-lab">Last used on your samples and travelers</div><div class="lib2">${last.map((x, i) => row({ ...x.st, fields: (x.st.fields || []).map(f => ({ ...f, plan: fUsed(f) })) }, `From ${x.from}${x.t ? `, ${fmtDate(x.t)}` : ''}`, 'u' + i))}</div>` : null}
     ${generic.length ? html`<div class="sec-lab">Generic, no details</div><div class="chips">${generic.map(([k, n]) => html`<button class="chip-btn" onClick=${() => add({ name: n, kind: k }, true)}>${n}</button>`)}</div>` : null}
@@ -3396,12 +3430,18 @@ function AddStepSheet({ at, onInsert, title }) {
 }
 function StepLibView() {
   const list = Object.entries(view('steplib')).sort((a, b) => (a[1].name || '').localeCompare(b[1].name || ''));
+  const kits = Object.entries(view('templates')).filter(([, t]) => t.kit);
+  const reseed = () => { const n = seedStarter(true); toast(n ? `Added ${plural(n, 'missing starter template')}` : 'All the starter templates are already here'); };
   return html`<${BackLink} label="Travelers" fallback=${{ v: 'travelers' }} />
     <div class="page-head"><h1>Your steps</h1><button class="btn" onClick=${() => openPreset()}>${I.plus()}<span>New</span></button></div>
     <p class="lede">Steps with their details. Adding one to a sample or traveler fills everything in; you change whatever differs.</p>
+    ${kits.length ? html`<div class="sec-lab">Kits</div><div class="lib2">${kits.map(([id, t]) => html`<button class="lib-it as-btn" key=${id} onClick=${() => go({ v: 'traveler', id })}>
+        <${Glyph} kind=${(t.steps[0] || {}).kind} size=${18} /><div><b>${t.name}</b><div class="d">${(t.steps || []).map(x => x.name).join(' → ')}</div></div><span class="chev">${I.chevR()}</span></button>`)}</div>
+      <div class="sec-lab">Single steps</div>` : null}
     ${list.length ? html`<div class="lib2">${list.map(([id, p]) => html`<button class="lib-it as-btn" key=${id} onClick=${() => openPreset(id)}><${Glyph} kind=${p.kind} size=${18} />
         <div><b>${p.name}</b>${hasDetails(p) ? html`<div class="d">${detailText(p)}</div>` : null}</div><span class="chev">${I.chevR()}</span></button>`)}</div>`
-      : html`<${Empty} title="No saved steps yet"><p>Open any step on a sample or traveler and tap “Save as my step”.</p></${Empty}>`}`;
+      : html`<${Empty} title="No saved steps yet"><p>Open any step on a sample or traveler and tap “Save as my step”.</p></${Empty}>`}
+    <div class="row gap wrap after-steps"><button class="btn sm ghost" onClick=${reseed}>Add any missing starter templates</button></div>`;
 }
 function openPreset(id) { openSheet(() => html`<${PresetSheet} id=${id} />`); }
 function PresetSheet({ id }) {
@@ -3417,7 +3457,7 @@ function PresetSheet({ id }) {
       <${Field} label="Step name" cls="span2"><input value=${f.name} onInput=${ch('name')} /></${Field}>
       <${Field} label="Type"><select value=${f.kind} onChange=${ch('kind')}>${KIND_KEYS.map(k => html`<option value=${k}>${KINDS[k].label}</option>`)}</select></${Field}>
       <${Field} label="Tool"><input list="dl-tools" value=${f.tool} onInput=${ch('tool')} /></${Field}>
-      <${Field} label="Recipe" cls="span2"><input value=${f.recipe} onInput=${ch('recipe')} /></${Field}>
+      <${Field} label="Recipe" cls="span2"><input value=${f.recipe} onInput=${e => { const v = e.currentTarget.value; setF(x => ({ ...x, ...recipePatch(x.fields || [], x.recipe, v) })); }} /></${Field}>
       ${rk ? html`<${Field} label="Method"><input list=${'dl-m-' + f.kind} value=${f.method} onInput=${ch('method')} /></${Field}>
         <${Field} label="Material"><input list="dl-mats" value=${f.material} onInput=${ch('material')} /></${Field}>
         <${Field} label="Process time" cls="span2"><span class="unit-in timer-in"><input inputmode="decimal" value=${f.timeV || ''} onInput=${ch('timeV')} />
@@ -3426,7 +3466,7 @@ function PresetSheet({ id }) {
       <${Field} label="Timer" cls="span2"><span class="unit-in timer-in"><input inputmode="decimal" aria-label="Timer length" value=${f.durV || ''} onInput=${ch('durV')} />
         <select aria-label="Timer unit" value=${f.durU || 'min'} onChange=${ch('durU')}>${['s', 'min', 'h'].map(u => html`<option value=${u}>${TIME_LABEL[u] || u}</option>`)}</select></span></${Field}>
     </div>
-    <${FieldsEditor} kind=${f.kind} fields=${f.fields || []} onChange=${fields => setF(x => ({ ...x, fields }))} />
+    <${FieldsEditor} kind=${f.kind} fields=${f.fields || []} onChange=${fields => setF(x => ({ ...x, fields, recipe: withRecipe(fields, x.recipe) }))} />
     <${SubsEditor} subs=${f.subs || []} onChange=${subs => setF(x => ({ ...x, subs }))} />
     ${(f.ops || []).length ? html`<p class="small muted">Drawing: ${f.ops.map(opText).join('; ')}. To change it, edit a step that uses it and save it again.</p>` : null}
     <div class="row gap wrap end">${id ? html`<button class="btn ghost danger" onClick=${del}>${sure ? 'Tap again to remove' : 'Remove'}</button><span class="grow" />` : null}
@@ -3452,7 +3492,7 @@ function saveAsTraveler(sid) {
   toast(`Saved “${name}” to Travelers`, { action: { label: 'Open', fn: () => go({ v: 'traveler', id }) } });
 }
 function TravelersView() {
-  const list = Object.entries(view('templates')).sort((a, b) => (b[1].updated || 0) - (a[1].updated || 0));
+  const list = Object.entries(view('templates')).filter(([, t]) => !t.kit).sort((a, b) => (b[1].updated || 0) - (a[1].updated || 0));
   const nLib = Object.keys(view('steplib')).length;
   return html`
     <div class="page-head"><h1>Travelers</h1><div class="row gap">
@@ -3559,7 +3599,7 @@ function TStepDetail({ H, t, st, i }) {
       <${Field} label="Step name" cls="span2"><input value=${st.name} onInput=${e => setS({ name: e.currentTarget.value })} /></${Field}>
       <${Field} label="Type"><span class="sel-glyph"><${Glyph} kind=${st.kind} /><select value=${st.kind} onChange=${e => setS({ kind: e.currentTarget.value }, 0)}>${KIND_KEYS.map(k => html`<option value=${k}>${KINDS[k].label}</option>`)}</select></span></${Field}>
       <${Field} label="Tool"><input list="dl-tools" value=${st.tool} placeholder="Equipment" onInput=${e => setS({ tool: e.currentTarget.value })} /></${Field}>
-      <${Field} label="Recipe" cls="span2"><input value=${st.recipe} placeholder="Recipe name or chemistry" list=${'dl-trec-' + st.id} onInput=${e => setS({ recipe: e.currentTarget.value })} />
+      <${Field} label="Recipe" cls="span2"><input value=${st.recipe} placeholder="Recipe name or chemistry" list=${'dl-trec-' + st.id} onInput=${e => setS(recipePatch(st.fields || [], st.recipe, e.currentTarget.value))} />
         <datalist id=${'dl-trec-' + st.id}>${[...(sug.recipes.get(norm(st.tool)) || [])].map(r => html`<option value=${r} />`)}</datalist></${Field}>
       ${rk ? html`<${Field} label="Method"><input list=${'dl-m-' + st.kind} value=${st.method} onInput=${e => setS({ method: e.currentTarget.value })} /></${Field}>
         <${Field} label="Material"><input list="dl-mats" value=${st.material} onInput=${e => setS({ material: e.currentTarget.value })} /></${Field}>
@@ -3569,7 +3609,7 @@ function TStepDetail({ H, t, st, i }) {
       <${Field} label="Timer" cls="span2"><span class="unit-in timer-in"><input inputmode="decimal" aria-label="Timer length" value=${st.durV || ''} placeholder="0" onInput=${e => setS({ durV: e.currentTarget.value })} />
         <select aria-label="Timer unit" value=${st.durU || 'min'} onChange=${e => setS({ durU: e.currentTarget.value }, 0)}>${['s', 'min', 'h'].map(u => html`<option value=${u}>${TIME_LABEL[u] || u}</option>`)}</select></span></${Field}>
     </div>
-    <${FieldsEditor} kind=${st.kind} fields=${st.fields || []} onChange=${(fields, d) => setS({ fields }, d)} />
+    <${FieldsEditor} kind=${st.kind} fields=${st.fields || []} onChange=${(fields, d) => setS({ fields, recipe: withRecipe(fields, st.recipe) }, d)} />
     <${SubsEditor} subs=${st.subs || []} onChange=${(subs, d) => setS({ subs }, d)} />
     <div class="st-foot">
       <button class="btn ghost sm" disabled=${i === 0} onClick=${() => moveStep(H, i, -1)}>${I.up()}<span>Up</span></button>
@@ -3784,19 +3824,27 @@ function fmtPm(v, sd, unit = '') {
   const dec = Math.min(8, Math.max(0, 1 - Math.floor(Math.log10(sd))));
   return `${v.toFixed(dec)} ± ${sd.toFixed(dec)}${u}`;
 }
-function PiecesEditor({ value, kind, onChange }) {
+function PiecesEditor({ value, kind, onChange, linkable }) {
   const pieces = value.pieces || [], cols = value.cols || [];
   const [open, setOpen] = useState(() => new Set());
   const [colIn, setColIn] = useState(null);
+  const [picking, setPicking] = useState(null);
   const lab = kind === 'etch' ? 'Depth' : 'Thickness';
   const sum = pieceSummary({ pieces, cols });
   const commit = (p, c = cols, d = 600) => onChange({ pieces: p, cols: c }, d);
   const setPiece = (i, patch, d) => commit(pieces.map((p, j) => (j === i ? { ...p, ...patch } : p)), cols, d);
   const setPt = (i, k, patch) => setPiece(i, { pts: pieces[i].pts.map((q, j) => (j === k ? { ...q, ...patch, x: { ...(q.x || {}), ...(patch.x || {}) } } : q)) });
   const toggle = id => setOpen(o => { const n = new Set(o); if (n.has(id)) n.delete(id); else n.add(id); return n; });
-  const addPiece = () => {
-    const id = newId('pc');
-    commit([...pieces, { id, name: `${kind === 'etch' ? 'Witness' : 'Dummy'} ${pieces.length + 1}`, role: kind === 'etch' ? 'witness' : 'dummy', pts: [{ t: '', x: {} }] }], cols, 0);
+  const roleOf = (pd, dflt) => (pd && /witness/i.test(pd.kind || '') ? 'witness' : pd && /dummy/i.test(pd.kind || '') ? 'dummy' : dflt);
+  const onPick = (ref, pd) => {
+    if (picking && picking.mode === 'assign') {
+      const i = picking.i;
+      if (ref) setPiece(i, { ref, name: pd.name, role: roleOf(pd, pieces[i].role) }, 0);
+    } else {
+      commit([...pieces, { id: newId('pc'), name: pd ? pd.name : `${kind === 'etch' ? 'Witness' : 'Dummy'} ${pieces.length + 1}`, role: roleOf(pd, kind === 'etch' ? 'witness' : 'dummy'),
+        ...(ref ? { ref } : {}), pts: [{ t: '', x: {} }] }], cols, 0);
+    }
+    setPicking(null);
   };
   const addCol = () => { const c = (colIn || '').trim(); if (c && !cols.includes(c)) commit(pieces, [...cols, c], 0); setColIn(null); };
   const delCol = c => commit(pieces, cols.filter(x => x !== c), 0);
@@ -3808,7 +3856,9 @@ function PiecesEditor({ value, kind, onChange }) {
       return html`<div class="pc" key=${p.id}>
         <div class="pc-row">
           <button class="pc-tog" aria-label=${(open.has(p.id) ? 'Hide' : 'Show') + ' points of ' + p.name} aria-expanded=${open.has(p.id) ? 'true' : 'false'} onClick=${() => toggle(p.id)}>${open.has(p.id) ? I.chevD() : I.chevR()}</button>
-          <input class="pc-name" aria-label=${'Piece ' + (i + 1) + ' name'} value=${p.name} onInput=${e => setPiece(i, { name: e.currentTarget.value })} />
+          ${p.ref ? html`<span class="pc-name pc-ref">${linkable ? html`<button class="linkish" onClick=${() => go({ v: 'piece', id: p.ref })}>${regName(p)}</button>` : html`<b>${regName(p)}</b>`}</span>`
+            : html`<span class="pc-name-w"><input class="pc-name" aria-label=${'Piece ' + (i + 1) + ' name'} value=${p.name} onInput=${e => setPiece(i, { name: e.currentTarget.value })} />
+              <button class="btn sm ghost pc-pick" aria-label=${'Pick a named piece for ' + p.name} onClick=${() => setPicking({ mode: 'assign', i })}>Pick</button></span>`}
           ${single ? html`<input class="pc-in" inputmode="decimal" aria-label=${lab + ' of ' + p.name} value=${p.pts[0].t} placeholder="nm" onInput=${e => setPt(i, 0, { t: e.currentTarget.value })} />
               ${cols.map(c => html`<input class="pc-in" key=${c} inputmode="decimal" aria-label=${c + ' of ' + p.name} value=${(p.pts[0].x || {})[c] || ''} onInput=${e => setPt(i, 0, { x: { [c]: e.currentTarget.value } })} />`)}`
             : html`<span class="pc-val tnum">${fmtV(ps.mean)}<small>${ps.ts && ps.ts.length ? `n=${ps.ts.length}` : ''}</small></span>
@@ -3825,7 +3875,8 @@ function PiecesEditor({ value, kind, onChange }) {
           </div>` : null}
       </div>`;
     })}
-    <div class="row gap wrap pc-acts"><button class="btn sm" onClick=${addPiece}>${I.plus()}<span>Piece</span></button>
+    ${picking ? html`<${PiecePicker} kind=${kind} onPick=${onPick} onClose=${() => setPicking(null)} />` : null}
+    <div class="row gap wrap pc-acts"><button class="btn sm" onClick=${() => setPicking({ mode: 'add' })}>${I.plus()}<span>Piece</span></button>
       ${colIn == null ? html`<button class="btn sm ghost" onClick=${() => setColIn('')}>${I.plus()}<span>Column</span></button>`
         : html`<span class="row gap"><input class="col-in" aria-label="New column name" value=${colIn} placeholder=${kind === 'etch' ? 'e.g. Mask left (nm)' : 'e.g. RI'} onInput=${e => setColIn(e.currentTarget.value)} /><button class="btn sm primary" onClick=${addCol}>Add</button></span>`}
       ${cols.map(c => html`<button class="chip-btn ghost" key=${c} aria-label=${'Remove column ' + c} onClick=${() => delCol(c)}>${c} ×</button>`)}</div>
@@ -3858,7 +3909,7 @@ function TargetCalc({ sid, s, st }) {
   const nx = later.find(x => norm(x.tool) === norm(st.tool) && norm(x.recipe) === norm(st.recipe)) || later[0];
   const use = () => {
     updStep(sid, nx.id, x => {
-      if (r.basis === 'cyc') { x.timeV = String(Math.ceil(tf.t)); x.timeU = 'cyc'; } else { x.timeV = String(+tf.t.toFixed(2)); x.timeU = 'min'; }
+      if (r.basis === 'cyc') { x.timeV = String(Math.ceil(tf.t)); x.timeU = 'cyc'; } else { x.timeV = String(+tf.t.toFixed(3)); x.timeU = 'min'; }
       x.timeFromCal = st.id;
     });
     updStep(sid, st.id, x => { x.target = tgt; }, 400);
@@ -3894,7 +3945,7 @@ function RunBlock({ sid, s, st }) {
     ${cal ? html`<p class="small muted">Process time set from the calibration in ${stepLabel(s, cal)} ${cal.name}.</p>` : null}
     ${st.timeFromTimer && st.timeV ? html`<p class="small muted">Process time filled in from the timer. Change it if the actual time differed.</p>` : null}
     <div class="sec">Pieces</div>
-    <${PiecesEditor} value=${{ pieces: piecesOf(st), cols: st.cols || [] }} kind=${st.kind}
+    <${PiecesEditor} linkable value=${{ pieces: piecesOf(st), cols: st.cols || [] }} kind=${st.kind}
       onChange=${(v, d) => set({ pieces: v.pieces.map(p => (p.legacy ? { id: newId('pc'), name: p.name, role: p.role, pts: p.pts } : p)), cols: v.cols, thkV: '' }, d)} />
     <${RunResults} x=${st} kind=${st.kind} />
     ${odd ? html`<p class="caution small">This rate is outside the plausible range. Check the time and the thickness units.</p>` : null}
@@ -3907,7 +3958,11 @@ function RunBlock({ sid, s, st }) {
 }
 
 /* ---------------- sub-steps ---------------- */
-const subSec = sb => { const v = num(sb.durV); return Number.isFinite(v) && v > 0 ? Math.round(v * (DUR_F[sb.durU] || 60)) : 0; };
+const subSec = sb => { const v = num(sb.durV); return Number.isFinite(v) && v > 0 ? Math.round(v * (DUR_F[sb.durU] || 60)) : fieldTimeSec(sb); };
+const SUB_DEFS = [fd('Resist', 'text'), fd('Speed', 'num', 'rpm'), fd('Time', 'num', 's'), fd('Hotplate', 'text'), fd('Temperature', 'num', '°C'), fd('Chemistry', 'text'), fd('Concentration', 'text'), fd('Developer', 'text')];
+function setSubF(sid, st, sb, fid, patch, d = 600) {
+  updStep(sid, st.id, x => { const y = (x.subs || []).find(z => z.id === sb.id); const f = y && (y.fields || []).find(z => z.id === fid); if (f) Object.assign(f, patch); }, d);
+}
 const subKey = (st, sb) => `${st.id}:${sb.id}:${sb.ends}`;
 function startSubTimer(sid, st, sb) {
   const sec = subSec(sb);
@@ -3948,6 +4003,7 @@ function SubRow({ sid, st, sb, now }) {
     ${sb.done ? html`<span class="tm tnum">${sb.start ? `${fmtTime(sb.start)} to ` : ''}${fmtTime(sb.done)}</span>`
       : running ? html`<span class="runbox"><span class="big tnum">${cdText(left)}</span><span class="u">${left > 0 ? `until ${fmtTime(sb.ends)}` : 'time is up'}</span></span>`
       : sec ? html`<button class="tbtn" aria-label=${`Start ${fmtClock(sec * 1000)} timer for ${sb.name}`} onClick=${() => startSubTimer(sid, st, sb)}>${I.play()}<span class="tnum">${fmtClock(sec * 1000)}</span></button>` : null}
+    ${(sb.fields || []).length ? html`<div class="sub-f">${sb.fields.map(f => html`<${FieldInput} key=${f.id} f=${f} onSet=${(patch, d) => setSubF(sid, st, sb, f.id, patch, d)} />`)}</div>` : null}
   </div>`;
 }
 function PlanList({ sid, st }) {
@@ -3960,6 +4016,7 @@ function PlanList({ sid, st }) {
     ${st.status === 'running' && !left ? html`<button class="btn primary wide" onClick=${() => completeStep(sid, st)}>${I.check()}<span>Mark step done</span></button>` : null}`;
 }
 function SubsEditor({ subs, onChange }) {
+  const [openF, setOpenF] = useState(() => new Set());
   const upd = (i, patch, d = 600) => onChange(subs.map((x, j) => (j === i ? { ...x, ...patch } : x)), d);
   const up = i => { if (i < 1) return; const n = subs.slice(); const [x] = n.splice(i, 1); n.splice(i - 1, 0, x); onChange(n, 0); };
   return html`<div class="subs-ed">
@@ -3970,8 +4027,10 @@ function SubsEditor({ subs, onChange }) {
       <input aria-label=${'Sub-step ' + (i + 1) + ' parameters'} value=${x.params} placeholder="e.g. sonicate" onInput=${e => upd(i, { params: e.currentTarget.value })} />
       <span class="unit-in sub-timer"><input inputmode="decimal" aria-label=${'Sub-step ' + (i + 1) + ' timer'} value=${x.durV || ''} placeholder="Timer" onInput=${e => upd(i, { durV: e.currentTarget.value })} />
         <select aria-label=${'Sub-step ' + (i + 1) + ' timer unit'} value=${x.durU || 'min'} onChange=${e => upd(i, { durU: e.currentTarget.value }, 0)}>${['s', 'min', 'h'].map(u => html`<option value=${u}>${u}</option>`)}</select></span>
-      <span class="sub-ed-acts"><button class="icon-btn" aria-label="Move sub-step up" disabled=${i === 0} onClick=${() => up(i)}>${I.up()}</button>
+      <span class="sub-ed-acts"><button class="btn sm ghost" aria-expanded=${openF.has(x.id) ? 'true' : 'false'} onClick=${() => setOpenF(o => { const n = new Set(o); if (n.has(x.id)) n.delete(x.id); else n.add(x.id); return n; })}>Settings${(x.fields || []).length ? ` (${x.fields.length})` : ''}</button>
+        <button class="icon-btn" aria-label="Move sub-step up" disabled=${i === 0} onClick=${() => up(i)}>${I.up()}</button>
         <button class="icon-btn" aria-label="Remove sub-step" onClick=${() => onChange(subs.filter((_, j) => j !== i), 0)}>${I.trash()}</button></span>
+      ${openF.has(x.id) ? html`<div class="sub-ed-f"><${FieldsEditor} kind="" defs=${SUB_DEFS} fields=${x.fields || []} onChange=${(fields, d) => upd(i, { fields }, d)} /></div>` : null}
     </div>`)}
     <div><button class="btn sm ghost" onClick=${() => onChange([...subs, { id: newId('u'), name: '', params: '', durV: '', durU: 'min' }], 0)}>${I.plus()}<span>Sub-step</span></button></div>
   </div>`;
@@ -4021,7 +4080,7 @@ function StepPage({ id, step }) {
       ${st.params ? html`<p class="sp-cond">${st.params}</p>` : null}
       <${PlanList} sid=${id} st=${st} />
       <${FieldsBlock} sid=${id} s=${s} st=${st} />
-      ${isRateKind(st.kind) ? html`<${RunBlock} sid=${id} s=${s} st=${st} />` : null}
+      ${isRateKind(st.kind) && st.role !== 'coat' ? html`<${RunBlock} sid=${id} s=${s} st=${st} />` : null}
       ${st.kind === 'metrology' ? html`<div class="sec">Measurements</div><${MeasEditor} kind=${st.kind} meas=${st.meas || []} onChange=${(meas, d) => set({ meas }, d)} />` : null}
       <div class="sec">Record</div>
       <${Field} label="Notes"><${AutoText} value=${st.notes} label="Notes" placeholder="Observations, deviations, anything to remember" onInput=${v => set({ notes: v })} /></${Field}>
@@ -4048,7 +4107,7 @@ function StepEditSheet({ sid, stepId }) {
         <${Field} label="Step name" cls="span2"><input value=${st.name} onInput=${e => set({ name: e.currentTarget.value })} /></${Field}>
         <${Field} label="Type"><span class="sel-glyph"><${Glyph} kind=${st.kind} /><select value=${st.kind} onChange=${e => set({ kind: e.currentTarget.value }, 0)}>${KIND_KEYS.map(k => html`<option value=${k}>${KINDS[k].label}</option>`)}</select></span></${Field}>
         <${Field} label="Tool"><input list="dl-tools" value=${st.tool} placeholder="Equipment" onInput=${e => set({ tool: e.currentTarget.value })} /></${Field}>
-        <${Field} label="Recipe" cls="span2"><input list=${'dl-erec-' + st.id} value=${st.recipe} placeholder="Recipe name or chemistry" onInput=${e => set({ recipe: e.currentTarget.value })} />
+        <${Field} label="Recipe" cls="span2"><input list=${'dl-erec-' + st.id} value=${st.recipe} placeholder="Recipe name or chemistry" onInput=${e => set(recipePatch(st.fields || [], st.recipe, e.currentTarget.value))} />
           <datalist id=${'dl-erec-' + st.id}>${[...(sug.recipes.get(norm(st.tool)) || [])].map(r => html`<option value=${r} />`)}</datalist></${Field}>
         ${rk ? html`<${Field} label="Method"><input list=${'dl-m-' + st.kind} value=${st.method} onInput=${e => set({ method: e.currentTarget.value })} /></${Field}>
           <${Field} label=${st.kind === 'etch' ? 'Material etched' : 'Material deposited'}><input list="dl-mats" value=${st.material} onInput=${e => set({ material: e.currentTarget.value })} /></${Field}>` : null}
@@ -4056,7 +4115,7 @@ function StepEditSheet({ sid, stepId }) {
         ${(st.subs || []).length ? null : html`<${Field} label="Timer for the whole step" cls="span2"><span class="unit-in timer-in"><input inputmode="decimal" aria-label="Timer length" value=${st.durV || ''} placeholder="0" onInput=${e => set({ durV: e.currentTarget.value })} />
           <select aria-label="Timer unit" value=${st.durU || 'min'} onChange=${e => set({ durU: e.currentTarget.value }, 0)}>${['s', 'min', 'h'].map(u => html`<option value=${u}>${TIME_LABEL[u] || u}</option>`)}</select></span></${Field}>`}
       </div>
-      <${FieldsEditor} kind=${st.kind} fields=${st.fields || []} onChange=${(fields, d) => set({ fields }, d)} />
+      <${FieldsEditor} kind=${st.kind} fields=${st.fields || []} onChange=${(fields, d) => set({ fields, recipe: withRecipe(fields, st.recipe) }, d)} />
       <${SubsEditor} subs=${st.subs || []} onChange=${(subs, d) => set({ subs }, d)} />
       <div class="st-foot">
         <button class="btn ghost sm" disabled=${i === 0} onClick=${() => moveStep(sid, i, -1)}>${I.up()}<span>Up</span></button>
@@ -4074,13 +4133,18 @@ function StepEditSheet({ sid, stepId }) {
 
 /* ---------------- compact rows and the Now list ---------------- */
 const sameDay = t => new Date(t).toDateString() === new Date().toDateString();
-const subsLine = subs => subs.map(x => [x.name, x.params].filter(Boolean).join(' ')).filter(Boolean).join(' · ');
+const subsLine = subs => subs.map(x => [x.name, x.params || (x.fields || []).map(f => fText(f, fUsed(f))).filter(Boolean).join(' ')].filter(Boolean).join(' ')).filter(Boolean).join(' · ');
 function CompactStep({ sid, s, st, i, isNext, label }) {
   const r = isRateKind(st.kind) ? rateOf(st) : null;
   const unit = getSettings().rateUnit;
   const nImg = (st.imgs || []).length;
   const subs = st.subs || [];
-  const line = [subs.length ? subsLine(subs) : [[st.tool, st.recipe].filter(Boolean).join(', '), st.params].filter(Boolean).join(' · '), fieldsLine(st)].filter(Boolean).join(' · ');
+  const cal = st.timeFromCal ? (s.steps || []).find(x => x.id === st.timeFromCal) : null;
+  const fromCal = cal && num(st.timeV) > 0 ? `Time from ${hasSegs(s) ? '' : 'step '}${stepLabel(s, cal)}: ${fmtSpan(st.timeU === 'cyc' ? num(st.timeV) : (num(st.timeV) * (TIME_UNITS[st.timeU] || 60)) / 60, st.timeU === 'cyc' ? 'cyc' : 't')}` : '';
+  const pcs = (st.pieces || []).filter(p => p.ref).map(regName).join(', ');
+  const line = [fromCal, subs.length ? subsLine(subs) : [[st.tool, st.recipe].filter(Boolean).join(', '), st.params].filter(Boolean).join(' · '), pcs, fieldsLine(st)].filter(Boolean).join(' · ');
+  const prevSt = (s.steps || [])[i - 1];
+  const kitStart = !!st.kit && (!prevSt || prevSt.kit !== st.kit);
   const extra = [r ? fmtRate(r.v, r.basis, unit) + (r.nPieces > 1 ? `, ${r.nPieces} pieces` : '') : '', nImg ? plural(nImg, 'photo') : ''].filter(Boolean).join(' · ');
   const rs = subs.find(x => x.ends && !x.done);
   let right = null;
@@ -4088,7 +4152,8 @@ function CompactStep({ sid, s, st, i, isNext, label }) {
   else if (st.status === 'skipped') right = html`<span class="skip-label">Skipped</span>`;
   else if (st.status === 'running') right = rs ? html`<${Countdown} tmr=${{ ends: rs.ends }} cls="run-chip" />` : st.tmr && st.tmr.ends ? html`<${Countdown} tmr=${st.tmr} cls="run-chip" />`
     : html`<span class="run-chip"><${Elapsed} since=${st.startedAt} /></span>`;
-  return html`<li id=${'step-' + st.id} class=${`crow ${st.status}${isNext ? ' cur' : ''}`}>
+  return html`<li id=${'step-' + st.id} class=${`crow ${st.status}${isNext ? ' cur' : ''}${st.kit ? ' in-kit' : ''}`}>
+    ${kitStart ? html`<div class="kit-cap">Kit: ${st.kitName || 'linked steps'}</div>` : null}
     <button class="crow-btn" onClick=${() => go({ v: 'step', id: sid, step: st.id })}>
       <span class="cn tnum">${label || i + 1}</span><span class="cg"><${Glyph} kind=${st.kind} state=${st.status} size=${18} label=${(KINDS[st.kind] || KINDS.other).label} /></span>
       <span class="cm"><b>${st.name || 'Untitled step'}${st.rework ? html` <span class="tag">rework</span>` : null}</b>${line || extra ? html`<span class="cp">${[line, extra].filter(Boolean).join(' · ')}</span>` : null}</span>
@@ -4180,15 +4245,24 @@ function fieldSuggest() {
     return m;
   });
 }
-const untouched = st => (st.fields || []).filter(f => String(f.val || '') === '' && String(f.plan || '') !== '');
+function allFields(st) {
+  const out = (st.fields || []).map(f => ({ f, where: '' }));
+  for (const s of st.subs || []) for (const f of s.fields || []) out.push({ f, where: s.name, sub: s.id });
+  return out;
+}
+const untouched = st => allFields(st).filter(({ f }) => String(f.val || '') === '' && String(f.plan || '') !== '');
 async function confirmUntouched(sid, st) {
   const un = untouched(st);
   const ok = await confirmBox({ title: 'Confirm the untouched fields',
-    body: `${un.map(f => `${f.name}: ${fText(f, String(f.plan))}`).join(', ')}. ${un.length === 1 ? 'It was' : 'These were'} not changed. Record ${un.length === 1 ? 'it' : 'them'} as planned and finish the step?`,
+    body: `${un.map(({ f, where }) => `${where ? where + ' · ' : ''}${f.name}: ${fText(f, String(f.plan))}`).join(', ')}. ${un.length === 1 ? 'It was' : 'These were'} not changed. Record ${un.length === 1 ? 'it' : 'them'} as planned and finish the step?`,
     ok: 'Record as planned and finish' });
   if (!ok) { go({ v: 'step', id: sid, step: st.id }); return; }
   const now = Date.now();
-  updStep(sid, st.id, x => { for (const f of x.fields || []) if (String(f.val || '') === '' && String(f.plan || '') !== '') { f.val = String(f.plan); f.conf = now; } });
+  updStep(sid, st.id, x => {
+    const fix = f => { if (String(f.val || '') === '' && String(f.plan || '') !== '') { f.val = String(f.plan); f.conf = now; } };
+    (x.fields || []).forEach(fix);
+    for (const s of x.subs || []) (s.fields || []).forEach(fix);
+  });
   const cur = (view('samples')[sid].steps || []).find(x => x.id === st.id);
   if (cur) completeStep(sid, cur, true);
 }
@@ -4227,9 +4301,15 @@ function FieldInput({ f, onSet }) {
 }
 function FieldsBlock({ sid, s, st }) {
   const fields = st.fields || [];
-  const setF = (id, patch, d = 600) => updStep(sid, st.id, x => { const f = (x.fields || []).find(y => y.id === id); if (f) Object.assign(f, patch); }, d);
+  const setF = (id, patch, d = 600) => updStep(sid, st.id, x => {
+    const f = (x.fields || []).find(y => y.id === id);
+    if (!f) return;
+    Object.assign(f, patch);
+    if (norm(f.name) === 'recipe' && fUsed(f)) x.recipe = fUsed(f);
+  }, d);
   if (!fields.length) {
-    return typeFieldsFor(st.kind).length ? html`<div><button class="btn sm ghost" onClick=${() => addTypeFields(sid, st)}>${I.plus()}<span>Add the ${(KINDS[st.kind] || KINDS.other).label.toLowerCase()} fields</span></button></div>` : null;
+    const subSettings = (st.subs || []).some(x => (x.fields || []).length);
+    return typeFieldsFor(st.kind).length && !subSettings ? html`<div><button class="btn sm ghost" onClick=${() => addTypeFields(sid, st)}>${I.plus()}<span>Add the ${(KINDS[st.kind] || KINDS.other).label.toLowerCase()} fields</span></button></div>` : null;
   }
   const nCh = fields.filter(fChanged).length;
   const rework = st.kind === 'inspect' && fields.some(f => /result/i.test(f.name) && norm(fUsed(f)) === 'rework');
@@ -4238,10 +4318,10 @@ function FieldsBlock({ sid, s, st }) {
     ${fields.some(f => f.plan) ? html`<p class="small muted fcap">Grey values are the plan. Type over one only when it differed.</p>` : null}
     ${rework ? html`<button class="btn sm" onClick=${() => reworkLitho(sid, s, st)}>${I.plus()}<span>Add rework copies of the litho steps above</span></button>` : null}`;
 }
-function FieldsEditor({ kind, fields, onChange }) {
+function FieldsEditor({ kind, fields, onChange, defs }) {
   const [nf, setNf] = useState(null);
   const have = new Set(fields.map(f => norm(f.name)));
-  const missing = typeFieldsFor(kind).filter(d => !have.has(norm(d.name)));
+  const missing = (defs || typeFieldsFor(kind)).filter(d => !have.has(norm(d.name)));
   const upd = (i, patch, d = 600) => onChange(fields.map((f, j) => (j === i ? { ...f, ...patch } : f)), d);
   const add = d => onChange([...fields, { id: newId('f'), name: d.name, unit: d.unit || '', kind: d.kind || 'text', opts: [...(d.opts || [])], plan: '', val: '' }], 0);
   const addNew = () => {
@@ -4313,10 +4393,10 @@ function reworkLitho(sid, s, st) {
 function fieldsCsv() {
   const head = ['Date (ISO UTC)', 'Sample', '#', 'Step', 'Type', 'Status', 'Field', 'Unit', 'Planned', 'Used', 'Changed from plan', 'How recorded'];
   const rows = [head];
-  for (const s of Object.values(view('samples'))) for (const st of s.steps || []) for (const f of st.fields || []) {
+  for (const s of Object.values(view('samples'))) for (const st of s.steps || []) for (const { f, where } of allFields(st)) {
     const v = String(f.val || ''), p = String(f.plan || '');
     const how = v === '' ? (p ? 'not yet confirmed' : 'not recorded') : f.conf ? 'confirmed as planned' : 'entered';
-    rows.push([iso(st.doneAt || st.startedAt || s.updated), s.name, stepLabel(s, st), st.name, (KINDS[st.kind] || KINDS.other).label, st.status, f.name, f.unit || '', p, fUsed(f), fChanged(f) ? 'yes' : '', how]);
+    rows.push([iso(st.doneAt || st.startedAt || s.updated), s.name, stepLabel(s, st), st.name, (KINDS[st.kind] || KINDS.other).label, st.status, where ? `${where} · ${f.name}` : f.name, f.unit || '', p, fUsed(f), fChanged(f) ? 'yes' : '', how]);
   }
   return '\ufeff' + rows.map(r => r.map(c => { const v = String(c == null ? '' : c); return /[",\n]/.test(v) ? `"${v.replace(/"/g, '""')}"` : v; }).join(',')).join('\r\n');
 }
@@ -4324,6 +4404,199 @@ function fieldsGuide() {
   const all = typeDefaults();
   const parts = KIND_KEYS.filter(k => (all[k] || []).length).map(k => `${k}: ${all[k].map(f => f.name + (f.unit ? ` (${f.unit})` : '') + (f.opts && f.opts.length ? ` [${f.opts.join('/')}]` : '')).join(', ')}`);
   return `11. fields: the settings this step records, each with the planned value written in the traveler (value) and its unit. Prefer these names by kind: ${parts.join('; ')}. Include only fields whose value the traveler gives for this step, and never invent a value.`;
+}
+
+/* ---------------- starter templates and kits ----------------
+   Structure only: names, sub-steps, fields with units, timers, pieces and drawing operations. No numbers, except the
+   acetone and IPA times (3 min) and the 10 min chamber coat and calibration that Jubair gave. Planned values come
+   from his traveler or from the edit sheet. */
+function fd(name, kind = 'num', unit = '', opts) { return { name, kind, unit, opts: opts || [] }; }
+const sb0 = (name, durV = '', durU = 'min', fields = []) => ({ name, params: '', durV, durU, fields });
+const COAT_F = () => [fd('Resist', 'text'), fd('Speed', 'num', 'rpm'), fd('Time', 'num', 's')];
+const BAKE_F = () => [fd('Hotplate', 'text'), fd('Temperature', 'num', '°C'), fd('Time', 'num', 's')];
+const MEAS_F = opts => fd('Measured with', 'choice', '', opts);
+const DEP_F = () => [fd('Recipe', 'text'), fd('Temperature', 'num', '°C'), fd('Power', 'num', 'W'), fd('Pressure', 'num', 'mTorr'), fd('Gases', 'text')];
+const ICP_F = () => [fd('Recipe', 'text'), fd('ICP power', 'num', 'W'), fd('RF power', 'num', 'W'), fd('Pressure', 'num', 'mTorr'), fd('Gases', 'text')];
+const STARTER = [
+  { name: 'Solvent clean', kind: 'clean', subs: [sb0('Acetone', '3'), sb0('IPA', '3'), sb0('DI rinse'), sb0('N₂ dry')], fields: [fd('Sonication', 'bool')] },
+  { name: 'Acid dip', kind: 'clean', subs: [sb0('Dip', '', 's', [fd('Chemistry', 'text'), fd('Concentration', 'text'), fd('Temperature', 'num', '°C'), fd('Time', 'num', 's')]), sb0('DI rinse'), sb0('N₂ dry')] },
+  { name: 'Resist strip', kind: 'clean', subs: [sb0('Strip', '', 'min', [fd('Stripper', 'text'), fd('Temperature', 'num', '°C'), fd('Time', 'num', 'min')]), sb0('IPA'), sb0('DI rinse'), sb0('N₂ dry')], ops: [{ op: 'strip', m: 'resist' }] },
+  { name: 'Liftoff', kind: 'clean', subs: [sb0('Soak', '', 'min', [fd('Solvent', 'text'), fd('Temperature', 'num', '°C'), fd('Time', 'num', 'min'), fd('Sonication', 'bool')]), sb0('IPA'), sb0('DI rinse'), sb0('N₂ dry')], ops: [{ op: 'liftoff' }] },
+  { name: 'O₂ descum', kind: 'plasma', fields: [fd('Gas', 'text'), fd('Flow', 'num', 'sccm'), fd('Power', 'num', 'W'), fd('Pressure', 'num', 'mTorr'), fd('Time', 'num', 'min')] },
+  { name: 'Resist coat', kind: 'litho', subs: [sb0('HMDS'), sb0('Coat', '', 's', COAT_F()), sb0('Bake', '', 's', BAKE_F())] },
+  { name: 'Bilayer resist coat', kind: 'litho', subs: [sb0('HMDS'), sb0('Coat 1', '', 's', COAT_F()), sb0('Bake 1', '', 's', BAKE_F()), sb0('Coat 2', '', 's', COAT_F()), sb0('Bake 2', '', 's', BAKE_F())] },
+  { name: 'Exposure', kind: 'litho', fields: [fd('Mask', 'text'), fd('Layer', 'text'), fd('Dose', 'num', 'mJ/cm²'), fd('Defocus', 'num'), fd('Alignment', 'choice', '', ['Pass', 'Offset', 'Fail'])], ops: [{ op: 'resist' }] },
+  { name: 'Post-exposure bake', kind: 'litho', fields: BAKE_F() },
+  { name: 'Develop', kind: 'litho', subs: [sb0('Develop', '', 's', [fd('Developer', 'text'), fd('Time', 'num', 's')]), sb0('DI rinse'), sb0('N₂ dry')] },
+  { name: 'Optical inspection', kind: 'inspect', fields: [fd('Result', 'choice', '', ['Pass', 'Rework', 'Fail']), fd('Checked', 'multi', '', ['Develop clear', 'Alignment marks', 'CD', 'Edge bead', 'Particles'])] },
+  { name: 'ICP etch', kind: 'etch', method: 'ICP-RIE', fields: [...ICP_F(), fd('Endpoint', 'text')], pieces: [['Witness 1', 'witness']], ops: [{ op: 'etch' }] },
+  { name: 'RIE5 etch', kind: 'etch', tool: 'RIE5', method: 'RIE', fields: [fd('Recipe', 'text'), fd('RF power', 'num', 'W'), fd('Pressure', 'num', 'mTorr'), fd('Gases', 'text')], pieces: [['Witness 1', 'witness']], ops: [{ op: 'etch' }] },
+  { name: 'Wet etch', kind: 'etch', method: 'Wet', fields: [fd('Chemistry', 'text'), fd('Temperature', 'num', '°C')], pieces: [['Witness 1', 'witness']], ops: [{ op: 'etch' }] },
+  { name: 'Sputter', kind: 'dep', method: 'Sputter', fields: [fd('Recipe', 'text'), fd('Target', 'text'), fd('Power', 'num', 'W'), fd('Pressure', 'num', 'mTorr'), fd('Gases', 'text')], pieces: [['Dummy 1', 'dummy']], cols: ['RI'], ops: [{ op: 'dep' }] },
+  { name: 'PECVD', kind: 'dep', method: 'PECVD', fields: DEP_F(), pieces: [['Dummy 1', 'dummy']], cols: ['RI'], ops: [{ op: 'dep', conf: true }] },
+  { name: 'ALD', kind: 'dep', method: 'ALD', timeU: 'cyc', fields: [fd('Recipe', 'text'), fd('Temperature', 'num', '°C'), fd('Precursor', 'text'), fd('Oxidant', 'text')], pieces: [['Dummy 1', 'dummy']], cols: ['RI'], ops: [{ op: 'dep', conf: true }] },
+  { name: 'E-beam metal stack', kind: 'dep', method: 'E-beam', fields: [fd('Layers', 'text'), fd('Rate', 'num', 'Å/s'), fd('Base pressure', 'num', 'Torr')], ops: [{ op: 'dep' }] },
+  { name: 'RTA', kind: 'thermal', fields: [fd('Peak temperature', 'num', '°C'), fd('Time', 'num', 's'), fd('Ambient', 'text'), fd('Ramp', 'num', '°C/s')] },
+  { name: 'Furnace anneal', kind: 'thermal', fields: [fd('Temperature', 'num', '°C'), fd('Time', 'num', 'min'), fd('Ambient', 'text')] },
+  { name: 'Profilometry', kind: 'metrology', fields: [MEAS_F(['Dektak', 'AFM'])] },
+  { name: 'Ellipsometry', kind: 'metrology', fields: [fd('Instrument', 'text')] },
+  { name: 'Electrical test', kind: 'metrology', fields: [fd('Test', 'choice', '', ['TLM', 'I–V', 'C–V', 'Hall'])] },
+];
+const KITS = [
+  { name: 'Hardmask deposition', steps: [
+    { name: 'Chamber coat', kind: 'dep', role: 'coat', durV: '10', durU: 'min', fields: [fd('Recipe', 'text')] },
+    { name: 'Hardmask calibration', kind: 'dep', role: 'cal', timeV: '10', timeU: 'min', fields: [...DEP_F(), MEAS_F(['Ellipsometer', 'Filmetrics', 'Dektak', 'AFM'])], pieces: [['Dummy 1', 'dummy'], ['Dummy 2', 'dummy']], cols: ['RI'] },
+    { name: 'Hardmask deposition', kind: 'dep', role: 'main', fields: DEP_F(), ops: [{ op: 'dep', conf: true }] }] },
+  { name: 'Etch with calibration', steps: [
+    { name: 'Etch calibration', kind: 'etch', role: 'cal', fields: [...ICP_F(), MEAS_F(['AFM', 'Dektak'])], pieces: [['Witness 1', 'witness']] },
+    { name: 'Etch', kind: 'etch', role: 'main', fields: ICP_F(), ops: [{ op: 'etch' }] }] },
+];
+const newField = d => ({ id: newId('f'), name: d.name, unit: d.unit || '', kind: d.kind || 'text', opts: [...(d.opts || [])], plan: '', val: '' });
+function mkStep(d) {
+  return blankStep({ name: d.name, kind: d.kind, tool: d.tool || '', method: d.method || '', role: d.role || '', durV: d.durV || '', durU: d.durU || 'min',
+    timeV: d.timeV || '', timeU: d.timeU || 'min', fields: (d.fields || []).map(newField),
+    subs: (d.subs || []).map(x => ({ id: newId('u'), name: x.name, params: x.params || '', durV: x.durV || '', durU: x.durU || 'min', fields: (x.fields || []).map(newField) })),
+    pieces: (d.pieces || []).map(([n, r]) => ({ id: newId('pc'), name: n, role: r, pts: [{ t: '', x: {} }] })), cols: [...(d.cols || [])],
+    ops: (d.ops || []).map(o => ({ op: o.op, m: o.m || '', nm: null, at: null, conf: !!o.conf })) });
+}
+function seedStarter(force) {
+  if (!force && (getSettings().starterSeeded || /[?&]noseed\b/.test(location.search))) return 0;
+  let n = 0;
+  const have = new Set(Object.values(view('steplib')).map(p => norm(p.name)));
+  for (const d of STARTER) if (!have.has(norm(d.name))) { put('steplib', newId('p'), { v: 1, ...pickTpl(mkStep(d)), starter: true, created: Date.now() }); n++; }
+  const kits = new Set(Object.values(view('templates')).filter(t => t.kit).map(t => norm(t.name)));
+  for (const k of KITS) if (!kits.has(norm(k.name))) {
+    put('templates', newId('t'), { v: 2, kit: true, name: k.name, desc: '', created: Date.now(), steps: k.steps.map(d => ({ id: newId('s'), ...pickTpl(mkStep(d)) })) });
+    n++;
+  }
+  if (!getSettings().starterSeeded) putSettings({ starterSeeded: 1 });
+  return n;
+}
+function insertKit(t) {
+  const kid = newId('k');
+  return (t.steps || []).map(x => ({ ...stepFromTpl(x), kit: kid, kitName: t.name }));
+}
+const isCal = st => st.role === 'cal' || /calibrat/i.test(st.name || st.label || '');
+/* a step's Recipe field and its recipe box are the same thing; the recipe groups the rate history */
+const recipeField = fields => (fields || []).find(f => norm(f.name) === 'recipe');
+function withRecipe(fields, cur) { const rf = recipeField(fields); return rf && fUsed(rf) ? fUsed(rf) : cur || ''; }
+function recipePatch(fields, cur, v) {
+  const rf = recipeField(fields);
+  return rf ? { recipe: v, fields: fields.map(f => (f === rf ? { ...f, plan: v } : f)) } : { recipe: v };
+}
+
+/* ---------------- named pieces: dummies, witnesses, test pieces ---------------- */
+const regName = p => (p.ref && view('pieces')[p.ref] ? view('pieces')[p.ref].name : p.name);
+function pieceUses(ref) {
+  const m = memoize('pieceUses', () => {
+    const out = new Map();
+    const add = (r, e) => { if (!out.has(r)) out.set(r, []); out.get(r).push(e); };
+    const entry = (p, x, extra) => {
+      const ts = (p.pts || []).map(q => num(q.t)).filter(v => v > 0);
+      const mw = (x.fields || []).find(f => norm(f.name) === 'measured with');
+      return { kind: x.kind, tool: x.tool, recipe: x.recipe, cal: isCal(x), mean: ts.length ? pAvg(ts) : NaN, n: ts.length, how: mw ? fUsed(mw) : '', ...extra };
+    };
+    for (const [sid, s] of Object.entries(view('samples'))) for (const st of s.steps || []) for (const p of st.pieces || []) if (p.ref) {
+      add(p.ref, entry(p, st, { at: st.doneAt || st.startedAt || s.updated || 0, sid, stepId: st.id, who: s.name, step: `${stepLabel(s, st)} ${st.name}`.trim(), status: st.status }));
+    }
+    for (const e of Object.values(view('ratelog'))) for (const p of e.pieces || []) if (p.ref) {
+      add(p.ref, entry(p, e, { at: e.at || e.created || 0, who: e.label || 'Logged run', step: 'Logged run', status: 'done' }));
+    }
+    for (const v of out.values()) v.sort((a, b) => a.at - b.at);
+    return out;
+  });
+  return m.get(ref) || [];
+}
+const hasFilm = ref => pieceUses(ref).some(u => u.kind === 'dep' && u.mean > 0);
+function pieceStatus(id, p) {
+  if (p.usedUp) return 'used up';
+  const u = pieceUses(id);
+  const film = u.filter(x => x.kind === 'dep' && x.mean > 0).pop();
+  if (film) return `has ${fmtNum(film.mean, 3)} nm${film.recipe ? ' ' + film.recipe : ''} from ${fmtDate(film.at)}`;
+  return u.length ? `used in ${plural(u.length, 'run')}` : 'fresh';
+}
+function nextPieceName(kind) {
+  const pre = kind === 'etch' ? 'W-' : 'Si-D';
+  let max = 0;
+  for (const p of Object.values(view('pieces'))) { const m = String(p.name || '').match(new RegExp('^' + pre.replace('-', '\\-') + '(\\d+)$')); if (m) max = Math.max(max, Number(m[1])); }
+  return pre + (max + 1);
+}
+function newPieceDoc(name, kind, notes) {
+  const id = newId('pz');
+  put('pieces', id, { v: 1, name: name.trim(), kind: (kind || '').trim(), source: '', stack: '', place: '', notes: (notes || '').trim(), usedUp: false, created: Date.now() });
+  return id;
+}
+function PiecePicker({ kind, onPick, onClose }) {
+  const [q, setQ] = useState('');
+  const [all, setAll] = useState(false);
+  const [nf, setNf] = useState(null);
+  const list = Object.entries(view('pieces')).filter(([, p]) => (all || !p.usedUp) && (!q || norm(`${p.name} ${p.kind || ''}`).includes(norm(q))))
+    .sort((a, b) => (b[1].updated || 0) - (a[1].updated || 0));
+  return html`<div class="ppick">
+    <div class="row gap ppick-top"><input aria-label="Find a piece" placeholder="Find a piece" value=${q} onInput=${e => setQ(e.currentTarget.value)} />
+      <${Seg} label="Which pieces" value=${all ? 'all' : 'avail'} onChange=${v => setAll(v === 'all')} options=${[['avail', 'Available'], ['all', 'All']]} />
+      <button class="icon-btn" aria-label="Close the piece list" onClick=${onClose}>${I.x()}</button></div>
+    ${list.map(([id, p]) => {
+      const film = kind === 'dep' && hasFilm(id);
+      return html`<div class="pick" key=${id}><span><b>${p.name}</b>${film ? html` <span class="tag2 warn">has a film</span>` : null}
+          <span class="small">${[p.kind, p.place, pieceStatus(id, p)].filter(Boolean).join(' · ')}</span></span>
+        <button class=${'btn sm' + (film ? ' ghost' : '')} onClick=${() => onPick(id, p)}>${film ? 'Use anyway' : 'Use'}</button></div>`;
+    })}
+    ${list.length ? null : html`<p class="small muted">${q ? 'No piece matches.' : 'No named pieces yet. Add one below.'}</p>`}
+    ${nf ? html`<div class="pnew">
+        <input aria-label="New piece name" value=${nf.name} onInput=${e => setNf({ ...nf, name: e.currentTarget.value })} />
+        <input aria-label="New piece kind" value=${nf.kind} placeholder="e.g. Si dummy" onInput=${e => setNf({ ...nf, kind: e.currentTarget.value })} />
+        <input class="pnew-d" aria-label="New piece details" value=${nf.notes} placeholder="Source, starting stack, where it's kept" onInput=${e => setNf({ ...nf, notes: e.currentTarget.value })} />
+        <span class="row gap pnew-a"><button class="btn sm" onClick=${() => setNf(null)}>Cancel</button>
+          <button class="btn sm primary" disabled=${!nf.name.trim()} onClick=${() => { const id = newPieceDoc(nf.name, nf.kind, nf.notes); onPick(id, { name: nf.name.trim(), kind: nf.kind }); }}>Add and use</button></span></div>`
+      : html`<div class="row gap wrap"><button class="btn sm" onClick=${() => setNf({ name: nextPieceName(kind), kind: kind === 'etch' ? 'Witness' : 'Si dummy', notes: '' })}>${I.plus()}<span>New piece</span></button>
+          <button class="btn sm ghost" onClick=${() => onPick(null, null)}>Unnamed piece</button></div>`}
+  </div>`;
+}
+function PiecesView() {
+  const [all, setAll] = useState(false);
+  const [nf, setNf] = useState(null);
+  const list = Object.entries(view('pieces')).filter(([, p]) => all || !p.usedUp).sort((a, b) => (a[1].name || '').localeCompare(b[1].name || '', undefined, { numeric: true }));
+  return html`<${BackLink} label="Rates" fallback=${{ v: 'rates' }} />
+    <div class="page-head"><h1>Pieces</h1><button class="btn" onClick=${() => setNf({ name: nextPieceName('dep'), kind: 'Si dummy' })}>${I.plus()}<span>New</span></button></div>
+    <p class="lede">Dummies, witnesses and test pieces. Each keeps the runs it went through and what was measured on it.</p>
+    ${nf ? html`<div class="pnew"><input aria-label="New piece name" value=${nf.name} onInput=${e => setNf({ ...nf, name: e.currentTarget.value })} />
+        <input aria-label="New piece kind" value=${nf.kind} onInput=${e => setNf({ ...nf, kind: e.currentTarget.value })} />
+        <span class="row gap pnew-a"><button class="btn sm" onClick=${() => setNf(null)}>Cancel</button>
+          <button class="btn sm primary" disabled=${!nf.name.trim()} onClick=${() => { const id = newPieceDoc(nf.name, nf.kind, ''); setNf(null); go({ v: 'piece', id }); }}>Add</button></span></div>` : null}
+    <${Seg} label="Which pieces" value=${all ? 'all' : 'avail'} onChange=${v => setAll(v === 'all')} options=${[['avail', 'Available'], ['all', 'All']]} />
+    ${list.length ? html`<div class="plist">${list.map(([id, p]) => html`<button class="pick as-btn" key=${id} onClick=${() => go({ v: 'piece', id })}>
+        <span><b>${p.name}</b><span class="small">${[p.kind, p.place, pieceStatus(id, p)].filter(Boolean).join(' · ')}</span></span><span class="chev">${I.chevR()}</span></button>`)}</div>`
+      : html`<${Empty} title="No pieces yet"><p>Add pieces here, or name them as you add them to a calibration.</p></${Empty}>`}`;
+}
+function PieceView({ id }) {
+  const p = view('pieces')[id];
+  if (!p) return html`<${BackLink} label="Pieces" fallback=${{ v: 'pieces' }} /><${Empty} title="This piece is not here"><p>It may have been deleted.</p></${Empty}>`;
+  const set = (patch, d = 600) => updDoc('pieces', id, x => Object.assign(x, patch), d);
+  const uses = pieceUses(id);
+  const del = async () => {
+    if (!(await confirmBox({ title: `Delete ${p.name}?`, body: 'Runs that used it keep its name; only the register entry goes.', ok: 'Delete piece', danger: true }))) return;
+    const before = clone(p);
+    removeDoc('pieces', id);
+    go({ v: 'pieces' }, true);
+    toast('Piece deleted', { action: { label: 'Undo', fn: () => put('pieces', id, before) } });
+  };
+  const field = (lab, k, ph) => html`<${Field} label=${lab}><input value=${p[k] || ''} placeholder=${ph || ''} onInput=${e => set({ [k]: e.currentTarget.value })} /></${Field}>`;
+  return html`<${BackLink} label="Pieces" fallback=${{ v: 'pieces' }} />
+    <h1 class="piece-h">${p.name || 'Unnamed piece'}</h1>
+    <p class="small muted">${[p.kind, pieceStatus(id, p)].filter(Boolean).join(' · ')}</p>
+    <div class="grid2">${field('Name', 'name')}${field('Kind', 'kind', 'e.g. Si dummy, GaN witness')}${field('Source', 'source', 'e.g. wafer offcut')}
+      ${field('Starting stack', 'stack', 'e.g. AlScN / GaN')}${field('Kept in', 'place', 'e.g. Box B, slot 2')}${field('Notes', 'notes')}</div>
+    <div class="sec">History<span class="sec-n">${plural(uses.length, 'run')}</span></div>
+    ${uses.length ? html`<div class="table-wrap"><table class="hist"><thead><tr><th>Date</th><th>Run</th><th>Measured</th></tr></thead><tbody>${uses.map((u, i) => html`<tr key=${i}>
+        <td class="nowrap">${fmtDate(u.at)}</td>
+        <td>${u.sid ? html`<button class="linkish" onClick=${() => go({ v: 'step', id: u.sid, step: u.stepId })}>${u.step}</button>` : u.step}
+          <div class="small muted">${[u.who, u.tool, u.recipe, u.cal ? 'calibration' : ''].filter(Boolean).join(' · ')}</div></td>
+        <td>${Number.isFinite(u.mean) ? `${fmtNum(u.mean, 4)} nm ${u.kind === 'etch' ? 'depth' : 'thickness'}` : 'not measured'}
+          ${u.n || u.how ? html`<div class="small muted">${[u.n ? plural(u.n, 'point') : '', u.how].filter(Boolean).join(', ')}</div>` : null}</td></tr>`)}</tbody></table></div>`
+      : html`<p class="small muted">Not used in any run yet.</p>`}
+    <div class="row gap wrap after-steps"><button class="btn sm" onClick=${() => set({ usedUp: !p.usedUp }, 0)}>${p.usedUp ? 'Mark as available' : 'Mark as used up'}</button>
+      <button class="btn sm ghost danger" onClick=${del}>Delete</button></div>`;
 }
 
 /* ---------------- log ---------------- */
@@ -4599,7 +4872,8 @@ function RatesView() {
   const all = rateGroups();
   const groups = all.filter(g => (k === 'all' || g.kind === k) && (!q || norm([g.material, g.method, g.tool, g.recipe].join(' ')).includes(norm(q))));
   return html`
-    <div class="page-head"><h1>Rates</h1><button class="btn" onClick=${() => openRateEntry()}>${I.plus()}<span>Log a run</span></button></div>
+    <div class="page-head"><h1>Rates</h1><div class="row gap"><button class="btn" onClick=${() => go({ v: 'pieces' })}>Pieces</button>
+      <button class="btn" onClick=${() => openRateEntry()}>${I.plus()}<span>Log a run</span></button></div></div>
     <p class="lede">Finished etch and deposition steps with a process time and a depth or thickness collect here, one history per method, material, tool and recipe.</p>
     ${all.length ? html`<div class="toolbar">
         <${Seg} label="Filter by type" value=${k} onChange=${setK} options=${[['all', 'All'], ['etch', 'Etch'], ['dep', 'Deposition']]} />
@@ -4734,7 +5008,8 @@ function RateGroupView({ gk }) {
           return html`<tr key=${r.id} class=${(r.excl ? 'excl' : '') + (note ? ' has-note' : '')}>
             <td class="tnum">${r.n}</td><td class="nowrap">${fmtDate(r.at)}<div class="small muted">${fmtTime(r.at)}</div></td>
             <td class="num tnum"><b>${fmtNum(conv(r.rate))}</b></td>
-            <td>${r.rows.map(x => html`<button class="linkish block nowrap" onClick=${() => openRow(x)}>${x.who}</button>`)}</td>
+            <td>${r.rows.map(x => html`<div><button class="linkish block nowrap" onClick=${() => openRow(x)}>${x.who}</button>${x.cal ? html`<span class="tag2">calibration</span>` : null}
+              ${x.pieces && x.pieces.some(p => p.name) ? html`<div class="small muted">${x.pieces.map(p => p.name).join(', ')}</div>` : null}</div>`)}</td>
             <td class="num tnum">${r.rows.map(x => html`<div class="nowrap">${fmtNum(x.nm, 3)} nm, ${g.basis === 'cyc' ? `${x.cyc} cyc` : fmtDur(x.sec)}${x.pieces && x.pieces.length > 1 ? `, ${x.pieces.length} pieces` : ''}</div>`)}</td>
             ${mk.map(x => { const v = runMeas(r, x.k); return html`<td class="num tnum">${Number.isFinite(v) ? fmtNum(v, 4) : ''}</td>`; })}
             <td class="act"><button class="btn xs ghost" onClick=${() => setRunExcl(r, !r.excl)}>${r.excl ? 'Include' : 'Leave out'}</button></td></tr>
@@ -5037,8 +5312,9 @@ function ImportView({ draft: draft0 }) {
               <option value="seg">Segment heading</option>${KIND_KEYS.map(k => html`<option value=${k}>${KINDS[k].label}</option>`)}</select>
             ${meta ? html`<span class="small muted">${meta}</span>` : null}</div>
           ${r.params ? html`<div class="small imp-params">${r.params}</div>` : null}
+          ${r.tpl ? html`<div class="small imp-params">From your template: ${r.tpl}</div>` : null}
           ${(r.subs || []).length ? html`<div class="small imp-params">Sub-steps: ${subsLine(r.subs)}</div>` : null}
-          ${(r.fields || []).length ? html`<div class="small imp-params">Settings: ${r.fields.map(f => `${f.name} ${fText(f, f.plan)}`).join(', ')}</div>` : null}
+          ${(r.fields || []).some(f => f.plan) ? html`<div class="small imp-params">Settings: ${r.fields.filter(f => f.plan).map(f => `${f.name} ${fText(f, f.plan)}`).join(', ')}</div>` : null}
           ${r.durV ? html`<div><span class="tchip">Timer ${r.durV} ${r.durU || 'min'}</span></div>` : null}
           ${r.flag ? html`<div class="flag-note">${I.flag()}<span>${r.flag}</span></div>` : null}
         </div></li>`;
@@ -5155,7 +5431,13 @@ if (LOCAL) {
     }
   } catch (e) { /* not supported */ }
   if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) {
-    const reg = () => navigator.serviceWorker.register('./sw.js').catch(() => {});
+    const reg = () => navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' }).then(r => {
+      const had = !!navigator.serviceWorker.controller;
+      navigator.serviceWorker.addEventListener('controllerchange', () => { if (had) { updState.ready = true; bump(); } });
+      const check = () => { if (document.visibilityState === 'visible') r.update().catch(() => {}); };
+      addEventListener('visibilitychange', check);
+      setInterval(check, 30 * 60 * 1000);
+    }).catch(() => {});
     if (document.readyState === 'complete') reg(); else addEventListener('load', reg);
   }
   LocalRT.onChange(() => scheduleFolderBackup(false));
@@ -5238,7 +5520,7 @@ function backupData() {
   const pre = LocalRT.BASE + '/';
   for (const [k, at] of LocalRT.tombs) if (k.startsWith(pre)) { const rest = k.slice(pre.length); if (rest.split('/').length === 2) tombs[rest] = at; }
   return { app: 'ProcessTracer', format: 2, exported: new Date().toISOString(),
-    samples: view('samples'), templates: view('templates'), ratelog: view('ratelog'), steplib: view('steplib'), settings: getSettings(), tombs, photos: {} };
+    samples: view('samples'), templates: view('templates'), ratelog: view('ratelog'), steplib: view('steplib'), pieces: view('pieces'), settings: getSettings(), tombs, photos: {} };
 }
 async function buildBackupZip() {
   const data = backupData();
@@ -5553,8 +5835,14 @@ function InstallHint() {
   return html`<div class="banner act" role="status"><span>Install first: tap Share, then <b>Add to Home Screen</b>. The home screen app keeps its own data, works without signal, and iOS will not clear it. Anything entered here in Safari stays in Safari.</span>
     <div class="row gap"><button class="btn sm" onClick=${hide}>Got it</button></div></div>`;
 }
+const updState = { ready: false };
+function UpdateBanner() {
+  if (!updState.ready) return null;
+  return html`<div class="banner act" role="status"><span>A new version of ProcessTracer is ready.</span>
+    <div class="row gap"><button class="btn sm primary" onClick=${() => location.reload()}>Reload</button></div></div>`;
+}
 function LocalBanners() {
-  return html`<${InstallHint} /><${AiJobBanner} /><${BackupBanner} />`;
+  return html`<${UpdateBanner} /><${InstallHint} /><${AiJobBanner} /><${BackupBanner} />`;
 }
 
 /* ---------------- AI import through the user's own OpenAI key ----------------
@@ -5629,21 +5917,23 @@ const AI_SCHEMA = {
     type: 'object', additionalProperties: false, required: ['name', 'steps'],
     properties: { name: STR, steps: { type: 'array', items: {
       type: 'object', additionalProperties: false,
-      required: ['name', 'kind', 'tool', 'recipe', 'method', 'material', 'conditions', 'timer_value', 'timer_unit', 'flag', 'substeps', 'fields'],
+      required: ['name', 'kind', 'tool', 'recipe', 'method', 'material', 'conditions', 'timer_value', 'timer_unit', 'flag', 'substeps', 'fields', 'template'],
       properties: {
         name: STR, kind: { type: 'string', enum: ['clean', 'plasma', 'litho', 'etch', 'dep', 'thermal', 'inspect', 'metrology', 'other'] },
         tool: STR, recipe: STR, method: STR, material: STR, conditions: STR,
         timer_value: { type: ['number', 'null'] }, timer_unit: { type: ['string', 'null'], enum: ['s', 'min', 'h', null] }, flag: STR,
-        substeps: { type: 'array', items: { type: 'object', additionalProperties: false, required: ['name', 'params', 'timer_value', 'timer_unit'],
-          properties: { name: STR, params: STR, timer_value: { type: ['number', 'null'] }, timer_unit: { type: ['string', 'null'], enum: ['s', 'min', 'h', null] } } } },
+        substeps: { type: 'array', items: { type: 'object', additionalProperties: false, required: ['name', 'params', 'timer_value', 'timer_unit', 'fields'],
+          properties: { name: STR, params: STR, timer_value: { type: ['number', 'null'] }, timer_unit: { type: ['string', 'null'], enum: ['s', 'min', 'h', null] },
+            fields: { type: 'array', items: { type: 'object', additionalProperties: false, required: ['name', 'unit', 'value'], properties: { name: STR, unit: STR, value: STR } } } } } },
         fields: { type: 'array', items: { type: 'object', additionalProperties: false, required: ['name', 'unit', 'value'], properties: { name: STR, unit: STR, value: STR } } },
+        template: STR,
       } } } } } } },
 };
 async function startAiImport(text, draft) {
   const S = getSettings();
   const model = S.aiModel || 'gpt-6-astra', effort = S.aiEffort || 'max';
   const r = await oaiFetch('/responses', { method: 'POST', body: {
-    model, reasoning: { effort }, background: true, store: true, instructions: AI_INSTRUCTIONS + '\n' + fieldsGuide(), input: text, max_output_tokens: 100000,
+    model, reasoning: { effort }, background: true, store: true, instructions: AI_INSTRUCTIONS + '\n' + fieldsGuide() + '\n' + templateGuide(), input: text, max_output_tokens: 100000,
     text: { format: { type: 'json_schema', name: 'traveler', strict: true, schema: AI_SCHEMA } },
   } });
   const job = { type: 'import', id: r.id, started: Date.now(), draft, text, model, effort };
@@ -5688,16 +5978,48 @@ function parseAiOutput(r) {
         durV: st.timer_value != null && Number.isFinite(tv) && tv > 0 ? String(tv) : '', durU: ['s', 'min', 'h'].includes(st.timer_unit) ? st.timer_unit : 'min',
         flag: String(st.flag || '').trim(),
         subs: (st.substeps || []).filter(x => x && String(x.name || '').trim()).map(x => ({ id: newId('u'), name: String(x.name).trim(), params: String(x.params || '').trim(),
-          durV: x.timer_value != null && Number(x.timer_value) > 0 ? String(x.timer_value) : '', durU: ['s', 'min', 'h'].includes(x.timer_unit) ? x.timer_unit : 'min' })),
+          durV: x.timer_value != null && Number(x.timer_value) > 0 ? String(x.timer_value) : '', durU: ['s', 'min', 'h'].includes(x.timer_unit) ? x.timer_unit : 'min',
+          fields: aiFields(x.fields, '') })),
         fields: (st.fields || []).filter(x => x && String(x.name || '').trim() && String(x.value || '').trim()).map(x => {
           const k = KINDS[st.kind] ? st.kind : 'other';
           const d = typeFieldsFor(k).find(y => norm(y.name) === norm(x.name));
           const v = String(x.value).trim();
           return { id: newId('f'), name: d ? d.name : String(x.name).trim(), unit: d ? d.unit || '' : String(x.unit || '').trim(), kind: d ? d.kind || 'text' : Number.isFinite(num(v)) ? 'num' : 'text', opts: d ? [...(d.opts || [])] : [], plan: v, val: '' };
         }) });
+      applyTemplate(rows[rows.length - 1], st.template);
     }
   }
   return rows;
+}
+const aiFields = (arr, kind) => (arr || []).filter(x => x && String(x.name || '').trim() && String(x.value || '').trim()).map(x => {
+  const v = String(x.value).trim();
+  return { id: newId('f'), name: String(x.name).trim(), unit: String(x.unit || '').trim(), kind: Number.isFinite(num(v)) ? 'num' : 'text', opts: [], plan: v, val: '' };
+});
+function templateGuide() {
+  const lib = Object.values(view('steplib'));
+  if (!lib.length) return '12. template: always an empty string.';
+  return `12. template: the name of the template that matches this step, copied exactly from this list, or an empty string when none fits: ${lib.map(p => `${p.name} (${p.kind}${(p.subs || []).length ? '; sub-steps ' + p.subs.map(x => x.name).join(', ') : ''})`).join('; ')}. When a template matches, use its sub-step names for substeps, and put the values the traveler gives into fields and into substeps[].fields with the template's field names.`;
+}
+/* start from the matching template in Your steps, then lay the traveler's own values over it */
+function applyTemplate(row, name) {
+  const tp = name ? Object.values(view('steplib')).find(p => norm(p.name) === norm(name)) : null;
+  if (!tp) return row;
+  const base = pickTpl(tp);
+  const take = (bf, given) => {
+    const m = new Map((given || []).map(f => [norm(f.name), f]));
+    const out = bf.map(f => { const g = m.get(norm(f.name)); if (g) m.delete(norm(f.name)); return g ? { ...f, plan: g.plan } : f; });
+    return [...out, ...m.values()];
+  };
+  const subs = base.subs.length ? base.subs.map((b, k) => {
+    const g = row.subs.find(x => norm(x.name) === norm(b.name)) || row.subs[k];
+    return g ? { ...b, params: g.params || b.params, durV: g.durV || b.durV, durU: g.durV ? g.durU : b.durU, fields: take(b.fields, g.fields) } : b;
+  }) : row.subs;
+  Object.assign(row, { kind: base.kind, fields: take(base.fields, row.fields), subs, ops: base.ops, pieces: base.pieces, cols: base.cols, role: base.role,
+    method: row.method || base.method, tool: row.tool || base.tool, tpl: tp.name });
+  const rf = recipeField(row.fields);
+  if (rf && !rf.plan && row.recipe) rf.plan = row.recipe;
+  row.recipe = withRecipe(row.fields, row.recipe);
+  return row;
 }
 async function clearAiJob() { aiState.job = null; try { await LocalRT.meta.del('aiJob'); } catch (e) { /* ignore */ } bump(); }
 async function finishAiJob(job, r) {
@@ -5975,7 +6297,7 @@ const TABS = [
   { v: 'samples', label: 'Samples', icon: I.wafer, match: ['samples', 'sample', 'import', 'step'] },
   { v: 'travelers', label: 'Travelers', icon: I.layers, match: ['travelers', 'traveler', 'steplib', 'templates', 'template'] },
   { v: 'log', label: 'Log', icon: I.log, match: ['log'] },
-  { v: 'rates', label: 'Rates', icon: I.rates, match: ['rates', 'rate'] },
+  { v: 'rates', label: 'Rates', icon: I.rates, match: ['rates', 'rate', 'pieces', 'piece'] },
 ];
 function SaveState() {
   if (store.mode === 'memory') return html`<span class="save-state warn" title=${store.note}>Not saving</span>`;
@@ -6009,6 +6331,8 @@ function Route({ r }) {
     case 'traveler': case 'template': return html`<${TravelerView} key=${r.id} id=${r.id} step=${r.step} />`;
     case 'steplib': return html`<${StepLibView} />`;
     case 'types': return html`<${TypesView} />`;
+    case 'pieces': return html`<${PiecesView} />`;
+    case 'piece': return html`<${PieceView} key=${r.id} id=${r.id} />`;
     case 'drawsetup': return html`<${DrawSetupView} key=${r.col + r.id} col=${r.col} id=${r.id} />`;
     case 'xsec': return html`<${XsViewer} col=${r.col} id=${r.id} step=${r.step} />`;
     case 'import': return html`<${ImportView} draft=${r.draft} />`;
@@ -6026,6 +6350,7 @@ function App() {
     if (store.ver !== seen.current) f(); // catch changes made before this subscription existed
     return () => subs.delete(f);
   }, []);
+  useEffect(() => { if (store.loaded && !store.readOnly) seedStarter(); }, [store.loaded]);
   const r = nav.route;
   const active = (TABS.find(t => t.match.includes(r.v)) || {}).v;
   return html`
