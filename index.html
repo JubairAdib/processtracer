@@ -836,6 +836,37 @@ button.prow:hover { background: var(--surface-2); }
 .ptab-r .pc-in { min-height: 44px; padding: 6px 8px; font-size: 16px; text-align: right; }
 .ptab-v { min-height: 44px; padding: 0 8px; border: 1px dashed var(--rule-2); border-radius: 9px; background: none; color: var(--ink); font: inherit; font-size: 16px; text-align: right; cursor: pointer; }
 .ptab-v small { display: block; color: var(--ink-3); font-size: 11px; }
+/* witnesses: Before, After and the change worked out from them */
+.wt { display: flex; flex-direction: column; gap: 10px; border-top: 1px solid var(--rule); padding-top: 8px; }
+.wt-h, .wt-r { display: grid; grid-template-columns: 34px repeat(3, minmax(0, 1fr)); gap: 8px; align-items: center; }
+.wt-h.tr, .wt-r.tr { grid-template-columns: 30px repeat(3, minmax(0, 1fr)) 40px; }
+.wt-h { padding: 0 2px; color: var(--ink-2); font-size: 12px; font-weight: 700; }
+.wt-h span:not(:first-child) { text-align: right; }
+.wt-p { display: flex; flex-direction: column; gap: 6px; padding-bottom: 10px; border-bottom: 1px solid var(--rule); }
+.wt-n { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; min-width: 0; min-height: 32px; padding: 0; border: 0; background: none; color: inherit; font: inherit; text-align: left; cursor: pointer; }
+.wt-n b { font-size: 16px; overflow-wrap: anywhere; }
+.wt-n span { color: var(--ink-3); font-size: 12px; text-align: right; }
+.wt-p.hole .wt-n b { color: var(--ink-2); }
+.wt-p.hole .wt-n span { color: var(--accent); font-weight: 650; }
+.wt-pe { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.wt-k { overflow: hidden; color: var(--ink-3); font-size: 12px; font-weight: 650; text-overflow: ellipsis; white-space: nowrap; }
+.wt-r input { min-width: 0; min-height: 42px; padding: 6px 9px; font-size: 16px; font-variant-numeric: tabular-nums; text-align: right; }
+.wt-r input.carried { border-style: dashed; background: var(--surface-2); }
+.wt-r input.carried::placeholder { color: var(--ink-2); opacity: 1; }
+.wt-r input.neg { border-color: var(--danger); color: var(--danger); }
+.wt-d { padding-right: 2px; font-size: 16px; font-weight: 750; text-align: right; }
+.wt-d.neg { color: var(--danger); }
+.wt-d.muted { color: var(--ink-3); font-weight: 600; }
+.wt-w { padding-right: 9px; color: var(--ink-3); font-size: 15px; text-align: right; }
+.wt-s { margin: 0; color: var(--ink-3); font-size: 12px; line-height: 1.35; }
+.wt-s b { color: var(--accent); font-weight: 650; }
+.wt-s.warn { color: var(--danger); font-weight: 650; }
+.wt-now { display: grid; gap: 3px; margin: 10px 0 4px; padding: 12px; border-radius: 10px; background: var(--surface-2); }
+.wt-now span { color: var(--ink-2); font-size: 13px; }
+.wt-now b { font-size: 17px; }
+.wt-hist td { vertical-align: top; }
+.wt-hist td.muted { color: var(--ink-3); }
+.pcs2 { display: flex; flex-direction: column; gap: 8px; }
 .ptab-add { align-items: center; margin-top: -4px; }
 .pts { display: flex; flex-direction: column; gap: 6px; margin: 6px 0 4px; }
 .notecard { display: flex; flex-direction: column; gap: 2px; width: 100%; padding: 10px 12px; border: 0; border-radius: 10px; background: var(--surface-2); color: var(--ink); font: inherit; font-size: 15px; text-align: left; white-space: pre-wrap; cursor: pointer; }
@@ -903,12 +934,9 @@ body:has(.sp-act):has(.timerbar) .toasts { bottom: auto; }
 </script>
 <script>
 const LOCAL = true;
-const BUILD = '2026.10.07.0424';
+const BUILD = '2026.10.17.1829';
 /* ---------------- on-device runtime: everything stays in this browser ---------------- */
 const randHex = n => { const a = new Uint8Array(Math.ceil(n / 2)); crypto.getRandomValues(a); return Array.from(a, b => b.toString(16).padStart(2, '0')).join('').slice(0, n); };
-const toBuf = blob => (blob.arrayBuffer ? blob.arrayBuffer() : new Promise((res, rej) => {
-  const fr = new FileReader(); fr.onload = () => res(fr.result); fr.onerror = () => rej(fr.error); fr.readAsArrayBuffer(blob);
-}));
 const LocalRT = (() => {
   const BASE = 'data/users/local/app';
   let idb = null, ok = false;
@@ -1039,40 +1067,7 @@ const LocalRT = (() => {
   };
 })();
 
-/* ---------------- zip (stored entries; reads stored or deflated) ---------------- */
-const CRC_T = (() => { const t = new Uint32Array(256); for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; } return t; })();
-function crc32(u8) { let c = 0xFFFFFFFF; for (let i = 0; i < u8.length; i++) c = CRC_T[(c ^ u8[i]) & 0xFF] ^ (c >>> 8); return (c ^ 0xFFFFFFFF) >>> 0; }
-function dosTime(d) {
-  return { time: (d.getHours() << 11) | (d.getMinutes() << 5) | (d.getSeconds() >> 1),
-    date: ((Math.max(1980, d.getFullYear()) - 1980) << 9) | ((d.getMonth() + 1) << 5) | d.getDate() };
-}
-async function makeZip(entries) {
-  const enc = new TextEncoder();
-  const parts = [], central = [];
-  let offset = 0;
-  const { time, date } = dosTime(new Date());
-  for (const e of entries) {
-    const nameB = enc.encode(e.name);
-    const u8 = typeof e.data === 'string' ? enc.encode(e.data) : new Uint8Array(await toBuf(e.data));
-    const crc = crc32(u8), size = u8.length;
-    const lh = new DataView(new ArrayBuffer(30));
-    lh.setUint32(0, 0x04034b50, true); lh.setUint16(4, 20, true); lh.setUint16(6, 0x0800, true); lh.setUint16(8, 0, true);
-    lh.setUint16(10, time, true); lh.setUint16(12, date, true); lh.setUint32(14, crc, true);
-    lh.setUint32(18, size, true); lh.setUint32(22, size, true); lh.setUint16(26, nameB.length, true); lh.setUint16(28, 0, true);
-    parts.push(new Blob([lh.buffer, nameB, u8]));
-    const ch = new DataView(new ArrayBuffer(46));
-    ch.setUint32(0, 0x02014b50, true); ch.setUint16(4, 20, true); ch.setUint16(6, 20, true); ch.setUint16(8, 0x0800, true); ch.setUint16(10, 0, true);
-    ch.setUint16(12, time, true); ch.setUint16(14, date, true); ch.setUint32(16, crc, true); ch.setUint32(20, size, true); ch.setUint32(24, size, true);
-    ch.setUint16(28, nameB.length, true); ch.setUint32(42, offset, true);
-    central.push(ch.buffer, nameB);
-    offset += 30 + nameB.length + size;
-  }
-  const cdSize = central.reduce((a, b) => a + b.byteLength, 0);
-  const end = new DataView(new ArrayBuffer(22));
-  end.setUint32(0, 0x06054b50, true); end.setUint16(8, entries.length, true); end.setUint16(10, entries.length, true);
-  end.setUint32(12, cdSize, true); end.setUint32(16, offset, true);
-  return new Blob([...parts, ...central, end.buffer], { type: 'application/zip' });
-}
+/* ---------------- zip reader (stored or deflated); the writer, makeZip, is in 03e-traveler.js ---------------- */
 async function readZip(file) {
   const tailLen = Math.min(file.size, 66000);
   const tail = new DataView(await toBuf(file.slice(file.size - tailLen)));
@@ -2135,57 +2130,6 @@ function ratesCsv() {
   return csv([head, ...body]);
 }
 const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-async function travelerHtml(s, withPhotos) {
-  const unit = getSettings().rateUnit;
-  const imgs = new Map();
-  let missing = 0;
-  if (withPhotos) {
-    for (const st of s.steps || []) for (const im of st.imgs || []) {
-      if (imgs.has(im.id) || !(im.type || '').startsWith('image/')) continue;
-      try { imgs.set(im.id, await dataUrlOf(im)); } catch (e) { missing++; }
-    }
-  }
-  let lastSeg = null;
-  const rows = (s.steps || []).map((st, i) => {
-    const sg = segOf(s, st);
-    const head = sg && sg.id !== lastSeg ? `<tr class="seg"><td colspan="7">${esc(`${s.segs.indexOf(sg) + 1}. ${sg.name}`)}</td></tr>` : '';
-    if (sg) lastSeg = sg.id;
-    const r = isRateKind(st.kind) ? rateOf(st) : null;
-    const when = st.status === 'done' ? `Done ${esc(fmtDT(st.doneAt))}${st.timeEdited ? ' (entered later)' : ''}${st.by ? ' by ' + esc(st.by) : ''}`
-      : st.status === 'skipped' ? `Skipped ${esc(fmtDT(st.skippedAt))}` : st.status === 'running' ? `Running since ${esc(fmtDT(st.startedAt))}` : 'Not started';
-    const data = [];
-    if (st.tLog) data.push(esc(tLogText(st.tLog)));
-    /* every value with what was planned when it differed; tool, recipe and conditions have their own columns */
-    for (const { f, where } of allFields(st)) {
-      if (fUsed(f) === '' || (!where && ['tool', 'recipe', 'params'].includes(canonKey(f)) && !fChanged(f))) continue;
-      data.push(`${esc((where ? where + ' ' : '') + f.name)}: ${esc(fText(f, fUsed(f)))}${fChanged(f) ? ` <i>(planned ${esc(fText(f, String(f.plan || '')))})</i>` : ''}`);
-    }
-    if (st.thkV) data.push(`${st.kind === 'etch' ? 'Depth' : 'Thickness'} ${esc(st.thkV)} ${esc(st.thkU)}`);
-    if (r) data.push(`<b>${esc(fmtRate(r.v, r.basis, unit))}</b>${st.excl ? ' (excluded: ' + esc(st.exclWhy) + ')' : ''}`);
-    for (const m of st.meas || []) if (m.k) data.push(`${esc(m.k)} ${esc(m.v)} ${esc(m.u)}`);
-    const pics = (st.imgs || []).map(im => imgs.has(im.id)
-      ? `<figure><img src="${imgs.get(im.id)}" alt=""><figcaption>${esc(im.cap || '')} <span>${esc(fmtDT(im.at))}</span></figcaption></figure>`
-      : `<figure class="nop"><figcaption>${esc(im.cap || im.name || 'Attachment')} <span>${esc(fmtDT(im.at))}</span> (not embedded)</figcaption></figure>`).join('');
-    return head + `<tr class="${st.status}"><td class="n">${esc(stepLabel(s, st) || String(i + 1))}</td><td><b>${esc(st.name)}</b><div class="k">${esc(KINDS[st.kind]?.label || '')}</div></td>
-      <td>${esc([st.tool, st.recipe].filter(Boolean).join(', '))}${st.method ? `<div class="k">${esc(st.method)}</div>` : ''}</td>
-      <td class="pre">${esc(st.params)}</td><td>${when}</td><td>${data.join('<br>')}</td><td class="pre">${esc(st.notes)}</td></tr>
-      ${pics ? `<tr class="pics"><td></td><td colspan="6">${pics}</td></tr>` : ''}`;
-  }).join('');
-  const p = progress(s);
-  const doc = `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>${esc(s.name)} traveler</title><style>
-body{font:13px/1.4 "Helvetica Neue",Helvetica,Arial,sans-serif;color:#17202b;margin:24px}
-h1{font-size:28px;margin:0 0 4px;letter-spacing:-.01em}.meta{color:#485364;margin:0 0 16px}
-table{border-collapse:collapse;width:100%}th,td{border-bottom:1px solid #d5dbe3;padding:6px 8px;text-align:left;vertical-align:top}
-th{font-size:12px;color:#485364;border-bottom:1.5px solid #17202b}.n{width:36px;color:#657083}.k{color:#657083;font-size:12px}
-.pre{white-space:pre-wrap}tr.skipped td{color:#8a93a0}tr.seg td{font-weight:700;font-size:14px;padding-top:16px;border-bottom:1.5px solid #17202b}tr.pics td{border-bottom:1px solid #d5dbe3}
-figure{display:inline-block;margin:4px 8px 4px 0;max-width:300px;vertical-align:top}figure img{max-width:300px;max-height:240px;display:block}
-figcaption{font-size:12px;color:#485364}figcaption span{color:#8a93a0}@media print{body{margin:10mm}tr{break-inside:avoid}}
-</style></head><body><h1>${esc(s.name)}</h1>
-<p class="meta">${s.proc ? 'Process: ' + esc(s.proc) + '<br>' : ''}${esc(s.desc || '')}${s.epi ? '<br>Epi / substrate: ' + esc(s.epi) : ''}<br>Created ${esc(fmtDT(s.created))}, ${p.fin} of ${p.total} steps finished. Exported ${esc(fmtDT(Date.now()))} from ProcessTracer.${missing ? ` ${missing} photo(s) could not be embedded.` : ''}</p>
-<table><thead><tr><th>#</th><th>Step</th><th>Tool, recipe</th><th>Conditions</th><th>Status</th><th>Data</th><th>Notes</th></tr></thead><tbody>${rows}</tbody></table></body></html>`;
-  return { doc, missing };
-}
 function backupJson() {
   return JSON.stringify({ app: 'ProcessTracer', version: 1, exported: new Date().toISOString(),
     samples: view('samples'), templates: view('templates'), ratelog: view('ratelog'), steplib: view('steplib'), pieces: view('pieces'), settings: getSettings() }, null, 1);
@@ -2617,6 +2561,7 @@ function normStep(st0) {
   const st = toV2({ ...st0 });
   st.fields = normFields(st.fields, true);
   st.subs = (st.subs || []).map(sb => ({ ...sb, id: sb.id || newId('u'), fields: normFields(sb.fields, false) }));
+  if (Array.isArray(st.pieces)) st.pieces = syncPieces(st.kind, st.pieces);   // a change from Before and After (witness module)
   st.fv = 2;
   return syncLegacy(st);
 }
@@ -2751,6 +2696,673 @@ function applyVal(f, v) {
   const nv = String(v ?? '').trim();
   f.val = nv; f.conf = null; f.src = '';
   if (String(f.plan || '') !== '' && nv !== '' && !fChanged(f)) f.val = '';
+}
+/* ---------------- witnesses: Before and After ----------------
+   A piece in an etch or a deposition is measured before and after the run (thickness, and RI or any other column).
+   The change is worked out per point, deposited = after − before and etched = before − after, and kept in pts[].t:
+   that is what every rate, statistic and export already reads, so nothing downstream changes. A change typed directly
+   (step heights, and everything recorded before this version) stays exactly as it was typed.
+   A named piece carries its film from run to run: its last After, or its starting measurement on its first run, is the
+   next Before. For a run that has only the change, its Before and After are worked out from the film before it, for
+   display and for carrying forward; the stored change is never touched. */
+const hasVal = v => String(v ?? '').trim() !== '';
+const decOf = s => { const m = String(s ?? '').trim().match(/[.,](\d+)$/); return m ? m[1].length : 0; };
+/* a ± b with as many decimals as the more precise of the two, so 371.70 − 2.10 reads 369.60 */
+function dAdd(a, b, sign = 1) {
+  const x = num(a), y = num(b);
+  if (!Number.isFinite(x) || !Number.isFinite(y)) return '';
+  const d = Math.min(6, Math.max(decOf(a), decOf(b)));
+  const v = x + sign * y;
+  return Math.abs(v) < 0.5 * 10 ** -d ? (0).toFixed(d) : v.toFixed(d);
+}
+function dMean(vals) {
+  const ok = vals.filter(v => Number.isFinite(num(v)));
+  if (!ok.length) return '';
+  const d = Math.min(6, Math.max(...ok.map(decOf)));
+  return (ok.reduce((a, v) => a + num(v), 0) / ok.length).toFixed(d);
+}
+const changeOf = (kind, b, a) => (kind === 'etch' ? dAdd(b, a, -1) : dAdd(a, b, -1));
+const ptsOf = p => (p && Array.isArray(p.pts) && p.pts.length ? p.pts : [{ t: '', x: {} }]);
+/* measured before and after, or the change alone: a piece says so once it is switched; until then a piece with a change
+   typed (all older records) is "change only" and an empty one starts as before-and-after */
+function isBA(p) {
+  if (!p || p.legacy) return false;
+  if (p.mode) return p.mode === 'ba';
+  const pts = p.pts || [];
+  return pts.some(q => hasVal(q.a) || hasVal(q.b)) || !pts.some(q => hasVal(q.t));
+}
+/* the change of one point from its Before and After; a change worked out earlier goes when either is cleared */
+function syncPt(kind, q) {
+  if (Number.isFinite(num(q.a)) && Number.isFinite(num(q.b))) {
+    const t = changeOf(kind, q.b, q.a);
+    return t === q.t && q.tA ? q : { ...q, t, tA: true };
+  }
+  if (q.tA) { const { tA, ...r } = q; return { ...r, t: '' }; }
+  return q;
+}
+function syncPiece(kind, p) {
+  if (!p || !isRateKind(kind) || !isBA(p) || !Array.isArray(p.pts)) return p;
+  const pts = p.pts.map(q => syncPt(kind, q));
+  return pts.every((q, i) => q === p.pts[i]) ? p : { ...p, pts };
+}
+const syncPieces = (kind, pieces) => (Array.isArray(pieces) ? pieces.map(p => syncPiece(kind, p)) : pieces);
+
+/* one film per point: the same number of points carries point by point, otherwise their mean carries to every point */
+function alignFilm(f, n) {
+  if (f.vals.length === n) return { ...f, vals: [...f.vals], x: f.vals.map((_, k) => ({ ...(f.x[k] || {}) })) };
+  const keys = [...new Set(f.x.flatMap(o => Object.keys(o || {})))];
+  const xm = Object.fromEntries(keys.map(c => [c, dMean(f.x.map(o => (o || {})[c]))]).filter(([, v]) => v !== ''));
+  return { ...f, vals: Array(n).fill(dMean(f.vals)), x: Array.from({ length: n }, () => ({ ...xm })) };
+}
+const filmText = f => (f.vals.length <= 2 ? `${f.vals.join(' and ')} nm` : `${dMean(f.vals)} nm (mean of ${f.vals.length} points)`);
+/* the runs a named piece went through, oldest first: its film before and after each, measured or worked out */
+function pieceChain(ref) {
+  return memoize('chain:' + ref, () => {
+    const pd = view('pieces')[ref];
+    const runs = new Map();
+    const add = e => {
+      const cur = runs.get(e.key);
+      if (!cur) { runs.set(e.key, e); return; }
+      for (const w of e.who) if (!cur.who.includes(w)) cur.who.push(w);   // a sample processed alongside: the same run, once
+      if (!cur.full && e.full) runs.set(e.key, { ...e, who: cur.who });
+    };
+    for (const [sid, s] of Object.entries(view('samples'))) for (const st of s.steps || []) {
+      if (st.status !== 'done' || !isRateKind(st.kind)) continue;
+      for (const p of st.pieces || []) if (p.ref === ref) {
+        const key = st.run || ('u:' + sid + ':' + st.id);
+        add({ key, at: st.doneAt || st.loggedAt || s.updated || 0, sid, stepId: st.id, st, p, who: [s.name], label: st.name || 'Unnamed step',
+          full: (p.pts || []).some(q => hasVal(q.t) || hasVal(q.a)) });
+      }
+    }
+    for (const [id, e] of Object.entries(view('ratelog'))) if (isRateKind(e.kind)) for (const p of e.pieces || []) if (p.ref === ref) {
+      add({ key: 'l:' + id, at: e.at || e.created || 0, log: id, st: e, p, who: [e.label || 'Logged run'], label: e.label || 'Logged run', full: true });
+    }
+    const list = [...runs.values()].sort((a, b) => a.at - b.at);
+    const st0 = pd && pd.start;
+    const start = st0 && Number.isFinite(num(st0.t))
+      ? { vals: [String(st0.t).trim()], x: [{ ...(st0.x || {}) }], src: 'start', label: `${pd.name || 'this piece'}'s starting measurement`, mat: '' } : null;
+    let film = start;
+    const out = [];
+    for (const r of list) {
+      const kind = r.st.kind, pts = r.p.pts || [], n = pts.length;
+      const prior = film;
+      const carry = prior ? alignFilm(prior, n) : null;
+      let before = pts.map(() => ''), after = pts.map(() => ''), bx = pts.map(() => ({}));
+      const ax = pts.map(q => ({ ...(q.x || {}) }));
+      let how;
+      if (isBA(r.p) && pts.some(q => hasVal(q.a) || hasVal(q.b))) {
+        before = pts.map(q => (hasVal(q.b) ? String(q.b).trim() : ''));
+        after = pts.map(q => (hasVal(q.a) ? String(q.a).trim() : ''));
+        bx = pts.map(q => ({ ...(q.bx || {}) }));
+        how = 'measured';
+      } else if (pts.some(q => hasVal(q.t))) {
+        if (carry) {
+          before = carry.vals; bx = carry.x;
+          after = pts.map((q, k) => (hasVal(q.t) && hasVal(before[k]) ? dAdd(before[k], q.t, kind === 'etch' ? -1 : 1) : ''));
+          how = 'worked out';
+        } else how = 'change only';
+      } else how = 'not measured';
+      const change = pts.map(q => (hasVal(q.t) ? String(q.t).trim() : ''));
+      out.push({ ...r, kind, before, after, bx, ax, change, how, prior });
+      film = after.length && after.every(hasVal)
+        ? { vals: after, x: ax, src: 'run', label: `${r.label}, ${fmtDate(r.at)}`, at: r.at, how, mat: kind === 'dep' ? (r.st.material || (prior && prior.mat) || '') : (prior && prior.mat) || '' }
+        : null;
+    }
+    return { pd, start, runs: out, now: film };
+  });
+}
+/* the Before a piece brings to this run: the film after its previous run, or its starting measurement */
+function carryFor(ref, key, n) {
+  if (!ref) return null;
+  const ch = pieceChain(ref);
+  const own = ch.runs.find(r => r.key === key);
+  const f = own ? own.prior : ch.now;
+  return f ? alignFilm(f, n) : null;
+}
+/* what the table says about where a piece's Before stands */
+function noBeforeWhy(ref) {
+  const ch = pieceChain(ref);
+  const last = ch.runs[ch.runs.length - 1];
+  if (!last) return 'Measure it before the run, or add a starting measurement on its page.';
+  const why = last.how === 'not measured' ? 'was not measured' : last.how === 'change only' ? 'recorded only the change' : 'has no After for every point';
+  return `Its last run (${last.label}) ${why}. Measure it, or add a starting measurement on its page.`;
+}
+/* ---------------- traveler export: a spreadsheet (.xlsx), filled or blank ----------------
+   One row per step. A step's sub-steps go into its Details cell, and nothing is said twice: a recipe that only names the
+   sub-steps, a material already in the step name, a value already in a sub-step's name, or a label word repeated in its
+   value are left out, and inside sub-steps a value with a unit needs no label. Step names, tools and times are bold.
+   Filled: the record of the sample (values as used, changes from the plan in red with the plan, results, done times,
+   initials, notes, photos), plus a Measurements sheet (every piece and point, as numbers) and a Photos sheet.
+   Blank: the process to share or print, with empty Date, Initials and Notes columns. Row heights are worked out from
+   the text, so nothing is cut off. A date that was never recorded reads "not recorded". */
+
+/* ---- zip, stored entries (an .xlsx is a zip; the phone backup uses the same writer) ---- */
+function toBuf(blob) {   // a declaration, so the on-device runtime defined before this file can use it
+  return blob.arrayBuffer ? blob.arrayBuffer() : new Promise((res, rej) => {
+    const fr = new FileReader(); fr.onload = () => res(fr.result); fr.onerror = () => rej(fr.error); fr.readAsArrayBuffer(blob);
+  });
+}
+const CRC_T = (() => { const t = new Uint32Array(256); for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; } return t; })();
+function crc32(u8) { let c = 0xFFFFFFFF; for (let i = 0; i < u8.length; i++) c = CRC_T[(c ^ u8[i]) & 0xFF] ^ (c >>> 8); return (c ^ 0xFFFFFFFF) >>> 0; }
+function dosTime(d) {
+  return { time: (d.getHours() << 11) | (d.getMinutes() << 5) | (d.getSeconds() >> 1),
+    date: ((Math.max(1980, d.getFullYear()) - 1980) << 9) | ((d.getMonth() + 1) << 5) | d.getDate() };
+}
+async function makeZip(entries, type = 'application/zip') {
+  const enc = new TextEncoder();
+  const parts = [], central = [];
+  let offset = 0;
+  const { time, date } = dosTime(new Date());
+  for (const e of entries) {
+    const nameB = enc.encode(e.name);
+    const u8 = typeof e.data === 'string' ? enc.encode(e.data) : e.data instanceof Uint8Array ? e.data : new Uint8Array(await toBuf(e.data));
+    const crc = crc32(u8), size = u8.length;
+    const lh = new DataView(new ArrayBuffer(30));
+    lh.setUint32(0, 0x04034b50, true); lh.setUint16(4, 20, true); lh.setUint16(6, 0x0800, true); lh.setUint16(8, 0, true);
+    lh.setUint16(10, time, true); lh.setUint16(12, date, true); lh.setUint32(14, crc, true);
+    lh.setUint32(18, size, true); lh.setUint32(22, size, true); lh.setUint16(26, nameB.length, true); lh.setUint16(28, 0, true);
+    parts.push(new Blob([lh.buffer, nameB, u8]));
+    const ch = new DataView(new ArrayBuffer(46));
+    ch.setUint32(0, 0x02014b50, true); ch.setUint16(4, 20, true); ch.setUint16(6, 20, true); ch.setUint16(8, 0x0800, true); ch.setUint16(10, 0, true);
+    ch.setUint16(12, time, true); ch.setUint16(14, date, true); ch.setUint32(16, crc, true); ch.setUint32(20, size, true); ch.setUint32(24, size, true);
+    ch.setUint16(28, nameB.length, true); ch.setUint32(42, offset, true);
+    central.push(ch.buffer, nameB);
+    offset += 30 + nameB.length + size;
+  }
+  const cdSize = central.reduce((a, b) => a + b.byteLength, 0);
+  const end = new DataView(new ArrayBuffer(22));
+  end.setUint32(0, 0x06054b50, true); end.setUint16(8, entries.length, true); end.setUint16(10, entries.length, true);
+  end.setUint32(12, cdSize, true); end.setUint32(16, offset, true);
+  return new Blob([...parts, ...central, end.buffer], { type });
+}
+
+/* ---- dates ---- */
+const okTs = ts => Number(ts) > 946684800000;   // a recorded date (after 2000); an empty one is "not recorded"
+const tvDay = ts => new Date(ts).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+const tvYear = ts => new Date(ts).getFullYear();
+const tvClock = ts => new Date(ts).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
+function tvSpan(list) {
+  const d = list.filter(okTs);
+  if (!d.length) return '';
+  const a = Math.min(...d), b = Math.max(...d);
+  if (tvDay(a) === tvDay(b) && tvYear(a) === tvYear(b)) return `${tvDay(b)}, ${tvYear(b)}`;
+  return `${tvDay(a)}${tvYear(a) !== tvYear(b) ? ', ' + tvYear(a) : ''} – ${tvDay(b)}, ${tvYear(b)}`;
+}
+/* an Excel date: days since 1899-12-30, in local time */
+const xlDate = ts => { const d = new Date(ts); return Date.UTC(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds()) / 86400000 + 25569; };
+
+/* ---- the rows: one per step. A cell is a list of runs [text, style]: '' plain, 'b' bold, 'red' changed from the plan,
+   'lab' a label, 'it' worked out (not measured) ---- */
+const tvR = (t, st = '') => [String(t), st];
+const tvNrm = x => ` ${String(x || '').toLowerCase().replace(/[^a-z0-9+.]+/g, ' ').trim()} `;
+const tvWithin = (hay, needle) => tvNrm(needle).trim() !== '' && tvNrm(hay).includes(tvNrm(needle));
+const tvList = (parts, sep = ', ') => { const out = []; for (const p of parts.filter(x => x && x.length)) { if (out.length) out.push(tvR(sep, 'lab')); out.push(...p); } return out; };
+const tvLines = lines => { const out = []; lines.filter(l => l && l.length).forEach((l, k) => { if (k) out.push(tvR('\n')); out.push(...l); }); return out; };
+const tvLen = runs => runs.reduce((a, [t]) => a + t.length, 0);
+function travelerRows(sid, filled) {
+  const s = view('samples')[sid];
+  const unit = getSettings().rateUnit;
+  const isTime = f => canonKey(f) === 'time';
+  /* a value as used; in the filled traveler a change from the plan is red, with the plan */
+  const val = (f, style = '', planned = null) => {
+    const v = fUsed(f);
+    if (v === '') return [];
+    if (filled && fChanged(f)) {
+      if (planned) { planned.push(`${f.name} ${fShow(f, String(f.plan))}`); return [tvR(fShow(f, v), 'red')]; }   // a narrow column: the plan goes to Details
+      return [tvR(fShow(f, v), 'red'), tvR(` (plan ${fShow(f, String(f.plan))})`, 'lab')];
+    }
+    return [tvR(fShow(f, v), isTime(f) ? 'b' : style)];
+  };
+  /* "Spinner recipe" + "recipe 5" reads "Spinner recipe 5" */
+  const labelled = f => {
+    const v = val(f);
+    if (!v.length) return [];
+    const words = String(f.name || '').trim().split(/\s+/), last = words[words.length - 1];
+    if (words.length > 1 && tvNrm(fUsed(f)).startsWith(tvNrm(last))) return [tvR(words.slice(0, -1).join(' ') + ' ', 'lab'), ...v];
+    return [tvR((f.name || 'Value') + ' ', 'lab'), ...v];
+  };
+  const subRuns = (sb, mark) => {
+    const parts = [];
+    for (const f of sb.fields || []) {
+      if (isRecField(f) || fUsed(f) === '') continue;
+      if (f.kind !== 'num' && tvWithin(sb.name, fUsed(f))) continue;   // "Resist SPR 955 1.8" under "Coat SPR 955 1.8"
+      if (norm(f.name) === 'details') { parts.push([tvR(fUsed(f))]); continue; }
+      parts.push((f.kind === 'num' && f.unit) || isTime(f) ? val(f) : labelled(f));
+    }
+    const head = [...(mark ? [tvR(mark + ' ', 'b')] : []), tvR(sb.name || 'Sub-step')];
+    return parts.length ? [...head, tvR(': ', 'lab'), ...tvList(parts)] : head;
+  };
+  const steps = s.steps || [];
+  const rows = [], meas = [], photos = [];
+  for (const [gi, g] of segGroups(s).entries()) {
+    if (hasSegs(s)) {
+      const sp = filled ? tvSpan(g.steps.map(x => x.doneAt)) : '';
+      rows.push({ type: 'seg', text: `${gi + 1}.  ${g.name || 'Segment'}`, right: `${plural(g.steps.length, 'step')}${sp ? '   ·   ' + sp : ''}` });
+    }
+    for (const st of g.steps) {
+      const label = stepLabel(s, st), F = st.fields || [], subs = st.subs || [];
+      const fc = k => findCanon(F, k);
+      const tool = fc('tool'), recipe = fc('recipe'), time = fc('time'), mat = fc('material'), cond = fc('params');
+      /* a recipe that only names the sub-steps ("Acetone/IPA/DIW", "HMDS, followed by SPR 955 1.8") is said by the sub-steps */
+      const rv = recipe ? fUsed(recipe) : '';
+      const toks = rv.split(/\s*(?:[/,;+&]|\bfollowed by\b|\bthen\b)\s*/i).map(x => x.trim()).filter(Boolean);
+      const recipeDup = !!rv && subs.length > 0 && toks.length > 0 && toks.every(t => subs.some(sb => tvWithin(sb.name, t)));
+      const params = F.filter(f => !canonKey(f) && !isRecField(f));
+      const recs = F.filter(f => !canonKey(f) && isRecField(f));
+      const lines = [tvList([mat && fUsed(mat) && !tvWithin(st.name, fUsed(mat)) ? labelled(mat) : [], ...params.map(labelled)])];
+      const subLines = subs.map(sb => subRuns(sb, st.status === 'running' ? (sb.done ? '✓' : '☐') : ''));
+      if (subLines.length) {
+        if (subLines.length <= 5 && subLines.every(l => tvLen(l) <= 26) && subLines.reduce((a, l) => a + tvLen(l) + 5, 0) <= 75) lines.push(tvList(subLines, '  ·  '));
+        else lines.push(...subLines);
+      }
+      if (cond && fUsed(cond)) lines.push([tvR(fUsed(cond))]);
+      const planned = [];
+      const toolR = tool ? val(tool, 'b', planned) : [], recipeR = recipe && !recipeDup ? val(recipe, '', planned) : [], timeR = time ? val(time, 'b', planned) : [];
+      if (recipe && recipeDup && filled && fChanged(recipe)) planned.push(`${recipe.name} ${fShow(recipe, String(recipe.plan))}`);
+      if (planned.length) lines.push([tvR(`Plan: ${planned.join(', ')}`, 'lab')]);
+      if (!filled) for (const f of recs) lines.push([tvR(`Record ${String(f.name).toLowerCase()}${(f.opts || []).length ? ': ' + f.opts.join(' / ') : ''}`, 'lab')]);
+      const row = { type: 'step', status: st.status || 'pending', n: label, step: [tvR(st.name || 'Unnamed step', 'b')],
+        tool: toolR, recipe: recipeR, time: timeR, det: tvLines(lines) };
+      if (filled) {
+        const res = [];
+        const add = l => { if (l && l.length) { if (res.length) res.push(tvR('\n')); res.push(...l); } };
+        for (const f of recs) add(labelled(f));
+        if (isRateKind(st.kind) && st.status === 'done') {
+          const key = runKey(sid, st), cols = st.cols || [];
+          const kind = st.kind === 'etch' ? 'Etch' : 'Deposition';
+          const first = meas.length;
+          for (const pc of piecesOf(st)) {
+            const pts = ptsOf(pc), ba = isBA(pc), name = (pc.ref ? regName(pc) : pc.name) || 'Piece';
+            const w = !ba && pc.ref ? workedFor(pc.ref, key) : null, wk = !!w && w.how === 'worked out';
+            const B = pts.map((q, k) => String((ba ? q.b : wk ? w.before[k] : '') || '').trim());
+            const A = pts.map((q, k) => String((ba ? q.a : wk ? w.after[k] : '') || '').trim());
+            const T = pts.map(q => String(q.t || '').trim());
+            const xb = (q, k, c) => String((ba ? (q.bx || {})[c] : wk ? (w.bx[k] || {})[c] : '') || '').trim();
+            const line = [tvR(name + ': ', 'b')];
+            if (!T.some(Boolean) && !A.some(Boolean)) line.push(tvR('not measured', 'lab'));
+            else {
+              if (A.some(Boolean)) line.push(tvR(`${[...new Set(B.filter(Boolean))].join(' / ')} → ${A.join(' / ')} nm`, wk ? 'it' : ''),
+                tvR(` (${st.kind === 'etch' ? '−' : '+'}`, 'lab'), tvR(T.join(' / ')), tvR(')', 'lab'));
+              else line.push(tvR(`${T.join(' / ')} nm ${st.kind === 'etch' ? 'etched' : 'deposited'}`));
+              for (const c of cols) {
+                const bs = [...new Set(pts.map((q, k) => xb(q, k, c)).filter(Boolean))], as = pts.map(q => String((q.x || {})[c] || '').trim()).filter(Boolean);
+                if (bs.length || as.length) line.push(tvR(`; ${c} `, 'lab'), ...(bs.length ? [tvR(bs.join(' / '), wk ? 'it' : ''), tvR(' → ')] : []), tvR(as.join(' / ')));
+              }
+            }
+            add(line);
+            pts.forEach((q, k) => meas.push({ n: label, step: st.name || '', kind, done: okTs(st.doneAt) ? st.doneAt : null, piece: name, pt: pts.length > 1 ? k + 1 : '',
+              before: B[k], after: A[k], change: T[k], how: !(T[k] || A[k] || B[k]) ? 'not measured' : ba ? 'measured' : wk ? 'worked out' : 'change only',
+              cols: cols.map(c => [xb(q, k, c), String((q.x || {})[c] || '').trim()]), colNames: cols }));
+          }
+          const r = rateOf(st);
+          if (r) {
+            const rate = fmtPm(convRate(r.v, r.basis, unit), convRate(r.sdRate, r.basis, unit)), ru = rateUnitLabel(r.basis, unit);
+            add([tvR('Rate ', 'lab'), tvR(`${rate} ${ru}`, 'b'), tvR(` (${plural(r.nPieces, 'piece')})`, 'lab')]);
+            const [rv0, sd0] = rate.split(' ± ');
+            for (let k = first; k < meas.length; k++) Object.assign(meas[k], { rate: rv0, sd: sd0 || '', unit: ru, np: r.nPieces });
+          }
+          if (st.excl) {
+            add([tvR(`Not in rate statistics${st.exclWhy ? ': ' + st.exclWhy : ''}`, 'lab')]);
+            for (let k = first; k < meas.length; k++) meas[k].excl = st.exclWhy || 'yes';
+          }
+        }
+        for (const x of st.meas || []) if (hasVal(x.k) || hasVal(x.v)) add([tvR((x.k || 'Value') + ' ', 'lab'), tvR(`${x.v ?? ''}${x.u ? ' ' + x.u : ''}`, 'b')]);
+        row.res = res;
+        row.doneTs = st.status === 'done' && okTs(st.doneAt) ? st.doneAt : null;
+        row.doneText = st.status === 'done' ? (okTs(st.doneAt) ? '' : 'not recorded') : st.status === 'skipped' ? 'Skipped' : st.status === 'running' ? 'Running' : '';
+        row.by = st.by || '';
+        const notes = [];
+        if (String(st.notes || '').trim()) notes.push([tvR(String(st.notes).trim())]);
+        if (st.tLog) notes.push([tvR(tLogText(st.tLog), 'lab')]);
+        if (st.timeEdited && okTs(st.loggedAt) && okTs(st.doneAt)) notes.push([tvR(`Time entered later (logged ${tvDay(st.loggedAt)})`, 'lab')]);
+        const files = (st.imgs || []).filter(im => im && im.id);
+        const imgs = files.filter(im => (im.type || '').startsWith('image/')), others = files.filter(im => !(im.type || '').startsWith('image/'));
+        if (others.length) notes.push([tvR(`Attached: ${others.map(im => im.cap || im.name || 'file').join('; ')}`, 'lab')]);
+        row.notes = tvLines(notes);
+        row.pics = imgs.length;
+        row.picFirst = photos.length;
+        for (const im of imgs) photos.push({ id: im.id, src: im, n: label, step: st.name || '', cap: String(im.cap || '').trim(), at: okTs(im.at) ? im.at : 0 });
+      }
+      rows.push(row);
+    }
+  }
+  const n = k => steps.filter(x => (x.status || 'pending') === k).length;
+  const todo = steps.length - n('done') - n('skipped');
+  const undated = steps.filter(x => x.status === 'done' && !okTs(x.doneAt)).length;
+  const now = Date.now();
+  const info = filled
+    ? [['Description', s.desc], ['Epi / substrate', s.epi], ['Process', s.proc],
+      ['Progress', `${n('done')} of ${steps.length} steps done${n('skipped') ? `, ${n('skipped')} skipped` : ''}${todo ? `, ${todo} to do` : ''}`],
+      ['Dates', [tvSpan(steps.map(x => x.doneAt)), undated ? `${plural(undated, 'step')} without a date` : ''].filter(Boolean).join('; ')],
+      ['Exported', `${tvDay(now)}, ${tvYear(now)} from ProcessTracer`]]
+    : [['Description', s.desc], ['Epi / substrate', s.epi], ['Steps', `${plural(steps.length, 'step')}${hasSegs(s) ? ` in ${plural(s.segs.length, 'segment')}` : ''}`],
+      ['Exported', `${tvDay(now)}, ${tvYear(now)} from ProcessTracer (${s.name || 'sample'})`]];
+  return { title: (filled ? s.name : s.proc || s.name) || 'Traveler', info: info.filter(r => String(r[1] || '').trim()), rows, meas, photos };
+}
+
+/* ---- measuring text, so a row is as tall as its tallest cell ---- */
+let tvCtx = null;
+function tvTextPt(text, b, i, size) {
+  if (tvCtx === null) { try { tvCtx = document.createElement('canvas').getContext('2d') || false; } catch (e) { tvCtx = false; } }
+  if (!tvCtx) return text.length * size * (b ? 0.6 : 0.55);
+  tvCtx.font = `${i ? 'italic ' : ''}${b ? 'bold ' : ''}${size * 10}px Arial, "Liberation Sans", Helvetica, sans-serif`;
+  return tvCtx.measureText(text).width / 10;   // the width of a size-pt font, in points
+}
+/* lines a cell's runs take in a column of the given width (points), wrapping at spaces like a spreadsheet does */
+function tvLinesIn(runs, widthPt, size = 10) {
+  let lines = 1, cur = 0;
+  for (const [t, st] of runs) {
+    const b = st === 'b' || st === 'red', i = st === 'it';
+    String(t).split('\n').forEach((part, pi) => {
+      if (pi) { lines++; cur = 0; }
+      part.split(/( )/).forEach(tok => {
+        if (tok === '') return;
+        let w = tvTextPt(tok, b, i, size);
+        if (tok === ' ') { cur += w; return; }
+        if (cur > 0 && cur + w > widthPt * 0.98) { lines++; cur = 0; }   // a little margin: fonts differ slightly between apps
+        while (w > widthPt) { lines++; w -= widthPt; }
+        cur += w;
+      });
+    });
+  }
+  return lines;
+}
+const XL_LINE = 12.75;   // Arial 10 in Excel: 12.75 pt a line
+const xlColPt = w => (7 * w - 6) * 0.75;   // text width of a column w characters wide, less the cell margins
+
+/* ---- the spreadsheet writer ---- */
+const xe = s => String(s ?? '').replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F￾￿]/g, '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+const xlCol = n => { let s = ''; for (n++; n > 0; n = Math.floor((n - 1) / 26)) s = String.fromCharCode(65 + ((n - 1) % 26)) + s; return s; };   // 0 → A
+const xlRef = (r, c) => `${xlCol(c)}${r + 1}`;   // 0-based row and column
+const XL_C = { ink: '000000', lab: '595959', mute: '808080', red: 'C00000', link: '0563C1', head: '2F3B4C', seg: 'DDEBF7', soft: 'F2F2F2', white: 'FFFFFF' };
+function xlStyles() {
+  const fonts = [], fills = ['<fill><patternFill patternType="none"/></fill>', '<fill><patternFill patternType="gray125"/></fill>'];
+  const borders = ['<border><left/><right/><top/><bottom/><diagonal/></border>'], fmts = [], xfs = [];
+  const idx = (list, x) => { let i = list.indexOf(x); if (i < 0) { list.push(x); i = list.length - 1; } return i; };
+  const font = (o = {}) => idx(fonts, `<font>${o.b ? '<b/>' : ''}${o.i ? '<i/>' : ''}${o.u ? '<u/>' : ''}<sz val="${o.sz || 10}"/><color rgb="FF${o.color || XL_C.ink}"/><name val="Arial"/><family val="2"/></font>`);
+  font();   // the workbook's default font: Arial 10
+  const fill = c => (c ? idx(fills, `<fill><patternFill patternType="solid"><fgColor rgb="FF${c}"/><bgColor indexed="64"/></patternFill></fill>`) : 0);
+  const side = (n, s) => (s ? `<${n} style="${s}"><color rgb="FF000000"/></${n}>` : `<${n}/>`);
+  const border = b => (b ? idx(borders, `<border>${side('left', b.l)}${side('right', b.r)}${side('top', b.t)}${side('bottom', b.b)}<diagonal/></border>`) : 0);
+  const fmt = code => (code ? 164 + idx(fmts, code) : 0);
+  const xf = (o = {}) => {
+    const a = o.al || {};
+    const al = a.h || a.v || a.wrap || a.indent ? `<alignment${a.h ? ` horizontal="${a.h}"` : ''}${a.v ? ` vertical="${a.v}"` : ''}${a.wrap ? ' wrapText="1"' : ''}${a.indent ? ` indent="${a.indent}"` : ''}/>` : '';
+    const f = font(o.font), fl = fill(o.fill), bd = border(o.border), nf = fmt(o.fmt);
+    return idx(xfs, `<xf numFmtId="${nf}" fontId="${f}" fillId="${fl}" borderId="${bd}" xfId="0"${nf ? ' applyNumberFormat="1"' : ''}${f ? ' applyFont="1"' : ''}${fl ? ' applyFill="1"' : ''}${bd ? ' applyBorder="1"' : ''}${al ? ` applyAlignment="1">${al}</xf>` : '/>'}`);
+  };
+  xf();
+  const xml = () => `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">${fmts.length ? `<numFmts count="${fmts.length}">${fmts.map((c, i) => `<numFmt numFmtId="${164 + i}" formatCode="${xe(c)}"/>`).join('')}</numFmts>` : ''}<fonts count="${fonts.length}">${fonts.join('')}</fonts><fills count="${fills.length}">${fills.join('')}</fills><borders count="${borders.length}">${borders.join('')}</borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="${xfs.length}">${xfs.join('')}</cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles><dxfs count="0"/><tableStyles count="0" defaultTableStyle="TableStyleMedium2" defaultPivotStyle="PivotStyleLight16"/></styleSheet>`;
+  return { xf, xml };
+}
+/* a run's look; in a skipped step everything is grey */
+const xlRun = (st, mute, sz = 10) => {
+  const b = st === 'b' || st === 'red', i = st === 'it';
+  const color = mute ? XL_C.mute : st === 'red' ? XL_C.red : st === 'lab' || st === 'it' ? XL_C.lab : XL_C.ink;
+  return `<rPr>${b ? '<b/>' : ''}${i ? '<i/>' : ''}<sz val="${sz}"/><color rgb="FF${color}"/><rFont val="Arial"/><family val="2"/></rPr>`;
+};
+/* one cell: text, rich runs, a number or nothing (a styled empty cell) */
+function xlCell(r, c, s, v, o = {}) {
+  const ref = xlRef(r, c);
+  if (v === null || v === undefined || v === '' || (Array.isArray(v) && !v.some(([t]) => t !== ''))) return `<c r="${ref}" s="${s}"/>`;
+  if (typeof v === 'number') return `<c r="${ref}" s="${s}"><v>${v}</v></c>`;
+  if (Array.isArray(v)) return `<c r="${ref}" s="${s}" t="inlineStr"><is>${v.filter(([t]) => t !== '').map(([t, st, sz]) => `<r>${xlRun(st, o.mute, sz || o.sz)}<t xml:space="preserve">${xe(t)}</t></r>`).join('')}</is></c>`;
+  return `<c r="${ref}" s="${s}" t="inlineStr"><is><t xml:space="preserve">${xe(v)}</t></is></c>`;
+}
+function xlSheet({ cols, rows, merges = [], links = [], freeze = 0, filter = '', footer = '', drawing = false }) {
+  const body = rows.map((row, r) => (row ? `<row r="${r + 1}"${row.ht ? ` ht="${Math.min(409.5, row.ht).toFixed(2)}" customHeight="1"` : ''}>${row.cells.join('')}</row>` : '')).join('');   // 409.5 pt is Excel's tallest row
+  return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheetPr><pageSetUpPr fitToPage="1"/></sheetPr><sheetViews><sheetView workbookViewId="0" showGridLines="0"${freeze ? `><pane ySplit="${freeze}" topLeftCell="A${freeze + 1}" activePane="bottomLeft" state="frozen"/><selection pane="bottomLeft" activeCell="A${freeze + 1}" sqref="A${freeze + 1}"/></sheetView>` : '/>'}</sheetViews><sheetFormatPr defaultRowHeight="12.75"/><cols>${cols.map((w, i) => `<col min="${i + 1}" max="${i + 1}" width="${w}" customWidth="1"/>`).join('')}</cols><sheetData>${body}</sheetData>${filter ? `<autoFilter ref="${filter}"/>` : ''}${merges.length ? `<mergeCells count="${merges.length}">${merges.map(m => `<mergeCell ref="${m}"/>`).join('')}</mergeCells>` : ''}${links.length ? `<hyperlinks>${links.map(l => `<hyperlink ref="${l.ref}" location="${xe(l.loc)}" display="${xe(l.text)}"/>`).join('')}</hyperlinks>` : ''}<pageMargins left="0.35" right="0.35" top="0.45" bottom="0.5" header="0.2" footer="0.25"/><pageSetup paperSize="1" orientation="landscape" fitToWidth="1" fitToHeight="0"/>${footer ? `<headerFooter><oddFooter>${xe(footer)}</oddFooter></headerFooter>` : ''}${drawing ? '<drawing r:id="rIdDr"/>' : ''}</worksheet>`;
+}
+const xlMerge = (r1, c1, r2, c2) => (r1 === r2 && c1 === c2 ? null : `${xlRef(r1, c1)}:${xlRef(r2, c2)}`);
+const xlFooter = name => `&L&8Traveler: ${String(name).replace(/&/g, '&&')}&R&8Page &P of &N`;   // "&8" then a letter, never a digit
+
+const TV_COLS = {
+  filled: [['n', '#', 6], ['step', 'Step', 19], ['tool', 'Tool', 12], ['recipe', 'Recipe', 13], ['time', 'Time', 7], ['det', 'Details', 35],
+    ['res', 'Result', 17], ['done', 'Done', 17.5], ['by', 'By', 5], ['notes', 'Notes', 20], ['pics', 'Photos', 6.5]],
+  blank: [['n', '#', 6], ['step', 'Step', 22], ['tool', 'Tool', 13], ['recipe', 'Recipe', 15], ['time', 'Time', 7.5], ['det', 'Details', 44],
+    ['date', 'Date', 10], ['init', 'Initials', 7.5], ['notes', 'Notes', 22]],
+};
+/* the Traveler sheet */
+function tvTravelerSheet(st, d, filled, photoCell) {
+  const cols = TV_COLS[filled ? 'filled' : 'blank'], nc = cols.length, keys = cols.map(c => c[0]), W = Object.fromEntries(cols.map(c => [c[0], c[2]]));
+  const rows = [], merges = [], links = [];
+  const thin = 'thin', med = 'medium';
+  const span = (a, b) => cols.slice(a, b + 1).reduce((x, c) => x + c[2], 0);
+  /* title */
+  const sTitle = st.xf({ font: { b: true, sz: 16 }, al: { v: 'center' } }), sKind = st.xf({ font: { b: true, color: XL_C.lab }, al: { h: 'right', v: 'center' } });
+  rows.push({ ht: 24, cells: [xlCell(0, 0, sTitle, d.title), xlCell(0, nc - 3, sKind, filled ? 'Process traveler' : 'Process traveler (blank)')] });
+  merges.push(xlMerge(0, 0, 0, nc - 4), xlMerge(0, nc - 3, 0, nc - 1));
+  /* information: long items on the left, short ones on the right */
+  const LONG = ['Description', 'Epi / substrate', 'Process'];
+  const left = d.info.filter(x => LONG.includes(x[0])), right = d.info.filter(x => !LONG.includes(x[0]));
+  const spans = filled ? [[0, 1, 2, 5], [6, 6, 7, nc - 1]] : [[0, 1, 2, 5], [6, 7, 8, nc - 1]];
+  const sLab = st.xf({ font: { b: true, sz: 9 }, fill: XL_C.soft, border: { l: thin, r: thin, t: thin, b: thin }, al: { v: 'top' } });
+  const sVal = st.xf({ border: { l: thin, r: thin, t: thin, b: thin }, al: { v: 'top', wrap: true } });
+  for (let k = 0; k < Math.max(left.length, right.length); k++) {
+    const r = rows.length, cells = new Array(nc).fill(null);
+    let lines = 1;
+    [left[k], right[k]].forEach((pair, j) => {
+      if (!pair) return;
+      const [l1, l2, v1, v2] = spans[j];
+      for (let c = l1; c <= l2; c++) cells[c] = xlCell(r, c, sLab, c === l1 ? pair[0] : null);
+      for (let c = v1; c <= v2; c++) cells[c] = xlCell(r, c, sVal, c === v1 ? String(pair[1]) : null);
+      merges.push(xlMerge(r, l1, r, l2), xlMerge(r, v1, r, v2));
+      lines = Math.max(lines, tvLinesIn([[String(pair[1]), '']], xlColPt(span(v1, v2))));
+    });
+    rows.push({ ht: XL_LINE * lines, cells: cells.filter(Boolean) });
+  }
+  if (!filled) {
+    const r = rows.length;
+    rows.push({ cells: [xlCell(r, 0, st.xf({ font: { i: true, sz: 9, color: XL_C.lab } }), 'Fill in Date, Initials and Notes as each step is done.')] });
+    merges.push(xlMerge(r, 0, r, nc - 1));
+  } else rows.push(null);
+  /* column titles */
+  const hr = rows.length;
+  rows.push({ ht: 18, cells: cols.map(([, h], c) => xlCell(hr, c, st.xf({ font: { b: true, color: XL_C.white }, fill: XL_C.head, al: { h: 'center', v: 'center' },
+    border: { l: c ? thin : med, r: c === nc - 1 ? med : thin, t: med, b: thin } }), h)) });
+  /* the steps */
+  const last = hr + d.rows.length;
+  const sty = {};   // one style per column look, made once
+  const stOf = (c, k, mute, extra = {}) => {
+    const key = [c, k, mute, extra.fmt || '', extra.link || '', extra.it || '', extra.lastRow || ''].join('|');
+    if (sty[key] !== undefined) return sty[key];
+    const center = ['n', 'by', 'init', 'done', 'date', 'pics'].includes(k);
+    return (sty[key] = st.xf({ font: { b: k === 'n', i: !!extra.it, u: !!extra.link, color: extra.link ? XL_C.link : mute ? XL_C.mute : extra.it ? XL_C.lab : XL_C.ink },
+      fill: mute ? XL_C.soft : '', fmt: extra.fmt, al: { h: center ? 'center' : 'left', v: 'top', wrap: k !== 'n' },
+      border: { l: c ? thin : med, r: c === nc - 1 ? med : thin, t: thin, b: extra.lastRow ? med : thin } }));
+  };
+  d.rows.forEach((row, i) => {
+    const r = hr + 1 + i, lastRow = r === last;
+    if (row.type === 'seg') {
+      const s = st.xf({ fill: XL_C.seg, al: { v: 'center' }, border: { l: med, r: med, t: thin, b: lastRow ? med : thin } });
+      const cells = [xlCell(r, 0, s, [[row.text, 'b', 11], ['      ' + row.right, 'lab', 9]])];
+      for (let c = 1; c < nc; c++) cells.push(xlCell(r, c, s, null));
+      merges.push(xlMerge(r, 0, r, nc - 1));
+      rows.push({ ht: 19, cells });
+      return;
+    }
+    const mute = row.status === 'skipped';
+    let lines = 1;
+    const cells = keys.map((k, c) => {
+      let v = row[k];
+      if (k === 'n' || k === 'by') return xlCell(r, c, stOf(c, k, mute, { lastRow }), row[k] || null);
+      if (k === 'done') {
+        if (row.doneTs) return xlCell(r, c, stOf(c, k, mute, { fmt: 'mmm d, h:mm AM/PM', lastRow }), xlDate(row.doneTs));
+        return xlCell(r, c, stOf(c, k, mute, { it: true, lastRow }), row.doneText || null);
+      }
+      if (k === 'pics') {
+        if (!row.pics) return xlCell(r, c, stOf(c, k, mute, { lastRow }), null);
+        links.push({ ref: xlRef(r, c), loc: `'Photos'!${photoCell(row.picFirst)}`, text: String(row.pics) });
+        return xlCell(r, c, stOf(c, k, mute, { link: true, lastRow }), row.pics);
+      }
+      if (['date', 'init'].includes(k) || (k === 'notes' && !filled)) return xlCell(r, c, stOf(c, k, mute, { lastRow }), null);
+      if (Array.isArray(v) && v.length) lines = Math.max(lines, tvLinesIn(v, xlColPt(W[k])));
+      return xlCell(r, c, stOf(c, k, mute, { lastRow }), Array.isArray(v) ? v : null, { mute });
+    });
+    rows.push({ ht: XL_LINE * Math.max(lines, filled ? 1 : 2), cells });   // a blank traveler leaves room to write
+  });
+  if (filled) {
+    rows.push(null);
+    const r = rows.length;
+    rows.push({ cells: [xlCell(r, 0, st.xf({ font: { sz: 9 } }), [['Red', 'red'], [': changed from the plan (plan in brackets).   ', 'lab'], ['Italic', 'it'],
+      [' thickness: worked out from the recorded change, not measured.   Photos: how many, linked to the Photos sheet.', 'lab']], { sz: 9 })] });
+    merges.push(xlMerge(r, 0, r, nc - 1));
+  }
+  return { xml: xlSheet({ cols: cols.map(c => c[2]), rows, merges: merges.filter(Boolean), links, freeze: hr + 1, footer: xlFooter(d.title) }), titleRow: hr + 1 };
+}
+/* the Measurements sheet: every piece and point, numbers kept to the decimals they were recorded with */
+function tvMeasSheet(st, d) {
+  const colNames = [...new Set(d.meas.flatMap(m => m.colNames))];
+  const head = ['#', 'Step', 'Process', 'Done', 'Piece', 'Point', 'Before (nm)', 'After (nm)', 'Change (nm)', 'How',
+    ...colNames.flatMap(c => [`${c} before`, `${c} after`]), 'Rate', '±', 'Unit', 'Pieces', 'Left out of rate statistics'];
+  const widths = [6, 28, 11, 22, 12, 6, 11, 11, 13, 13, ...colNames.flatMap(() => [10, 10]), 9, 7, 9, 7, 24];
+  const thin = 'thin';
+  const sHead = st.xf({ font: { b: true, color: XL_C.white }, fill: XL_C.head, al: { h: 'center', v: 'center', wrap: true }, border: { l: thin, r: thin, t: thin, b: thin } });
+  const rows = [{ ht: 27, cells: head.map((h, c) => xlCell(0, c, sHead, h)) }];
+  const sty = {};
+  const s = (fmt, it, center) => { const k = `${fmt}|${it}|${center}`; return sty[k] !== undefined ? sty[k] : (sty[k] = st.xf({ fmt, font: { i: !!it, color: it ? XL_C.lab : XL_C.ink }, al: center ? { h: 'center' } : {}, border: { l: thin, r: thin, t: thin, b: thin } })); };
+  /* a recorded number as a number, shown with as many decimals as it was recorded with; anything else stays text */
+  const numCell = (r, c, v, it) => {
+    const t = String(v ?? '').trim().replace(',', '.');
+    if (/^[-+]?\d+(\.\d+)?$/.test(t)) { const dec = (t.split('.')[1] || '').length; return xlCell(r, c, s(dec ? '0.' + '0'.repeat(dec) : '0', it), Number(t)); }
+    return xlCell(r, c, s('', it), t || null);
+  };
+  d.meas.forEach((m, i) => {
+    const r = i + 1, wk = m.how === 'worked out';
+    const xs = colNames.map(c => { const k = m.colNames.indexOf(c); return k >= 0 ? m.cols[k] : ['', '']; });
+    let c = 0;
+    const cells = [xlCell(r, c++, s('', false, true), m.n), xlCell(r, c++, s(''), m.step), xlCell(r, c++, s(''), m.kind),
+      m.done ? xlCell(r, c++, s('mmm d, yyyy h:mm AM/PM'), xlDate(m.done)) : xlCell(r, c++, s('', true), 'not recorded'),
+      xlCell(r, c++, s(''), m.piece), m.pt ? xlCell(r, c++, s('0', false, true), m.pt) : xlCell(r, c++, s(''), null),
+      numCell(r, c++, m.before, wk), numCell(r, c++, m.after, wk), numCell(r, c++, m.change, false), xlCell(r, c++, s(''), m.how)];
+    for (const [b, a] of xs) { cells.push(numCell(r, c++, b, wk)); cells.push(numCell(r, c++, a, false)); }
+    cells.push(numCell(r, c++, m.rate || '', false), numCell(r, c++, m.sd || '', false), xlCell(r, c++, s(''), m.unit || null),
+      m.np ? xlCell(r, c++, s('0', false, true), m.np) : xlCell(r, c++, s(''), null), xlCell(r, c++, s(''), m.excl || null));
+    rows.push({ cells });
+  });
+  const lastCol = xlCol(head.length - 1);
+  return { xml: xlSheet({ cols: widths, rows, freeze: 1, filter: `A1:${lastCol}${d.meas.length + 1}`, footer: xlFooter(d.title) }), filter: `$A$1:$${lastCol}$${d.meas.length + 1}` };
+}
+/* the Photos sheet: three to a row, each with its step and time; a photo not on this device is listed */
+const TV_PER = 3, TV_PW = 320, TV_PH = 240;   // pixels a photo may take on the sheet
+function tvPhotoSheet(st, d, pics) {
+  const s = st.xf({ al: { v: 'top', wrap: true }, border: { l: 'thin', r: 'thin', t: 'thin', b: 'thin' } });
+  const rows = [], anchors = [];
+  for (let k = 0; k < d.photos.length; k += TV_PER) {
+    const r = rows.length, band = d.photos.slice(k, k + TV_PER);
+    let h = 0;
+    const cells = band.map((ph, j) => {
+      const p = pics.get(ph.id);
+      if (p) {
+        const sc = Math.min(TV_PW / p.w, TV_PH / p.h), w = Math.round(p.w * sc), hh = Math.round(p.h * sc);
+        h = Math.max(h, hh);
+        anchors.push({ r, c: j, w, h: hh, id: ph.id });
+      }
+      return xlCell(r, j, s, [[`${ph.n}  ${ph.step}`, 'b'], [`   ${ph.at ? `${tvDay(ph.at)}, ${tvClock(ph.at)}` : ''}${ph.cap ? '   ' + ph.cap : ''}${p ? '' : '\n(not available on this device)'}`, 'lab']]);
+    });
+    rows.push({ ht: (Math.max(h, 30) + 30) * 0.75, cells });
+  }
+  return { xml: xlSheet({ cols: Array(TV_PER).fill(46), rows, footer: xlFooter(d.title), drawing: anchors.length > 0 }), anchors };
+}
+function xlDrawing(anchors, media) {
+  const E = 9525;   // EMU per pixel
+  return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xdr:wsDr xmlns:xdr="http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">${anchors.map((a, i) => `<xdr:oneCellAnchor><xdr:from><xdr:col>${a.c}</xdr:col><xdr:colOff>${4 * E}</xdr:colOff><xdr:row>${a.r}</xdr:row><xdr:rowOff>${22 * E}</xdr:rowOff></xdr:from><xdr:ext cx="${a.w * E}" cy="${a.h * E}"/><xdr:pic><xdr:nvPicPr><xdr:cNvPr id="${i + 2}" name="Photo ${i + 1}"/><xdr:cNvPicPr><a:picLocks noChangeAspect="1"/></xdr:cNvPicPr></xdr:nvPicPr><xdr:blipFill><a:blip r:embed="${media.get(a.id).rid}"/><a:stretch><a:fillRect/></a:stretch></xdr:blipFill><xdr:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="${a.w * E}" cy="${a.h * E}"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></xdr:spPr></xdr:pic><xdr:clientData/></xdr:oneCellAnchor>`).join('')}</xdr:wsDr>`;
+}
+/* photos as JPEG, at most 1400 px on the long side */
+async function tvPhotos(list, maxDim = 1400) {
+  const map = new Map();
+  let missing = 0;
+  const tried = new Set();
+  for (const ph of list) {
+    if (tried.has(ph.id)) continue;
+    tried.add(ph.id);
+    try {
+      const img = await loadImg(await blobOf(ph.src));
+      const { blob, canvas } = await shrinkImage(img, maxDim, 0.85);
+      if (!blob) throw new Error('encode');
+      map.set(ph.id, { blob, w: canvas.width, h: canvas.height });
+    } catch (e) { missing++; }
+  }
+  return { map, missing };
+}
+async function travelerXlsx(sid, { filled = true, photos = true } = {}) {
+  const d = travelerRows(sid, filled);
+  const showPhotos = filled && photos && d.photos.length > 0;
+  if (!showPhotos) d.rows.forEach(r => { r.pics = 0; });
+  const pics = showPhotos ? await tvPhotos(d.photos) : { map: new Map(), missing: 0 };
+  const st = xlStyles();
+  const sheets = [];
+  const trav = tvTravelerSheet(st, d, filled, i => xlRef(Math.floor(i / TV_PER), i % TV_PER));   // the cell of a step's first photo
+  sheets.push({ name: 'Traveler', xml: trav.xml });
+  let meas = null, ph = null;
+  if (filled && d.meas.length) { meas = tvMeasSheet(st, d); sheets.push({ name: 'Measurements', xml: meas.xml }); }
+  const media = new Map();
+  if (showPhotos) {
+    ph = tvPhotoSheet(st, d, pics.map);
+    for (const a of ph.anchors) if (!media.has(a.id)) media.set(a.id, { rid: 'rIdImg' + (media.size + 1), name: `image${media.size + 1}.jpeg`, blob: pics.map.get(a.id).blob });
+    sheets.push({ name: 'Photos', xml: ph.xml, drawing: ph.anchors.length > 0 });
+  }
+  const R = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships';
+  const x = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n';
+  const names = [`<definedName name="_xlnm.Print_Titles" localSheetId="0">'Traveler'!$${trav.titleRow}:$${trav.titleRow}</definedName>`];
+  if (meas) names.push(`<definedName name="_xlnm._FilterDatabase" localSheetId="1" hidden="1">'Measurements'!${meas.filter}</definedName>`);
+  const now = new Date().toISOString().replace(/\.\d{3}Z$/, 'Z');
+  const files = [
+    { name: '[Content_Types].xml', data: `${x}<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Default Extension="jpeg" ContentType="image/jpeg"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>${sheets.map((s, i) => `<Override PartName="/xl/worksheets/sheet${i + 1}.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>`).join('')}<Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>${media.size ? '<Override PartName="/xl/drawings/drawing1.xml" ContentType="application/vnd.openxmlformats-officedocument.drawing+xml"/>' : ''}<Override PartName="/docProps/core.xml" ContentType="application/vnd.openxmlformats-package.core-properties+xml"/><Override PartName="/docProps/app.xml" ContentType="application/vnd.openxmlformats-officedocument.extended-properties+xml"/></Types>` },
+    { name: '_rels/.rels', data: `${x}<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="${R}/officeDocument" Target="xl/workbook.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties" Target="docProps/core.xml"/><Relationship Id="rId3" Type="${R}/extended-properties" Target="docProps/app.xml"/></Relationships>` },
+    { name: 'docProps/core.xml', data: `${x}<cp:coreProperties xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:dcmitype="http://purl.org/dc/dcmitype/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><dc:title>${xe(d.title)} traveler</dc:title><dc:creator>ProcessTracer</dc:creator><dcterms:created xsi:type="dcterms:W3CDTF">${now}</dcterms:created><dcterms:modified xsi:type="dcterms:W3CDTF">${now}</dcterms:modified></cp:coreProperties>` },
+    { name: 'docProps/app.xml', data: `${x}<Properties xmlns="http://schemas.openxmlformats.org/officeDocument/2006/extended-properties"><Application>ProcessTracer</Application></Properties>` },
+    { name: 'xl/workbook.xml', data: `${x}<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="${R}"><bookViews><workbookView xWindow="0" yWindow="0" windowWidth="28800" windowHeight="15000"/></bookViews><sheets>${sheets.map((s, i) => `<sheet name="${xe(s.name)}" sheetId="${i + 1}" r:id="rIdS${i + 1}"/>`).join('')}</sheets><definedNames>${names.join('')}</definedNames></workbook>` },
+    { name: 'xl/_rels/workbook.xml.rels', data: `${x}<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">${sheets.map((s, i) => `<Relationship Id="rIdS${i + 1}" Type="${R}/worksheet" Target="worksheets/sheet${i + 1}.xml"/>`).join('')}<Relationship Id="rIdSt" Type="${R}/styles" Target="styles.xml"/></Relationships>` },
+    ...sheets.map((s, i) => ({ name: `xl/worksheets/sheet${i + 1}.xml`, data: s.xml })),
+    { name: 'xl/styles.xml', data: st.xml() },
+  ];
+  if (media.size) {
+    const i = sheets.findIndex(s => s.drawing) + 1;
+    files.push({ name: `xl/worksheets/_rels/sheet${i}.xml.rels`, data: `${x}<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rIdDr" Type="${R}/drawing" Target="../drawings/drawing1.xml"/></Relationships>` });
+    files.push({ name: 'xl/drawings/drawing1.xml', data: xlDrawing(ph.anchors, media) });
+    files.push({ name: 'xl/drawings/_rels/drawing1.xml.rels', data: `${x}<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">${[...media.values()].map(m => `<Relationship Id="${m.rid}" Type="${R}/image" Target="../media/${m.name}"/>`).join('')}</Relationships>` });
+    for (const m of media.values()) files.push({ name: `xl/media/${m.name}`, data: m.blob });
+  }
+  return { blob: await makeZip(files, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'), title: d.title, missing: pics.missing };
+}
+
+/* ---- the export sheet ---- */
+function openTravelerExport(id) { openSheet(() => html`<${TravelerSheet} id=${id} />`); }
+function TravelerSheet({ id }) {
+  const s = view('samples')[id];
+  const [kind, setKind] = useState('filled');
+  const [pics, setPics] = useState(true);
+  const [busy, setBusy] = useState(false);
+  if (!s) return null;
+  const nImg = new Set((s.steps || []).flatMap(st => (st.imgs || []).filter(im => im && (im.type || '').startsWith('image/')).map(im => im.id))).size;
+  const go = async () => {
+    setBusy(true);
+    let file;
+    try { file = await buildTraveler(id, { blank: kind === 'blank', photos: pics }); }
+    catch (e) { setBusy(false); toast('Could not make the traveler: ' + ((e && e.message) || 'unknown error'), { error: true }); return; }
+    closeSheet();   // before saving, which may open its own sheet
+    const ok = await saveFile(file.name, file.data);
+    if (ok && file.missing) toast(`${plural(file.missing, 'photo')} could not be added; ${file.missing === 1 ? 'it is' : 'they are'} listed on the Photos sheet.`);
+  };
+  return html`<${Sheet} title="Export traveler" onClose=${closeSheet}>
+    <p class="lede">${s.name} as an Excel spreadsheet, one row per step.</p>
+    <div class="stack">
+      <div class="field"><span class="lab">Version</span><${Seg} label="Version" value=${kind} onChange=${setKind} options=${[['filled', 'Filled'], ['blank', 'Blank']]} />
+        <small class="hint">${kind === 'filled' ? 'The record of this sample: values as used, changes from the plan, results, done times, initials, notes and photos.' : 'The process to share or print: each step with its tool, recipe, time and settings, and empty Date, Initials and Notes columns.'}</small></div>
+      ${kind === 'filled' && nImg ? html`<label class="check"><input type="checkbox" checked=${pics} onChange=${e => setPics(e.currentTarget.checked)} /><span>Include the ${plural(nImg, 'photo')} (on a Photos sheet)</span></label>` : null}
+      <div class="row end gap"><button class="btn" onClick=${closeSheet}>Cancel</button>
+        <button class="btn primary" disabled=${busy} onClick=${go}>${I.download()}<span>${busy ? 'Preparing…' : 'Export'}</span></button></div>
+    </div>
+  </${Sheet}>`;
+}
+async function buildTraveler(id, { blank = false, photos = true } = {}) {
+  const s = view('samples')[id];
+  const r = await travelerXlsx(id, { filled: !blank, photos: !blank && photos });
+  return { name: `${safeName(blank ? s.proc || s.name : s.name)}_${blank ? 'blank_' : ''}traveler_${fileStamp()}.xlsx`, data: r.blob, missing: r.missing };
 }
 /* ---------------- step actions ---------------- */
 function swToField(ms, u) {
@@ -3584,21 +4196,13 @@ function SampleMenu({ id }) {
       <button onClick=${act(() => openSheet(() => html`<${SplitSheet} sid=${id} />`))}>${I.split()}<span>Duplicate or split</span></button>
       <button onClick=${act(() => go({ v: 'drawsetup', col: 'samples', id }))}>${I.layers()}<span>${drawOf(s) ? 'Drawing setup' : 'Set up cross-section drawings'}</span></button>
       <button onClick=${act(() => saveAsTraveler(id))}>${I.copy()}<span>Save as a traveler</span></button>
-      <button onClick=${act(() => exportTraveler(id))}>${I.download()}<span>Export printable traveler (HTML with photos)</span></button>
+      <button onClick=${act(() => openTravelerExport(id))}>${I.download()}<span>Export traveler (Excel)</span></button>
       <button onClick=${act(() => saveFile(`${safeName(s.name)}_steps_${fileStamp()}.csv`, sampleCsv(s)))}>${I.download()}<span>Export steps as CSV</span></button>
       ${status !== 'done' ? html`<button onClick=${act(() => updSample(id, x => { x.status = 'done'; }))}>${I.check()}<span>Mark sample done</span></button>` : null}
       ${status !== 'active' ? html`<button onClick=${act(() => updSample(id, x => { x.status = 'active'; }))}>${I.reopen()}<span>Make active again</span></button>` : null}
       ${status !== 'archived' ? html`<button onClick=${act(() => updSample(id, x => { x.status = 'archived'; }))}>${I.file()}<span>Archive</span></button>` : null}
       <button class="danger" onClick=${act(() => deleteSample(id))}>${I.trash()}<span>Delete sample</span></button>
     </div></${Sheet}>`;
-}
-async function exportTraveler(id) {
-  const s = view('samples')[id];
-  const hasPhotos = (s.steps || []).some(st => (st.imgs || []).length);
-  toast(hasPhotos ? 'Preparing the traveler with photos…' : 'Preparing the traveler…');
-  const { doc, missing } = await travelerHtml(s, true);
-  const ok = await saveFile(`${safeName(s.name)}_traveler_${fileStamp()}.html`, doc);
-  if (ok && missing) toast(`${plural(missing, 'photo')} could not be embedded and are listed by caption.`);
 }
 async function deleteSample(id) {
   const s = view('samples')[id];
@@ -4049,17 +4653,83 @@ function fmtPm(v, sd, unit = '') {
   const dec = Math.min(8, Math.max(0, 1 - Math.floor(Math.log10(sd))));
   return `${v.toFixed(dec)} ± ${sd.toFixed(dec)}${u}`;
 }
+/* one piece's points as rows: Before, After and the change worked out from them (or the change alone), then a row per
+   extra column (RI) with its value before and after. Used by the step page, the piece sheet and logged runs. */
+function ptRows({ kind, p, cols, carry, worked, name, onPts, edit }) {
+  const ba = isBA(p), pts = ptsOf(p), multi = pts.length > 1;
+  const dl = kind === 'etch' ? 'Etched' : 'Deposited';
+  const lab = k => (multi ? String(k + 1) : 'nm');
+  const at = k => (multi ? ` point ${k + 1}` : '');
+  const fill = (q, k, patch) => {
+    const n = { ...q, ...patch, x: { ...(q.x || {}), ...(patch.x || {}) }, bx: { ...(q.bx || {}), ...(patch.bx || {}) } };
+    if ('b' in patch) delete n.bsrc;
+    else if (('a' in patch || patch.x) && ba && carry && !hasVal(q.b) && hasVal(carry.vals[k])) {   // the carried Before is kept with this run
+      n.b = carry.vals[k]; n.bsrc = carry.label + (carry.how === 'worked out' ? ', worked out from its recorded changes' : '');
+      for (const c of cols) if (!hasVal(n.bx[c]) && hasVal((carry.x[k] || {})[c])) n.bx[c] = carry.x[k][c];
+    }
+    if (!Object.keys(n.bx).length) delete n.bx;
+    return syncPt(kind, n);
+  };
+  const set = (k, patch, d = 600) => onPts(pts.map((q, j) => (j === k ? fill(q, k, patch) : q)), d);
+  const del = k => onPts(pts.filter((_, j) => j !== k), 0);
+  const cv = (k, c) => (carry && carry.x[k] ? carry.x[k][c] || '' : '');
+  const rc = 'wt-r' + (edit ? ' tr' : '');
+  const out = [];
+  pts.forEach((q, k) => {
+    const neg = num(q.t) < 0;
+    const trash = edit ? html`<button class="icon-btn" aria-label=${'Remove point ' + (k + 1) + ' of ' + name} disabled=${pts.length < 2} onClick=${() => del(k)}>${I.trash()}</button>` : null;
+    const pad = edit ? html`<span></span>` : null;
+    if (ba) {
+      const cb = !hasVal(q.b) && !!carry && hasVal(carry.vals[k]);
+      out.push(html`<div class=${rc} key=${'t' + k}><span class="wt-k">${lab(k)}</span>
+        <input class=${q.bsrc || cb ? 'carried' : ''} inputmode="decimal" aria-label=${`Before of ${name}${at(k)}`} value=${q.b || ''} placeholder=${cb ? carry.vals[k] : 'nm'} onInput=${e => set(k, { b: e.currentTarget.value })} />
+        <input inputmode="decimal" aria-label=${`After of ${name}${at(k)}`} value=${q.a || ''} placeholder="nm" onInput=${e => set(k, { a: e.currentTarget.value })} />
+        <span class=${'wt-d tnum' + (neg ? ' neg' : hasVal(q.t) ? '' : ' muted')}>${hasVal(q.t) ? q.t : '–'}</span>${trash}</div>`);
+      for (const c of cols) {
+        const cc = !hasVal((q.bx || {})[c]) && hasVal(cv(k, c));
+        out.push(html`<div class=${rc} key=${c + k}><span class="wt-k">${c}${multi ? ' ' + (k + 1) : ''}</span>
+          <input class=${(q.bsrc && hasVal((q.bx || {})[c])) || cc ? 'carried' : ''} inputmode="decimal" aria-label=${`${c} before of ${name}${at(k)}`} value=${(q.bx || {})[c] || ''} placeholder=${cc ? cv(k, c) : c} onInput=${e => set(k, { bx: { [c]: e.currentTarget.value } })} />
+          <input inputmode="decimal" aria-label=${`${c} after of ${name}${at(k)}`} value=${(q.x || {})[c] || ''} placeholder=${c} onInput=${e => set(k, { x: { [c]: e.currentTarget.value } })} />
+          <span></span>${pad}</div>`);
+      }
+    } else {
+      const w = worked && worked.how === 'worked out' ? worked : null;
+      out.push(html`<div class=${rc} key=${'t' + k}><span class="wt-k">${lab(k)}</span>
+        <span class="wt-w tnum">${w && hasVal(w.before[k]) ? w.before[k] : '–'}</span><span class="wt-w tnum">${w && hasVal(w.after[k]) ? w.after[k] : '–'}</span>
+        <input class=${'wt-din' + (neg ? ' neg' : '')} inputmode="decimal" aria-label=${`${dl} of ${name}${at(k)}`} value=${q.t || ''} placeholder="nm" onInput=${e => set(k, { t: e.currentTarget.value })} />${trash}</div>`);
+      for (const c of cols) out.push(html`<div class=${rc} key=${c + k}><span class="wt-k">${c}${multi ? ' ' + (k + 1) : ''}</span><span></span>
+        <input inputmode="decimal" aria-label=${`${c} of ${name}${at(k)}`} value=${(q.x || {})[c] || ''} placeholder=${c} onInput=${e => set(k, { x: { [c]: e.currentTarget.value } })} /><span></span>${pad}</div>`);
+    }
+  });
+  return out;
+}
+/* where the Before came from, what is missing, and what does not add up */
+function ptNote({ kind, p, carry, worked }) {
+  const ba = isBA(p), pts = ptsOf(p), out = [];
+  if (pts.some(q => num(q.t) < 0)) out.push(html`<p class="wt-s warn" key="neg">${kind === 'etch' ? 'After is thicker than Before, and an etch cannot add film' : 'After is thinner than Before'}. Check the values; this piece stays out of the rate.</p>`);
+  if (ba) {
+    const src = pts.map(q => q.bsrc).find(Boolean);
+    const open = pts.some(q => !hasVal(q.b));
+    const offer = open && !!carry && pts.some((q, k) => !hasVal(q.b) && hasVal(carry.vals[k]));
+    if (offer) out.push(html`<p class="wt-s" key="c">Before: from <b>${carry.label}</b>${carry.how === 'worked out' ? ', worked out from its recorded changes' : ''}. Type over it if you measure again.</p>`);
+    else if (src) out.push(html`<p class="wt-s" key="s">Before: from <b>${src}</b>.</p>`);
+    else if (open && p.ref) out.push(html`<p class="wt-s" key="n">Before: not known. ${noBeforeWhy(p.ref)}</p>`);
+    else if (open && pts.some(q => hasVal(q.a))) out.push(html`<p class="wt-s" key="a">Add the Before to get the change.</p>`);
+  } else if (pts.some(q => hasVal(q.t))) {
+    out.push(html`<p class="wt-s" key="d">Entered as the change${worked && worked.how === 'worked out' && worked.prior ? html`; Before and After worked out from <b>${worked.prior.label}</b>` : ''}.</p>`);
+  }
+  return out;
+}
+const runKey = (sid, st) => st.run || ('u:' + sid + ':' + st.id);
+const workedFor = (ref, key) => (ref ? pieceChain(ref).runs.find(r => r.key === key) || null : null);
+const MODES = [['ba', 'Before and after'], ['d', 'Change only']];
 function PiecesEditor({ value, kind, onChange, linkable }) {
   const pieces = value.pieces || [], cols = value.cols || [];
-  const [open, setOpen] = useState(() => new Set());
   const [colIn, setColIn] = useState(null);
   const [picking, setPicking] = useState(null);
-  const lab = kind === 'etch' ? 'Depth' : 'Thickness';
-  const sum = pieceSummary({ pieces, cols });
-  const commit = (p, c = cols, d = 600) => onChange({ pieces: p, cols: c }, d);
+  const dl = kind === 'etch' ? 'Etched' : 'Deposited';
+  const commit = (p, c = cols, d = 600) => onChange({ pieces: syncPieces(kind, p), cols: c }, d);
   const setPiece = (i, patch, d) => commit(pieces.map((p, j) => (j === i ? { ...p, ...patch } : p)), cols, d);
-  const setPt = (i, k, patch) => setPiece(i, { pts: pieces[i].pts.map((q, j) => (j === k ? { ...q, ...patch, x: { ...(q.x || {}), ...(patch.x || {}) } } : q)) });
-  const toggle = id => setOpen(o => { const n = new Set(o); if (n.has(id)) n.delete(id); else n.add(id); return n; });
   const roleOf = (pd, dflt) => (pd && /witness/i.test(pd.kind || '') ? 'witness' : pd && /dummy/i.test(pd.kind || '') ? 'dummy' : dflt);
   const onPick = (ref, pd) => {
     if (picking && picking.mode === 'assign') {
@@ -4073,33 +4743,24 @@ function PiecesEditor({ value, kind, onChange, linkable }) {
   };
   const addCol = () => { const c = (colIn || '').trim(); if (c && !cols.includes(c)) commit(pieces, [...cols, c], 0); setColIn(null); };
   const delCol = c => commit(pieces, cols.filter(x => x !== c), 0);
-  return html`<div class="pcs" style=${'--nc:' + (1 + cols.length)}>
-    <div class="pc-head"><span>Piece</span><span>${lab} (nm)</span>${cols.map(c => html`<span key=${c}>${c}</span>`)}</div>
-    ${pieces.map((p, i) => {
-      const ps = sum.pieces[i] || {};
-      const single = (p.pts || []).length === 1 && !open.has(p.id);
-      return html`<div class="pc" key=${p.id}>
-        <div class="pc-row">
-          <button class="pc-tog" aria-label=${(open.has(p.id) ? 'Hide' : 'Show') + ' points of ' + p.name} aria-expanded=${open.has(p.id) ? 'true' : 'false'} onClick=${() => toggle(p.id)}>${open.has(p.id) ? I.chevD() : I.chevR()}</button>
-          ${p.ref ? html`<span class="pc-name pc-ref">${linkable ? html`<button class="linkish" onClick=${() => go({ v: 'piece', id: p.ref })}>${regName(p)}</button>` : html`<b>${regName(p)}</b>`}</span>`
+  return html`<div class="pcs2">
+    ${pieces.length ? html`<div class="wt">
+      <div class="wt-h tr"><span></span><span>Before</span><span>After</span><span>${dl}</span><span></span></div>
+      ${pieces.map((p, i) => {
+        const name = p.ref ? regName(p) : p.name;
+        const carry = p.ref ? carryFor(p.ref, '', ptsOf(p).length) : null;
+        return html`<div class="wt-p" key=${p.id}>
+          <div class="wt-pe">${p.ref ? html`<span class="pc-ref">${linkable ? html`<button class="linkish" onClick=${() => go({ v: 'piece', id: p.ref })}>${name}</button>` : html`<b>${name}</b>`}</span>`
             : html`<span class="pc-name-w"><input class="pc-name" aria-label=${'Piece ' + (i + 1) + ' name'} value=${p.name} onInput=${e => setPiece(i, { name: e.currentTarget.value })} />
-              <button class="btn sm ghost pc-pick" aria-label=${'Pick a named piece for ' + p.name} onClick=${() => setPicking({ mode: 'assign', i })}>Pick</button></span>`}
-          ${single ? html`<input class="pc-in" inputmode="decimal" aria-label=${lab + ' of ' + p.name} value=${p.pts[0].t} placeholder="nm" onInput=${e => setPt(i, 0, { t: e.currentTarget.value })} />
-              ${cols.map(c => html`<input class="pc-in" key=${c} inputmode="decimal" aria-label=${c + ' of ' + p.name} value=${(p.pts[0].x || {})[c] || ''} onInput=${e => setPt(i, 0, { x: { [c]: e.currentTarget.value } })} />`)}`
-            : html`<span class="pc-val tnum">${fmtV(ps.mean)}<small>${ps.ts && ps.ts.length ? `n=${ps.ts.length}` : ''}</small></span>
-              ${cols.map(c => html`<span class="pc-val tnum" key=${c}>${fmtV(ps.extra ? ps.extra[c] : NaN)}</span>`)}`}
-        </div>
-        ${open.has(p.id) ? html`<div class="pc-pts">
-            ${(p.pts || []).map((q, k) => html`<div class="pt-row" key=${k}><span class="pt-n tnum">${k + 1}</span>
-              <input inputmode="decimal" aria-label=${`${lab} point ${k + 1} of ${p.name}`} value=${q.t} placeholder="nm" onInput=${e => setPt(i, k, { t: e.currentTarget.value })} />
-              ${cols.map(c => html`<input key=${c} inputmode="decimal" aria-label=${`${c} point ${k + 1} of ${p.name}`} value=${(q.x || {})[c] || ''} onInput=${e => setPt(i, k, { x: { [c]: e.currentTarget.value } })} />`)}
-              <button class="icon-btn" aria-label=${'Remove point ' + (k + 1)} disabled=${p.pts.length < 2} onClick=${() => setPiece(i, { pts: p.pts.filter((_, j) => j !== k) }, 0)}>${I.trash()}</button></div>`)}
-            <div class="row gap wrap"><button class="btn sm ghost" onClick=${() => setPiece(i, { pts: [...p.pts, { t: '', x: {} }] }, 0)}>${I.plus()}<span>Point</span></button>
-              <select class="narrow pc-role" aria-label=${'Role of ' + p.name} value=${p.role || 'dummy'} onChange=${e => setPiece(i, { role: e.currentTarget.value }, 0)}>${PIECE_ROLES.map(([v, l]) => html`<option value=${v}>${l}</option>`)}</select>
-              <button class="btn sm ghost danger" onClick=${() => commit(pieces.filter((_, j) => j !== i), cols, 0)}>Remove piece</button></div>
-          </div>` : null}
-      </div>`;
-    })}
+              <button class="btn sm ghost pc-pick" aria-label=${'Pick a named piece for ' + p.name} onClick=${() => setPicking({ mode: 'assign', i })}>Pick</button></span>`}</div>
+          ${ptRows({ kind, p, cols, carry, worked: null, name, edit: true, onPts: (pts, d) => setPiece(i, { pts }, d) })}
+          ${ptNote({ kind, p, carry, worked: null })}
+          <div class="row gap wrap"><button class="btn sm ghost" onClick=${() => setPiece(i, { pts: [...ptsOf(p), { t: '', x: {} }] }, 0)}>${I.plus()}<span>Point</span></button>
+            <select class="narrow pc-role" aria-label=${'How ' + name + ' was measured'} value=${isBA(p) ? 'ba' : 'd'} onChange=${e => setPiece(i, { mode: e.currentTarget.value }, 0)}>${MODES.map(([v, l]) => html`<option value=${v}>${l}</option>`)}</select>
+            <select class="narrow pc-role" aria-label=${'Role of ' + name} value=${p.role || 'dummy'} onChange=${e => setPiece(i, { role: e.currentTarget.value }, 0)}>${PIECE_ROLES.map(([v, l]) => html`<option value=${v}>${l}</option>`)}</select>
+            <button class="btn sm ghost danger" onClick=${() => commit(pieces.filter((_, j) => j !== i), cols, 0)}>Remove piece</button></div>
+        </div>`;
+      })}</div>` : null}
     ${picking ? html`<${PiecePicker} kind=${kind} onPick=${onPick} onClose=${() => setPicking(null)} />` : null}
     <div class="row gap wrap pc-acts"><button class="btn sm" onClick=${() => setPicking({ mode: 'add' })}>${I.plus()}<span>Piece</span></button>
       ${colIn == null ? html`<button class="btn sm ghost" onClick=${() => setColIn('')}>${I.plus()}<span>Column</span></button>`
@@ -4111,8 +4772,8 @@ function RunResults({ x, kind }) {
   const unit = getSettings().rateUnit;
   const sum = pieceSummary(x);
   const r = rateOf(x);
-  const lab = kind === 'etch' ? 'Depth' : 'Thickness';
-  if (!sum.n) return html`<p class="small muted">Enter the ${kind === 'etch' ? 'depth' : 'thickness'} of each piece${num(x.timeV) > 0 ? '' : ' and the process time'} to get the rate.</p>`;
+  const lab = kind === 'etch' ? 'Etched' : 'Deposited';
+  if (!sum.n) return html`<p class="small muted">Enter each piece's Before and After, or the change alone${num(x.timeV) > 0 ? '' : ', and the process time,'} to get the rate.</p>`;
   return html`<div class="res">
       <span>${lab}</span><b>${fmtPm(sum.mean, sum.sd, 'nm')} (${plural(sum.n, 'piece')})</b>
       <span>Rate</span>${r ? html`<b>${fmtPm(convRate(r.v, r.basis, unit), convRate(r.sdRate, r.basis, unit), rateUnitLabel(r.basis, unit))}</b>` : html`<span class="muted">needs the process time</span>`}
@@ -4150,29 +4811,25 @@ function TargetCalc({ sid, s, st }) {
 }
 
 /* ---------------- the pieces measured in this run ---------------- */
-const pieceLab = kind => (kind === 'etch' ? 'Depth' : 'Thickness');
 const roleOfPiece = (pd, dflt) => (pd && /witness/i.test(pd.kind || '') ? 'witness' : pd && /dummy/i.test(pd.kind || '') ? 'dummy' : dflt);
 function setPieces(sid, st, next, d = 600) {
   updStep(sid, st.id, x => { x.pieces = next.map(p => (p.legacy ? { id: p.id, name: p.name, role: p.role, pts: p.pts } : p)); x.thkV = ''; }, d);
 }
-/* what a piece had been through before this run */
+/* the piece in a word: its kind, and its film now (or how often it has been used) */
 function pieceNote(sid, st, p) {
   if (!p.ref) return p.legacy ? '' : 'tap to name';
   const pd = view('pieces')[p.ref];
   if (!pd) return '';
-  const uses = pieceUses(p.ref).filter(u => !(u.sid === sid && u.stepId === st.id));
-  const film = uses.filter(u => u.kind === 'dep' && u.mean > 0).pop();
-  const status = pd.usedUp ? 'used up' : film ? `has ${fmtNum(film.mean, 3)} nm${film.recipe ? ' ' + film.recipe : ''}` : uses.length ? `used in ${plural(uses.length, 'run')}` : 'fresh';
+  const ch = pieceChain(p.ref), key = runKey(sid, st);
+  const others = ch.runs.filter(r => r.key !== key).length;
+  const status = pd.usedUp ? 'used up' : ch.now && ch.now.src === 'run' ? `now ${filmText(ch.now)}` : others ? `used in ${plural(others, 'run')}` : 'fresh';
   return [pd.kind, status].filter(Boolean).join(' · ');
 }
-const firstPt = p => ((p.pts || [])[0] || { t: '', x: {} });
 function PiecesTable({ sid, st }) {
   const pieces = piecesOf(st), cols = st.cols || [];
-  const sum = pieceSummary({ pieces, cols });
-  const lab = pieceLab(st.kind);
+  const key = runKey(sid, st);
+  const dl = st.kind === 'etch' ? 'Etched' : 'Deposited';
   const commit = (next, d) => setPieces(sid, st, next, d);
-  const setPt = (i, patch) => commit(pieces.map((p, j) => (j !== i ? p
-    : { ...p, pts: [firstPt(p), ...(p.pts || []).slice(1)].map((q, k) => (k === 0 ? { ...q, ...patch, x: { ...(q.x || {}), ...(patch.x || {}) } } : q)) })));
   const holes = pieces.filter(p => !p.ref && !p.legacy);
   const next = nextPieces(st.kind, st, holes.length + 1, sid), after = next[holes.length];
   const add = () => { const [pc] = claimPieces(st.kind, st, 1, sid); commit([...pieces, { id: newId('pc'), name: pc.name, role: pc.role, ref: pc.ref, pts: [{ t: '', x: {} }] }], 0); };
@@ -4185,19 +4842,16 @@ function PiecesTable({ sid, st }) {
   const addRow = html`<div class="row gap ptab-add"><button class="btn sm ghost" onClick=${add}>${I.plus()}<span>Piece</span></button>
       <span class="small muted">adds ${after.why}, ${after.name}</span></div>`;
   if (!pieces.length) return addRow;
-  return html`<div class="ptab" style=${'--ptab-cols: minmax(0, 1fr) minmax(76px, 96px)' + ' minmax(62px, 80px)'.repeat(cols.length)}>
-      <div class="ptab-h"><span>Piece</span><span>${lab} (nm)</span>${cols.map(c => html`<span key=${c}>${c}</span>`)}</div>
+  return html`<div class="wt">
+      <div class="wt-h"><span></span><span>Before</span><span>After</span><span>${dl}</span></div>
       ${pieces.map((p, i) => {
-        const ps = sum.pieces[i] || {};
         const name = p.ref ? regName(p) : p.name;
-        const multi = (p.pts || []).length > 1;
-        const open = () => openPiece(sid, st.id, p.id);
-        return html`<div class=${'ptab-r' + (p.ref || p.legacy ? '' : ' hole')} key=${p.id}>
-          <button class="ptab-n" onClick=${open}><b>${name || 'Unnamed piece'}</b><span>${pieceNote(sid, st, p)}</span></button>
-          ${multi ? html`<button class="ptab-v tnum" aria-label=${`${lab} of ${name}, ${ps.ts ? ps.ts.length : 0} points`} onClick=${open}>${fmtV(ps.mean)}<small>n=${ps.ts ? ps.ts.length : 0}</small></button>
-              ${cols.map(c => html`<button class="ptab-v tnum" key=${c} onClick=${open}>${fmtV(ps.extra ? ps.extra[c] : NaN)}</button>`)}`
-            : html`<input class="pc-in" inputmode="decimal" aria-label=${lab + ' of ' + name} value=${firstPt(p).t} placeholder="nm" onInput=${e => setPt(i, { t: e.currentTarget.value })} />
-              ${cols.map(c => html`<input class="pc-in" key=${c} inputmode="decimal" aria-label=${c + ' of ' + name} value=${(firstPt(p).x || {})[c] || ''} onInput=${e => setPt(i, { x: { [c]: e.currentTarget.value } })} />`)}`}
+        const carry = p.ref ? carryFor(p.ref, key, ptsOf(p).length) : null;
+        const worked = workedFor(p.ref, key);
+        return html`<div class=${'wt-p' + (p.ref || p.legacy ? '' : ' hole')} key=${p.id}>
+          <button class="wt-n" aria-label=${'Open ' + (name || 'piece')} onClick=${() => openPiece(sid, st.id, p.id)}><b>${name || 'Unnamed piece'}</b><span>${pieceNote(sid, st, p)}</span></button>
+          ${ptRows({ kind: st.kind, p, cols, carry, worked, name, onPts: (pts, d) => commit(pieces.map((x, j) => (j === i ? { ...x, pts } : x)), d) })}
+          ${ptNote({ kind: st.kind, p, carry, worked })}
         </div>`;
       })}
     </div>
@@ -4214,12 +4868,13 @@ function PieceSheet({ sid, stepId, pid }) {
   const i = pieces.findIndex(p => p.id === pid);
   if (i < 0) return null;
   const p = pieces[i], cols = st.cols || [];
-  const lab = pieceLab(st.kind);
   const name = p.ref ? regName(p) : p.name;
+  const key = runKey(sid, st), pts = ptsOf(p);
+  const carry = p.ref ? carryFor(p.ref, key, pts.length) : null;
+  const worked = workedFor(p.ref, key);
+  const dl = st.kind === 'etch' ? 'Etched' : 'Deposited';
   const commit = (next, d) => setPieces(sid, st, next, d);
   const setP = (patch, d = 0) => commit(pieces.map((x, j) => (j === i ? { ...x, ...patch } : x)), d);
-  const pts = (p.pts || []).length ? p.pts : [{ t: '', x: {} }];
-  const setPt = (k, patch) => setP({ pts: pts.map((q, j) => (j === k ? { ...q, ...patch, x: { ...(q.x || {}), ...(patch.x || {}) } } : q)) }, 600);
   const nx = !p.ref && !p.legacy ? nextPieces(st.kind, st, 1, sid)[0] : null;
   const useNext = () => { const [pc] = claimPieces(st.kind, st, 1, sid); setP({ ref: pc.ref, name: pc.name, role: pc.role }); };
   const onPick = (ref, pd) => { if (ref) setP({ ref, name: pd.name, role: roleOfPiece(pd, p.role) }); setPick(false); };
@@ -4230,12 +4885,12 @@ function PieceSheet({ sid, stepId, pid }) {
         <button class="btn primary" onClick=${useNext}>Use ${nx.name}${nx.isNew ? ', a new ' + (st.kind === 'etch' ? 'witness' : 'dummy') : ''}</button></div>` : null}
     ${pick ? html`<${PiecePicker} kind=${st.kind} onPick=${onPick} onClose=${() => setPick(false)} />`
       : html`<div><button class="btn sm" onClick=${() => setPick(true)}>${p.ref ? 'Choose another piece' : 'Choose from your pieces'}</button></div>`}
+    <div class="field"><span class="lab">Measured</span><${Seg} label="How it was measured" value=${isBA(p) ? 'ba' : 'd'} onChange=${v => setP({ mode: v })} options=${MODES} /></div>
     <div><div class="sec">Points<span class="sec-n">averaged for this piece</span></div>
-      <div class="pts" style=${'--nc:' + (1 + cols.length)}>
-        ${pts.map((q, k) => html`<div class="pt-row" key=${k}><span class="pt-n tnum">${k + 1}</span>
-          <input inputmode="decimal" aria-label=${`${lab} point ${k + 1} of ${name}`} value=${q.t} placeholder=${lab + ', nm'} onInput=${e => setPt(k, { t: e.currentTarget.value })} />
-          ${cols.map(c => html`<input key=${c} inputmode="decimal" aria-label=${`${c} point ${k + 1} of ${name}`} value=${(q.x || {})[c] || ''} placeholder=${c} onInput=${e => setPt(k, { x: { [c]: e.currentTarget.value } })} />`)}
-          <button class="icon-btn" aria-label=${'Remove point ' + (k + 1)} disabled=${pts.length < 2} onClick=${() => setP({ pts: pts.filter((_, j) => j !== k) })}>${I.trash()}</button></div>`)}
+      <div class="wt">
+        <div class="wt-h tr"><span></span><span>Before</span><span>After</span><span>${dl}</span><span></span></div>
+        ${ptRows({ kind: st.kind, p, cols, carry, worked, name, edit: true, onPts: (next, d) => setP({ pts: next }, d) })}
+        ${ptNote({ kind: st.kind, p, carry, worked })}
       </div>
       <button class="btn sm ghost" onClick=${() => setP({ pts: [...pts, { t: '', x: {} }] })}>${I.plus()}<span>Point</span></button></div>
     <div class="field"><span class="lab">Role in this run</span><${Seg} label="Role" value=${p.role || 'dummy'} onChange=${v => setP({ role: v })} options=${PIECE_ROLES} /></div>
@@ -4254,14 +4909,14 @@ function MeasuredBlock({ sid, s, st }) {
     if (g) { const gs = groupStats(g, win, st.run || ('u:' + sid + ':' + st.id)); if (gs.n) cmp = { g, gs, basis }; }
   }
   const odd = r && r.basis === 't' && (r.v > 3000 || r.v < 0.01);
-  return html`<div class="sec">Measured<span class="sec-n">type only what you measured</span></div>
+  return html`<div class="sec">Measured<span class="sec-n">Before and After of each piece</span></div>
     <${PiecesTable} sid=${sid} st=${st} />
     ${piecesOf(st).length ? html`<${RunResults} x=${st} kind=${st.kind} />` : null}
     ${odd ? html`<p class="caution small">This rate is outside the plausible range. Check the time and the thickness units.</p>` : null}
     ${cmp ? html`<p class="small cmp">Recent runs on the same tool and recipe: <b class="tnum">${fmtNum(convRate(cmp.gs.mean, cmp.basis, unit))}${Number.isFinite(cmp.gs.sd) ? ' ± ' + fmtNum(convRate(cmp.gs.sd, cmp.basis, unit), 2) : ''} ${rateUnitLabel(cmp.basis, unit)}</b>
         (n = ${cmp.gs.n}${cmp.gs.n === 1 ? ', no spread yet' : ''})${r && r.basis === cmp.basis ? html`; this run ${pct(r.v, cmp.gs.mean)}${cmp.gs.sd > 0 ? ` (${fmtNum(Math.abs(r.v - cmp.gs.mean) / cmp.gs.sd, 2)}σ)` : ''}` : null}.
         <button class="linkish" onClick=${() => go({ v: 'rate', key: cmp.g.key })}>Rate history</button></p>` : null}
-    ${st.excl ? html`<p class="small caution">Left out of rate statistics${st.exclWhy ? html`: <i>${st.exclWhy}</i>` : ''}. <button class="linkish" onClick=${() => toggleExcl(sid, st, false)}>Count it again</button></p>` : null}
+    ${st.excl ? html`<p class="small caution">Left out of rate statistics${st.exclWhy ? html`: <i>${String(st.exclWhy).replace(/[.\s]+$/, '')}</i>` : ''}. <button class="linkish" onClick=${() => toggleExcl(sid, st, false)}>Count it again</button></p>` : null}
     <${TargetCalc} key=${st.id} sid=${sid} s=${s} st=${st} />`;
 }
 
@@ -4731,7 +5386,7 @@ function piecesCsv() {
   for (const [id, e] of Object.entries(view('ratelog'))) if (isRateKind(e.kind)) srcs.push({ x: e, who: e.label || 'Logged run', step: 'Logged run', at: e.at || e.created, run: 'l:' + id });
   const cols = [...new Set(srcs.flatMap(r => r.x.cols || []))];
   const head = ['Date (ISO UTC)', 'Sample or label', 'Step', 'Run', 'Kind', 'Method', 'Material', 'Tool', 'Recipe', 'Time', 'Time unit', 'Piece', 'Role', 'Point',
-    'Thickness or depth (nm)', ...cols, 'Rate from this point', 'Rate unit', 'Left out', 'Reason'];
+    'Thickness or depth (nm)', ...cols, 'Rate from this point', 'Rate unit', 'Left out', 'Reason', 'Before (nm)', 'After (nm)', ...cols.map(c => c + ' before')];
   const rows = [head];
   for (const r of srcs.sort((a, b) => a.at - b.at)) {
     const x = r.x, t = num(x.timeV);
@@ -4739,7 +5394,8 @@ function piecesCsv() {
     for (const p of piecesOf(x)) (p.pts || []).forEach((q, j) => {
       const v = num(q.t);
       rows.push([iso(r.at), r.who, r.step, r.run, x.kind, x.method, x.material, x.tool, x.recipe, x.timeV, x.timeU, p.ref ? regName(p) : p.name, p.role || '', j + 1,
-        Number.isFinite(v) ? v : '', ...cols.map(c => (q.x || {})[c] || ''), Number.isFinite(v * k) ? +(v * k).toPrecision(6) : '', x.timeU === 'cyc' ? 'nm/cycle' : 'nm/min', x.excl ? 'yes' : '', x.exclWhy || '']);
+        Number.isFinite(v) ? v : '', ...cols.map(c => (q.x || {})[c] || ''), Number.isFinite(v * k) ? +(v * k).toPrecision(6) : '', x.timeU === 'cyc' ? 'nm/cycle' : 'nm/min', x.excl ? 'yes' : '', x.exclWhy || '',
+        q.b || '', q.a || '', ...cols.map(c => (q.bx || {})[c] || '')]);
     });
   }
   return '﻿' + rows.map(r => r.map(c => { const v = String(c == null ? '' : c); return /[",\n]/.test(v) ? `"${v.replace(/"/g, '""')}"` : v; }).join(',')).join('\r\n');
@@ -5051,7 +5707,7 @@ function pieceUses(ref) {
     const entry = (p, x, extra) => {
       const ts = (p.pts || []).map(q => num(q.t)).filter(v => v > 0);
       const mw = (x.fields || []).find(f => norm(f.name) === 'measured with');
-      return { kind: x.kind, tool: x.tool, recipe: x.recipe, cal: isCal(x), mean: ts.length ? pAvg(ts) : NaN, n: ts.length, how: mw ? fUsed(mw) : '', ...extra };
+      return { kind: x.kind, tool: x.tool, recipe: x.recipe, run: x.run || '', cal: isCal(x), mean: ts.length ? pAvg(ts) : NaN, n: ts.length, how: mw ? fUsed(mw) : '', ...extra };
     };
     for (const [sid, s] of Object.entries(view('samples'))) for (const st of s.steps || []) for (const p of st.pieces || []) if (p.ref) {
       add(p.ref, entry(p, st, { at: st.doneAt || st.startedAt || s.updated || 0, sid, stepId: st.id, who: s.name, step: `${stepLabel(s, st)} ${st.name}`.trim(), status: st.status }));
@@ -5067,9 +5723,12 @@ function pieceUses(ref) {
 const hasFilm = ref => pieceUses(ref).some(u => u.kind === 'dep' && u.mean > 0);
 function pieceStatus(id, p) {
   if (p.usedUp) return 'used up';
+  const ch = pieceChain(id);
+  if (ch.now && ch.now.src === 'run') return `now ${ch.now.mat ? ch.now.mat + ' ' : ''}${filmText(ch.now)}`;
   const u = pieceUses(id);
   const film = u.filter(x => x.kind === 'dep' && x.mean > 0).pop();
   if (film) return `has ${fmtNum(film.mean, 3)} nm${film.recipe ? ' ' + film.recipe : ''} from ${fmtDate(film.at)}`;
+  if (ch.now) return `starts at ${filmText(ch.now)}`;
   return u.length ? `used in ${plural(u.length, 'run')}` : 'fresh';
 }
 function nextPieceName(kind, skip = 0) {
@@ -5083,7 +5742,7 @@ function nextPieceName(kind, skip = 0) {
 function nextPieces(kind, st, n, sid) {
   const etch = kind === 'etch';
   const taken = new Set((st.pieces || []).map(p => p.ref).filter(Boolean));
-  const before = id => pieceUses(id).filter(u => !(u.sid === sid && u.stepId === st.id));
+  const before = id => pieceUses(id).filter(u => !(u.sid === sid && u.stepId === st.id) && !(st.run && u.run === st.run));   // a sample run alongside is the same run
   const avail = Object.entries(view('pieces')).filter(([id, p]) => !p.usedUp && !taken.has(id));
   const byName = (a, b) => (a[1].name || '').localeCompare(b[1].name || '', undefined, { numeric: true });
   const out = [];
@@ -5155,7 +5814,10 @@ function PieceView({ id }) {
   const p = view('pieces')[id];
   if (!p) return html`<${BackLink} label="Pieces" fallback=${{ v: 'pieces' }} /><${Empty} title="This piece is not here"><p>It may have been deleted.</p></${Empty}>`;
   const set = (patch, d = 600) => updDoc('pieces', id, x => Object.assign(x, patch), d);
-  const uses = pieceUses(id);
+  const ch = pieceChain(id);
+  const later = pieceUses(id).filter(u => u.sid && u.status !== 'done');
+  const start = p.start || {};
+  const setStart = (patch, d = 600) => updDoc('pieces', id, x => { const o = x.start || {}; x.start = { ...o, ...patch, x: { ...(o.x || {}), ...(patch.x || {}) } }; }, d);
   const del = async () => {
     if (!(await confirmBox({ title: `Delete ${p.name}?`, body: 'Runs that used it keep its name; only the register entry goes.', ok: 'Delete piece', danger: true }))) return;
     const before = clone(p);
@@ -5164,19 +5826,30 @@ function PieceView({ id }) {
     toast('Piece deleted', { action: { label: 'Undo', fn: () => put('pieces', id, before) } });
   };
   const field = (lab, k, ph) => html`<${Field} label=${lab}><input value=${p[k] || ''} placeholder=${ph || ''} onInput=${e => set({ [k]: e.currentTarget.value })} /></${Field}>`;
+  const signed = (kind, c) => (!c ? '–' : c.startsWith('-') ? (kind === 'etch' ? '+' : '−') + c.slice(1) : (kind === 'etch' ? '−' : '+') + c);
+  const now = ch.now;
   return html`<${BackLink} label="Pieces" fallback=${{ v: 'pieces' }} />
     <h1 class="piece-h">${p.name || 'Unnamed piece'}</h1>
     <p class="small muted">${[p.kind, pieceStatus(id, p)].filter(Boolean).join(' · ')}</p>
+    <div class="wt-now"><span>Now</span>${now
+      ? html`<b class="tnum">${now.mat ? now.mat + ' ' : ''}${filmText(now)}</b><span>${now.src === 'start' ? 'its starting measurement' : `after ${now.label}`}${now.how === 'worked out' ? ', worked out from the changes recorded' : ''}</span>`
+      : html`<b>Not known</b><span>${ch.runs.length ? noBeforeWhy(id) : 'Add its starting measurement below, or measure it before its first run.'}</span>`}</div>
+    <div class="sec">Starting measurement<span class="sec-n">its Before in its first run</span></div>
+    <div class="grid2">
+      <${Field} label="Thickness (nm)"><input inputmode="decimal" value=${start.t || ''} placeholder="e.g. native oxide" onInput=${e => setStart({ t: e.currentTarget.value })} /></${Field}>
+      <${Field} label="RI"><input inputmode="decimal" value=${(start.x || {}).RI || ''} onInput=${e => setStart({ x: { RI: e.currentTarget.value } })} /></${Field}></div>
     <div class="grid2">${field('Name', 'name')}${field('Kind', 'kind', 'e.g. Si dummy, GaN witness')}${field('Source', 'source', 'e.g. wafer offcut')}
       ${field('Starting stack', 'stack', 'e.g. AlScN / GaN')}${field('Kept in', 'place', 'e.g. Box B, slot 2')}${field('Notes', 'notes')}</div>
-    <div class="sec">History<span class="sec-n">${plural(uses.length, 'run')}</span></div>
-    ${uses.length ? html`<div class="table-wrap"><table class="hist"><thead><tr><th>Date</th><th>Run</th><th>Measured</th></tr></thead><tbody>${uses.map((u, i) => html`<tr key=${i}>
-        <td class="nowrap">${fmtDate(u.at)}</td>
-        <td>${u.sid ? html`<button class="linkish" onClick=${() => go({ v: 'step', id: u.sid, step: u.stepId })}>${u.step}</button>` : u.step}
-          <div class="small muted">${[u.who, u.tool, u.recipe, u.cal ? 'calibration' : ''].filter(Boolean).join(' · ')}</div></td>
-        <td>${Number.isFinite(u.mean) ? `${fmtNum(u.mean, 4)} nm ${u.kind === 'etch' ? 'depth' : 'thickness'}` : 'not measured'}
-          ${u.n || u.how ? html`<div class="small muted">${[u.n ? plural(u.n, 'point') : '', u.how].filter(Boolean).join(', ')}</div>` : null}</td></tr>`)}</tbody></table></div>`
-      : html`<p class="small muted">Not used in any run yet.</p>`}
+    <div class="sec">History<span class="sec-n">${plural(ch.runs.length, 'run')}</span></div>
+    ${ch.runs.length ? html`<div class="table-wrap"><table class="hist wt-hist"><thead><tr><th>Date</th><th>Run</th><th>Before → after (nm)</th><th>Change</th></tr></thead><tbody>${ch.runs.map(r => html`<tr key=${r.key}>
+        <td class="nowrap">${fmtDate(r.at)}</td>
+        <td>${r.sid ? html`<button class="linkish" onClick=${() => go({ v: 'step', id: r.sid, step: r.stepId })}>${r.label}</button>` : r.label}
+          <div class="small muted">${[r.who.join(', '), r.st.tool, r.st.recipe, isCal(r.st) ? 'calibration' : ''].filter(Boolean).join(' · ')}</div></td>
+        <td class=${'tnum' + (r.how === 'worked out' ? ' muted' : '')}>${r.how === 'not measured' ? 'not measured' : r.how === 'change only' ? html`<span class="muted">change only</span>`
+          : r.before.map((b, k) => html`<div class="nowrap" key=${k}>${b || '–'} → ${r.after[k] || '–'}</div>`)}${r.how === 'worked out' ? html`<div class="small">worked out</div>` : null}</td>
+        <td class="tnum">${r.change.map((c, k) => html`<div class="nowrap" key=${k}>${signed(r.kind, c)}</div>`)}</td></tr>`)}</tbody></table></div>`
+      : html`<p class="small muted">Not used in any finished run yet.</p>`}
+    ${later.length ? html`<p class="small muted">Also in ${plural(later.length, 'step')} not done yet: ${later.map((u, k) => html`${k ? ', ' : ''}<button class="linkish" onClick=${() => go({ v: 'step', id: u.sid, step: u.stepId })}>${u.who} ${u.step}</button>`)}.</p>` : null}
     <div class="row gap wrap after-steps"><button class="btn sm" onClick=${() => set({ usedUp: !p.usedUp }, 0)}>${p.usedUp ? 'Mark as available' : 'Mark as used up'}</button>
       <button class="btn sm ghost danger" onClick=${del}>Delete</button></div>`;
 }
@@ -5890,7 +6563,8 @@ const isIOS = () => /iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.pla
 const isStandalone = () => { try { return navigator.standalone === true || matchMedia('(display-mode: standalone)').matches; } catch (e) { return false; } };
 const coarse = () => { try { return matchMedia('(pointer: coarse)').matches; } catch (e) { return false; } };
 const MIME = { csv: 'text/csv', json: 'application/json', html: 'text/html', zip: 'application/zip', jpg: 'image/jpeg', jpeg: 'image/jpeg',
-  png: 'image/png', webp: 'image/webp', gif: 'image/gif', pdf: 'application/pdf', txt: 'text/plain', heic: 'image/heic' };
+  png: 'image/png', webp: 'image/webp', gif: 'image/gif', pdf: 'application/pdf', txt: 'text/plain', heic: 'image/heic',
+  docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' };
 const EXT_OF = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp', 'image/gif': 'gif', 'application/pdf': 'pdf', 'image/heic': 'heic' };
 const extOf = n => (String(n).split('.').pop() || '').toLowerCase();
 const BACKUP_README = [
